@@ -1042,32 +1042,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\XBOX2\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\Tabasalu Vapista\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\XBOX2\\Desktop\\ChatApp\\Code\\itb2203-chatapp\\backEnd.csproj",
+      "projectUniqueName": "C:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\backEnd.csproj",
       "projectName": "backEnd",
-      "projectPath": "c:\\Users\\XBOX2\\Desktop\\ChatApp\\Code\\itb2203-chatapp\\backEnd.csproj",
-      "packagesPath": "C:\\Users\\XBOX2\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\XBOX2\\Desktop\\ChatApp\\Code\\itb2203-chatapp\\obj\\",
+      "projectPath": "C:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\backEnd.csproj",
+      "packagesPath": "C:\\Users\\Tabasalu Vapista\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\XBOX2\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\Tabasalu Vapista\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -1127,7 +1119,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.401/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
