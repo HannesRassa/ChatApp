@@ -1,45 +1,55 @@
 using BackEnd.Data;
+using BackEnd.Data.Repos;
 using BackEnd.Models.Classes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BackEnd.Controllers
 {
-    [Route("Backend/Question")]
+    [Route("Backend/Questiom")]
     [ApiController]
-    public class QuestionController : ControllerBase
+    public class QuestionController(QuestionsRepo repo) : ControllerBase
     {
-        private readonly DataContext _context;
-        public QuestionController(DataContext context)
-        {
-            _context = context;
-        }
+        private readonly QuestionsRepo repo = repo;
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var questions = _context.Questions.ToList();
-            return Ok(questions);
+            var result = await repo.GetAllQuestions();
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById([FromRoute] int id)
+        public async Task<IActionResult> GetById([FromRoute] int id)
         {
-            var question = _context.Questions.Find(id);
-            if (question == null) return NotFound();
+            var question = await repo.GetQuestionById(id);
+            if (question == null)
+                return NotFound();
             return Ok(question);
         }
 
-         [HttpPost]
-        public IActionResult Create([FromBody] Question newQuestion)
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] Question newQuestion)
         {
-            // Add the new question to the context
-            _context.Questions.Add(newQuestion);
-            
-            // Save the changes to the database
-            _context.SaveChanges();
+            if (newQuestion == null)
+                return BadRequest();
 
-            // Return the created question with a 201 status code
+            await repo.AddQuestion(newQuestion);
             return CreatedAtAction(nameof(GetById), new { id = newQuestion.QuestionID }, newQuestion);
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] Question updatedQuestion)
+        {
+            if (updatedQuestion == null || updatedQuestion.QuestionID != id)
+                return BadRequest();
+
+            var existingQuestion = await repo.GetQuestionById(id);
+            if (existingQuestion == null)
+                return NotFound();
+
+            await repo.UpdateQuestion(updatedQuestion);
+            return NoContent();
+        }
+
     }
 }
