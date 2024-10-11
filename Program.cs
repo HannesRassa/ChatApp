@@ -15,6 +15,13 @@ builder.Services.AddDbContext<DataContext>(options => options.UseInMemoryDatabas
 
 
 var app = builder.Build();
+using (var scope = ((IApplicationBuilder)app).ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+{
+    using (var context = scope.ServiceProvider.GetService<DataContext>())
+    {
+        context?.Database.EnsureCreated();
+    }
+}
 
 if (app.Environment.IsDevelopment())
 {
