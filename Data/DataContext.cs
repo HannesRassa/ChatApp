@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BackEnd.Models.Classes;
+using ISA3Demos.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace BackEnd.Data;
@@ -24,16 +25,20 @@ public class DataContext(DbContextOptions options) : DbContext(options)
                 QuestionText = "Text1",
                 PossibleAnswers = new List<string> { "Answer1" },
                 CorrectAnswer = "CorrectAns1",
-                TimeLimit = 100
+                TimeLimit = 100,
+                Hardness = QuestionHardness.Easy
+
             },
-                new Question
-                {
-                    QuestionID = 2,
-                    QuestionText = "Text2",
-                    PossibleAnswers = new List<string> { "Answer2" },
-                    CorrectAnswer = "CorrectAns2",
-                    TimeLimit = 200
-                }
+            new Question
+            {
+                QuestionID = 2,
+                QuestionText = "Text2",
+                PossibleAnswers = new List<string> { "Answer2" },
+                CorrectAnswer = "CorrectAns2",
+                TimeLimit = 200,
+                Hardness = QuestionHardness.Easy
+
+            }
 
             );
         modelBuilder.Entity<Player>().Property(x => x.PlayerID).ValueGeneratedOnAdd();

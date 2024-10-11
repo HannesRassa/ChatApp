@@ -28,27 +28,21 @@ namespace BackEnd.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Player newPlayer)
+        public async Task<IActionResult> SavePlayer([FromBody] Player newPlayer)
         {
-            if (newPlayer == null)
-                return BadRequest();
+            var playerExists = await repo.PlayerExtistsInDb(newPlayer.PlayerID);
 
-            await repo.AddPlayer(newPlayer);
-            return CreatedAtAction(nameof(GetById), new { id = newPlayer.PlayerID }, newPlayer);
+            if (playerExists) return Conflict();
+
+            var result = repo.SavePlayerToDb(newPlayer);
+            return CreatedAtAction(nameof(SavePlayer), new { newPlayer.PlayerID }, result);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] Player updatedPlayer)
+        public async Task<IActionResult> Update(int id, [FromBody] Player newPlayer)
         {
-            if (updatedPlayer == null || updatedPlayer.PlayerID != id)
-                return BadRequest();
-
-            var existingPlayer = await repo.GetPlayerById(id);
-            if (existingPlayer == null)
-                return NotFound();
-
-            await repo.UpdatePlayer(updatedPlayer);
-            return NoContent();
+            bool result = await repo.UpdatePlayer(id,newPlayer);
+            return result? NoContent() : NotFound();
         }
 
     }
