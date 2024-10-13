@@ -9,6 +9,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<DataContext>(options => options.UseInMemoryDatabase("chatDb"))
+    .AddScoped<GameRepo>()
     .AddScoped<GameRoomRepo>()
     .AddScoped<PlayerRepo>()
     .AddScoped<QuestionsRepo>();
