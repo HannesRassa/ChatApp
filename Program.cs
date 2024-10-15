@@ -25,7 +25,7 @@ using (var scope = ((IApplicationBuilder)app).ApplicationServices.GetRequiredSer
 }
 
 if (app.Environment.IsDevelopment())
-{
+{   
     app.UseSwagger();
     app.UseSwaggerUI();
 }
