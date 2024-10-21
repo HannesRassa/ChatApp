@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BackEnd.Controllers
 {
-    [Route("Backend/Questiom")]
+    [Route("Backend/Question")]
     [ApiController]
     public class QuestionController(QuestionsRepo repo) : ControllerBase
     {
