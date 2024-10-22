@@ -1,10 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 namespace BackEnd.Models.Classes;
 
-public record Question {
+public record Round {
     
     [Key]
     public int Id { get; init; }
-    public required string QuestionText { get; init; }
+    public required List<Group> Groups { get; set; }
+    public required List<Question> Questions { get; init; }
     
 }

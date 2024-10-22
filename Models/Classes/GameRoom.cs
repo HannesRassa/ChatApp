@@ -1,17 +1,10 @@
-using BackEnd.Models.Enums;
 using System.ComponentModel.DataAnnotations;
-
 namespace BackEnd.Models.Classes;
 
 public record GameRoom {
     [Key]
+    
+    public int Id { get; init; }
     public int RoomCode { get; init; }
-    public int MaxCapacity { get; init; }
-    public GameStatus Status { get; init; }
-    public int AdminID { get; init; }          
-    public List<Player> Players { get; init; } = new();   
-    public List<Question> Questions { get; init; } = new();  
-    public int CurrentQuestion { get; set; }        
-    //public Dictionary<string, int> ScoreBoard { get; init; } = new(); 
-    public int GameTimer { get; set; }              
+    public List<Player> Players { get; set; } = new();   
 }
