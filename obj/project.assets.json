@@ -1042,23 +1042,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\User\\.nuget\\packages\\": {},
+    "C:\\Users\\danii\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\User\\Desktop\\itb2203-chatapp\\backEnd.csproj",
+      "projectUniqueName": "C:\\TalTech\\3 semester\\ISA 3\\ISA_Project_1\\itb2203-chatapp\\backEnd.csproj",
       "projectName": "backEnd",
-      "projectPath": "C:\\Users\\User\\Desktop\\itb2203-chatapp\\backEnd.csproj",
-      "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\User\\Desktop\\itb2203-chatapp\\obj\\",
+      "projectPath": "C:\\TalTech\\3 semester\\ISA 3\\ISA_Project_1\\itb2203-chatapp\\backEnd.csproj",
+      "packagesPath": "C:\\Users\\danii\\.nuget\\packages\\",
+      "outputPath": "C:\\TalTech\\3 semester\\ISA 3\\ISA_Project_1\\itb2203-chatapp\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\danii\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -1067,7 +1067,6 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
