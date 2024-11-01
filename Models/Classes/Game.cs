@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 namespace BackEnd.Models.Classes
 {
     public class Game
@@ -6,6 +7,7 @@ namespace BackEnd.Models.Classes
         [Key]
         public int Id { get; init; }           
         public List<Player> Players { get; set; } = []; 
+        [NotMapped]
         public Dictionary<Player, int> PlayersPoints { get; set; } = []; // <Id, Points>
         
         public List<Question> Questions { get; set; } = []; 
