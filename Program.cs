@@ -9,20 +9,21 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<DataContext>(options => options.UseInMemoryDatabase("chatDb"))
-    .AddScoped<GameRepo>()
-    .AddScoped<GameRoomRepo>()
-    .AddScoped<PlayerRepo>()
-    .AddScoped<QuestionsRepo>();
+    .AddScoped<AnswersRepo>()
+    .AddScoped<GamesRepo>()
+    .AddScoped<GameRoomsRepo>()
+    .AddScoped<GroupsRepo>()
+    .AddScoped<PlayersRepo>()
+    .AddScoped<QuestionsRepo>()
+    .AddScoped<RoundsRepo>();
 
 
 var app = builder.Build();
 using (var scope = ((IApplicationBuilder)app).ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-{
-    using (var context = scope.ServiceProvider.GetService<DataContext>())
-    {
-        context?.Database.EnsureCreated();
-    }
+using (var context = scope.ServiceProvider.GetService<DataContext>()){
+    context?.Database.EnsureCreated();
 }
+
 
 if (app.Environment.IsDevelopment())
 {   

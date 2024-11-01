@@ -5,8 +5,6 @@ namespace BackEnd.Models.Classes
     {
         [Key]
         public int Id { get; init; }           
-        public int AdminID { get; set; } 
-
         public List<Player> Players { get; set; } = []; 
         public Dictionary<Player, int> PlayersPoints { get; set; } = []; // <Id, Points>
         

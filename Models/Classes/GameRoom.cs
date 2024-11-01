@@ -6,5 +6,6 @@ public record GameRoom {
     
     public int Id { get; init; }
     public int RoomCode { get; init; }
+    public required Player Admin { get; init; }
     public List<Player> Players { get; set; } = new();   
 }
