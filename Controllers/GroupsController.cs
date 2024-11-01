@@ -25,6 +25,13 @@ namespace BackEnd.Controllers
             return Ok(group);
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] Group newGroup)
+        {
+            bool result = await repo.UpdateGroup(id,newGroup);
+            return result? NoContent() : NotFound();
+        }
+
         [HttpPost]
         public async Task<IActionResult> SaveGroup([FromBody] Group newGroup)
         {
@@ -34,11 +41,12 @@ namespace BackEnd.Controllers
             return CreatedAtAction(nameof(SaveGroup), new { newGroup.Id }, result);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Group newGroup)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteGroup([FromRoute] int id)
         {
-            bool result = await repo.UpdateGroup(id,newGroup);
-            return result? NoContent() : NotFound();
+            bool isDeleted = await repo.DeleteGroupById(id);    
+            if (!isDeleted)  return NotFound();
+            return NoContent();
         }
     }
 }

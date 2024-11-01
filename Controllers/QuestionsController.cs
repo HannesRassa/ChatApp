@@ -25,6 +25,13 @@ namespace BackEnd.Controllers
             return Ok(question);
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] Question newQuestion)
+        {
+            bool result = await repo.UpdateQuestion(id,newQuestion);
+            return result? NoContent() : NotFound();
+        }
+
         [HttpPost]
         public async Task<IActionResult> SaveQuestion([FromBody] Question newQuesiton)
         {
@@ -34,11 +41,12 @@ namespace BackEnd.Controllers
             return CreatedAtAction(nameof(SaveQuestion), new { newQuesiton.Id }, result);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Question newQuestion)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteQuestion([FromRoute] int id)
         {
-            bool result = await repo.UpdateQuestion(id,newQuestion);
-            return result? NoContent() : NotFound();
+            bool isDeleted = await repo.DeleteQuestionById(id);    
+            if (!isDeleted)  return NotFound();
+            return NoContent();
         }
     }
 }

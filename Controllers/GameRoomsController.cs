@@ -25,6 +25,13 @@ namespace BackEnd.Controllers
             return Ok(gameRoom);
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] GameRoom newGameRoom)
+        {
+            bool result = await repo.UpdateGameRoom(id,newGameRoom);
+            return result? NoContent() : NotFound();
+        }
+
         [HttpPost]
         public async Task<IActionResult> SaveGameRoom([FromBody] GameRoom newGameRoom)
         {
@@ -34,11 +41,12 @@ namespace BackEnd.Controllers
             return CreatedAtAction(nameof(SaveGameRoom), new { newGameRoom.Id }, result);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] GameRoom newGameRoom)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteGameRoom([FromRoute] int id)
         {
-            bool result = await repo.UpdateGameRoom(id,newGameRoom);
-            return result? NoContent() : NotFound();
+            bool isDeleted = await repo.DeleteGameRoomById(id);    
+            if (!isDeleted)  return NotFound();
+            return NoContent();
         }
     }
 }

@@ -11,7 +11,7 @@ namespace BackEnd.Controllers
         private readonly AnswersRepo repo = repo;
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] Question? question, [FromQuery] Player? palyer)
+        public async Task<IActionResult> GetAll([FromQuery] Question? question, [FromQuery] Player? player)
         {       
             var result = await repo.GetAllAnswers(question, player);
             return Ok(result);
@@ -25,6 +25,13 @@ namespace BackEnd.Controllers
             return Ok(answer);
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] Answer newAnswer)
+        {
+            bool result = await repo.UpdateAnswer(id,newAnswer);
+            return result? NoContent() : NotFound();
+        }
+
         [HttpPost]
         public async Task<IActionResult> SaveAnswer([FromBody] Answer newAnswer)
         {
@@ -34,11 +41,12 @@ namespace BackEnd.Controllers
             return CreatedAtAction(nameof(SaveAnswer), new { newAnswer.Id }, result);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Answer newAnswer)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAnswer([FromRoute] int id)
         {
-            bool result = await repo.UpdateAnswer(id,newAnswer);
-            return result? NoContent() : NotFound();
+            bool isDeleted = await repo.DeleteAnswerById(id);    
+            if (!isDeleted)  return NotFound();
+            return NoContent();
         }
     }
 }

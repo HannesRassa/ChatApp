@@ -26,6 +26,13 @@ namespace BackEnd.Controllers
             return Ok(round);
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] Round newRound)
+        {
+            bool result = await repo.UpdateRound(id,newRound);
+            return result? NoContent() : NotFound();
+        }
+
         [HttpPost]
         public async Task<IActionResult> SaveRound([FromBody] Round newRound)
         {
@@ -37,11 +44,12 @@ namespace BackEnd.Controllers
             return CreatedAtAction(nameof(SaveRound), new { newRound.Id }, result);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Round newRound)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteRound([FromRoute] int id)
         {
-            bool result = await repo.UpdateRound(id,newRound);
-            return result? NoContent() : NotFound();
+            bool isDeleted = await repo.DeleteRoundById(id);    
+            if (!isDeleted)  return NotFound();
+            return NoContent();
         }
     }
 }

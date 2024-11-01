@@ -25,6 +25,13 @@ namespace BackEnd.Controllers
             return Ok(game);
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] Game newGame)
+        {
+            bool result = await repo.UpdateGame(id,newGame);
+            return result? NoContent() : NotFound();
+        }
+
         [HttpPost]
         public async Task<IActionResult> SaveGame([FromBody] Game newGame)
         {
@@ -34,11 +41,12 @@ namespace BackEnd.Controllers
             return CreatedAtAction(nameof(SaveGame), new { newGame.Id }, result);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Game newGame)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteGame([FromRoute] int id)
         {
-            bool result = await repo.UpdateGame(id,newGame);
-            return result? NoContent() : NotFound();
+            bool isDeleted = await repo.DeleteGameById(id);    
+            if (!isDeleted)  return NotFound();
+            return NoContent();
         }
     }
 }
