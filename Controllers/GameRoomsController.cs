@@ -24,6 +24,7 @@ namespace BackEnd.Controllers
             if (gameRoom == null) return NotFound();
             return Ok(gameRoom);
         }
+        
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] GameRoom newGameRoom)
@@ -33,13 +34,29 @@ namespace BackEnd.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SaveGameRoom([FromBody] GameRoom newGameRoom)
+        public async Task<IActionResult> SaveGameRoom([FromBody] int adminId)
         {
-            var gameRoomExists = await repo.GameRoomExistsInDb(newGameRoom.Id);
-            if (gameRoomExists) return Conflict();
-            var result = repo.SaveGameRoomToDb(newGameRoom);
+            // Retrieve the player by adminId
+            var admin = await repo.GetPlayerById(adminId);
+            if (admin == null)
+            {
+                return NotFound("Admin player not found.");
+            }
+
+            // Create a new GameRoom instance and assign properties
+            var newGameRoom = new GameRoom
+            {
+                Admin = admin,
+                RoomCode = new Random().Next(1000, 9999),
+                Players = new List<Player> { admin }
+            };
+
+            // Save the new game room to the database
+            var result = await repo.SaveGameRoomToDb(newGameRoom);
             return CreatedAtAction(nameof(SaveGameRoom), new { newGameRoom.Id }, result);
         }
+
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGameRoom([FromRoute] int id)
@@ -47,6 +64,13 @@ namespace BackEnd.Controllers
             bool isDeleted = await repo.DeleteGameRoomById(id);    
             if (!isDeleted)  return NotFound();
             return NoContent();
+        }
+        [HttpGet("Player/{playerId}")]
+        public async Task<IActionResult> GetPlayerById([FromRoute] int playerId)
+        {
+            var player = await repo.GetPlayerById(playerId);
+            if (player == null) return NotFound();
+            return Ok(player);
         }
     }
 }

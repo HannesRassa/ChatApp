@@ -23,7 +23,7 @@ public class GameRoomsRepo(DataContext context) {
 
     public async Task<GameRoom?> GetGameRoomById(int id) => await context.GameRooms.FindAsync(id);
     public async Task<bool> GameRoomExistsInDb(int id) => await context.GameRooms.AnyAsync(x => x.Id == id);
-
+    public async Task<Player?> GetPlayerById(int id) => await context.Players.FindAsync(id);
     //UPDATE
     public async Task<bool> UpdateGameRoom(int id, GameRoom gameRoom)
     {

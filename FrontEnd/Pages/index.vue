@@ -7,8 +7,8 @@
         <button @click="toggleLoginMode">Log In</button>
       </div>
       <div v-else>
-        <span @click="toggleUserOptions">{{ username }}</span>
-        <div v-if="showUserOptions" class="dropdown">
+        <span @click="toggleDropdown" class="username">{{ username }}</span>
+        <div v-if="showDropdown" class="dropdown-menu">
           <button @click="logOut">Log Out</button>
         </div>
       </div>
@@ -26,7 +26,8 @@
           <label for="password">Password:</label>
           <input type="password" id="password" v-model="passwordInput" required />
         </div>
-        <button type="submit">{{ signUpMode ? "Sign Up" : "Log In" }}</button>
+        <button v-if="signUpMode" @click="signUp">Sign Up</button>
+        <button v-if="loginMode" @click="logIn">Log In</button>
         <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
       </form>
     </div>
@@ -36,8 +37,9 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import axios from 'axios';
+import { useUserStore } from '~/stores/userStore';
 
 export default {
   data() {
@@ -49,8 +51,9 @@ export default {
       signUpMode: false,
       loginMode: false,
       showUserOptions: false,
-      errorMessage: '', // New: for displaying error messages
-      userId: null // New: to store user ID
+      errorMessage: '',
+      userId: null,
+      showDropdown: false,
     };
   },
   methods: {
@@ -64,64 +67,70 @@ export default {
       this.signUpMode = false;
       this.resetForm();
     },
-    toggleUserOptions() {
-      this.showUserOptions = !this.showUserOptions;
-    },
     async signUp() {
       try {
         const newPlayer = {
           username: this.usernameInput,
           password: this.passwordInput,
         };
-        const response = await axios.post('http://localhost:5180/Backend/Player', newPlayer);
-        console.log('Player created successfully:', response.data);
 
+        const response = await axios.post('http://localhost:5180/Backend/Player', newPlayer);
         this.username = this.usernameInput;
         this.loggedIn = true;
         this.signUpMode = false;
-        this.errorMessage = ''; // Clear error on success
+        this.errorMessage = '';
       } catch (error) {
-        this.errorMessage = 'Error signing up. Please try again.'; // Set error message
-        console.error('Error signing up:', error);
+        this.errorMessage = 'Error signing up. Please try again.';
       }
     },
     async logIn() {
       try {
-        const response = await axios.post('http://localhost:5180/Backend/Player/Authenticate', {
+        const loginData = {
           username: this.usernameInput,
           password: this.passwordInput,
-        });
+        };
+
+        const response = await axios.post('http://localhost:5180/Backend/Player/Authenticate', loginData);
 
         if (response.data) {
+          const userStore = useUserStore();
+          userStore.setUser(response.data.id, response.data.username);  // Store user ID and username
+          
           this.username = response.data.username;
-          this.userId = response.data.id; // Store user ID
+          this.userId = response.data.id;
           this.loggedIn = true;
           this.loginMode = false;
-          this.errorMessage = ''; // Clear error on success
+          this.errorMessage = '';
         } else {
           this.errorMessage = 'Invalid credentials';
         }
       } catch (error) {
-        this.errorMessage = 'Error logging in. Please try again.'; // Set error message
-        console.error('Error logging in:', error);
+        this.errorMessage = 'Error logging in. Please try again.';
       }
     },
+    toggleDropdown() {
+      this.showDropdown = !this.showDropdown;
+    },
     logOut() {
+      const userStore = useUserStore();
+      userStore.logOut();  // Clear user ID and username
+
       this.loggedIn = false;
       this.username = '';
-      this.userId = null; // Clear user ID
+      this.userId = null;
       this.resetForm();
+      this.showDropdown = false;
     },
     resetForm() {
       this.usernameInput = '';
       this.passwordInput = '';
-      this.errorMessage = ''; // Clear error when resetting
+      this.errorMessage = '';
       this.showUserOptions = false;
     },
     redirectToChatPage() {
-      this.$router.push({ name: 'ChatPage' });
-    }
-  }
+      this.$router.push({ name: 'MainMenu' });
+    },
+  },
 };
 </script>
 
@@ -159,4 +168,3 @@ form div {
   font-size: 14px;
 }
 </style>
-

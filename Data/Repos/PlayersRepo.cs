@@ -39,5 +39,11 @@ public class PlayersRepo(DataContext context)
         int changesCount = await context.SaveChangesAsync();
         return changesCount == 1;
     }
+    public async Task<Player?> Authenticate(string username, string password)
+    {
+        return await context.Players
+            .FirstOrDefaultAsync(p => p.Username == username && p.Password == password);
+    }
+    
 }
 

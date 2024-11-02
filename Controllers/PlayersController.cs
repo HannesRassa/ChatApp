@@ -49,5 +49,21 @@ namespace BackEnd.Controllers
             if (!isDeleted)  return NotFound();
             return NoContent();
         }
+                [HttpPost("Authenticate")]
+        public async Task<IActionResult> Authenticate([FromBody] LoginRequest request)
+        {
+            var player = await repo.Authenticate(request.Username, request.Password);
+            if (player == null)
+                return Unauthorized("Invalid username or password.");
+
+            return Ok(new { player.Id, player.Username });
+        }
     }
+
+        public record LoginRequest
+        {
+            public required string Username { get; init; }
+            public required string Password { get; init; }
+        }
+    
 }

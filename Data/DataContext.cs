@@ -35,12 +35,14 @@ public class DataContext(DbContextOptions options) : DbContext(options)
             new Player
             {
                 Id = 1,
-                Username = "Player1"
+                Username = "Player1",
+                Password = "1234"
             },
             new Player
             {
                 Id = 2,
-                Username = "Player2"
+                Username = "Player2",
+                Password = "0000"
             }
             );
     }
