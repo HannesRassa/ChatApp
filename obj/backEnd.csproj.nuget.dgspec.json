@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\backEnd.csproj": {}
+    "C:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\backEnd.csproj": {}
   },
   "projects": {
-    "c:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\backEnd.csproj": {
+    "C:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\backEnd.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\backEnd.csproj",
+        "projectUniqueName": "C:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\backEnd.csproj",
         "projectName": "backEnd",
-        "projectPath": "c:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\backEnd.csproj",
+        "projectPath": "C:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\backEnd.csproj",
         "packagesPath": "C:\\Users\\Tabasalu Vapista\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\obj\\",
+        "outputPath": "C:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Tabasalu Vapista\\AppData\\Roaming\\NuGet\\NuGet.Config"
