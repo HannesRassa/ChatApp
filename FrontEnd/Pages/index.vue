@@ -1,6 +1,5 @@
 <template>
-  <div>
-    <!-- Top Right Login/Sign Up Buttons or Username Display -->
+  <div class="main-menu">
     <div class="top-right">
       <div v-if="!loggedIn">
         <button @click="toggleSignUpMode">Sign Up</button>
@@ -14,7 +13,7 @@
       </div>
     </div>
 
-    <!-- Sign Up / Login Form in the Center -->
+
     <div v-if="signUpMode || loginMode" class="form-container">
       <h2>{{ signUpMode ? "Sign Up" : "Log In" }}</h2>
       <form @submit.prevent="signUpMode ? signUp : logIn">
@@ -32,16 +31,40 @@
       </form>
     </div>
 
-    <!-- Redirect Button for Logged In Users -->
-    <button v-if="loggedIn" @click="redirectToChatPage">Go to Chat Page</button>
+    <div v-if="loggedIn" class="menu-options">
+      <button @click="startNewGame">Start New Game</button>
+      <button @click="searchForGames">Search for Existing Games</button>
+      <button @click="toggleQuestionDropdown">Create Question</button>
+      <button @click="browseQuestions">Browse Questions</button>
+    </div>
+
+    <div v-if="isDropdownOpen" class="question-form">
+      <form @submit.prevent="submitQuestion">
+        <label>
+          Question Text:
+          <input v-model="questionText" type="text" required />
+        </label>
+        <label>
+          Answer Text:
+          <input v-model="answerText" type="text" required />
+        </label>
+        <label>
+          Points:
+          <input v-model.number="answerPoints" type="number" min="0" required />
+        </label>
+        <button type="submit">Submit Question</button>
+      </form>
+    </div>
   </div>
 </template>
 
+
 <script lang="ts">
 import axios from 'axios';
-import { useUserStore } from '~/stores/userStore';
+import { defineComponent } from 'vue';
+import { useUserStore } from '@/stores/userStore';
 
-export default {
+export default defineComponent({
   data() {
     return {
       usernameInput: '',
@@ -50,10 +73,13 @@ export default {
       loggedIn: false,
       signUpMode: false,
       loginMode: false,
-      showUserOptions: false,
       errorMessage: '',
       userId: null,
       showDropdown: false,
+      isDropdownOpen: false,
+      questionText: '',
+      answerText: '',
+      answerPoints: null as number | null,
     };
   },
   methods: {
@@ -69,12 +95,10 @@ export default {
     },
     async signUp() {
       try {
-        const newPlayer = {
+        const response = await axios.post('http://localhost:5180/Backend/Player', {
           username: this.usernameInput,
           password: this.passwordInput,
-        };
-
-        const response = await axios.post('http://localhost:5180/Backend/Player', newPlayer);
+        });
         this.username = this.usernameInput;
         this.loggedIn = true;
         this.signUpMode = false;
@@ -85,17 +109,13 @@ export default {
     },
     async logIn() {
       try {
-        const loginData = {
+        const response = await axios.post('http://localhost:5180/Backend/Player/Authenticate', {
           username: this.usernameInput,
           password: this.passwordInput,
-        };
-
-        const response = await axios.post('http://localhost:5180/Backend/Player/Authenticate', loginData);
-
+        });
         if (response.data) {
           const userStore = useUserStore();
-          userStore.setUser(response.data.id, response.data.username);  // Store user ID and username
-          
+          userStore.setUser(response.data.id, response.data.username);
           this.username = response.data.username;
           this.userId = response.data.id;
           this.loggedIn = true;
@@ -113,8 +133,7 @@ export default {
     },
     logOut() {
       const userStore = useUserStore();
-      userStore.logOut();  // Clear user ID and username
-
+      userStore.logOut();
       this.loggedIn = false;
       this.username = '';
       this.userId = null;
@@ -125,16 +144,77 @@ export default {
       this.usernameInput = '';
       this.passwordInput = '';
       this.errorMessage = '';
-      this.showUserOptions = false;
     },
-    redirectToChatPage() {
-      this.$router.push({ name: 'MainMenu' });
+    startNewGame() {
+      const userStore = useUserStore();
+      if (userStore.userId === null) {
+        console.error("User is not logged in.");
+        return;
+      }
+
+      axios.post('http://localhost:5180/Backend/GameRoom', userStore.userId, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(response => {
+        console.log("Game room created:", response.data);
+        this.$router.push({ name: 'LobbyPage' });
+      })
+      .catch(error => {
+        console.error("Failed to start a new game:", error);
+        this.errorMessage = 'Failed to start a new game. Please try again.';
+      });
+    },
+    toggleQuestionDropdown() {
+      this.isDropdownOpen = !this.isDropdownOpen;
+    },
+    async submitQuestion() {
+      if (!this.questionText || !this.answerText || this.answerPoints === null) {
+        this.isDropdownOpen = false;
+        return;
+      }
+
+      try {
+        const response = await axios.post('http://localhost:5180/Backend/Answer', {
+          question: { questionText: this.questionText },
+          answerText: this.answerText,
+          answerPoints: this.answerPoints,
+        });
+        console.log('Question created successfully:', response.data);
+        this.resetQuestionForm();
+      } catch (error) {
+        console.error('Failed to create question:', error);
+      }
+    },
+    resetQuestionForm() {
+      this.questionText = '';
+      this.answerText = '';
+      this.answerPoints = null;
+      this.isDropdownOpen = false;
+    },
+    searchForGames() {
+      console.log("Searching for existing games...");
+    },
+    browseQuestions() {
+      this.$router.push({ name: 'BrowseQuestions' });
     },
   },
-};
+});
 </script>
 
+
+
 <style scoped>
+.main-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+}
+
 .top-right {
   position: absolute;
   top: 10px;
@@ -148,19 +228,21 @@ export default {
   margin-top: 20px;
 }
 
+.menu-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 button {
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-.dropdown {
-  display: flex;
-  flex-direction: column;
-}
-
-form div {
-  margin-bottom: 10px;
+button:hover {
+  background-color: #f0f0f0;
 }
 
 .error {

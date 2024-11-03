@@ -19,7 +19,6 @@ public class AnswersRepo(DataContext context)
     {
         IQueryable<Answer> query = context.Answers.AsQueryable();
         if (question is not null) query = query.Where(x => x.Question == question);
-        if (player is not null) query = query.Where(x => x.Player == player);
         return await query.ToListAsync();
     } 
 
