@@ -21,36 +21,48 @@ export default defineComponent({
     const router = useRouter();
     const userStore = useUserStore();
 
-    const startNewGame = async (): Promise<void> => {
-      try {
-        const userId = userStore.userId;
-        if (!userId) {
-          console.error("User is not logged in");
-          return;
-        }
+    const startNewGame = async () => {
+  try {
+    const userId = userStore.userId;
+    if (!userId) {
+      console.error("User is not logged in");
+      return;
+    }
 
-
-        // Make the POST request with the adminId in the body
-        const response = await axios.post(
-          'http://localhost:5180/Backend/GameRoom?Id=', 
-          { adminId: userId }
-        );
-
-        if (response.data) {
-          const roomCode = response.data.roomCode;
-          console.log("Game room created with room code:", roomCode);
-          await router.push({ name: 'LobbyPage'});
-        }
-      } catch (error) {
-        // Handle AxiosError separately for better error reporting
-        if (axios.isAxiosError(error)) {
-          const axiosError = error as AxiosError;
-          console.error("Error creating game room:", axiosError.message);
-        } else {
-          console.error("Unexpected error:", error);
-        }
-      }
+    // Construct the payload based on the required structure
+    const newGameRoomPayload = {
+      id: 0,
+      roomCode: 0, // Adjust this value if necessary; it might need to be a string.
+      admin: {
+        id: userId,
+        username: "string", // Replace with the actual username if available
+        password: "string"  // Replace with the actual password if needed
+      },
+      players: [] // This can start empty, add player IDs if necessary
     };
+
+    // Make the POST request with the constructed payload
+    const response = await axios.post(
+      'http://localhost:5180/Backend/GameRoom', 
+      newGameRoomPayload
+    );
+
+    if (response.data) {
+      const roomCode = response.data.roomCode;
+      console.log("Game room created with room code:", roomCode);
+      await router.push({ name: 'LobbyPage' });
+    }
+  } catch (error) {
+    // Handle AxiosError separately for better error reporting
+    if (axios.isAxiosError(error)) {
+      const axiosError = error;
+      console.error("Error creating game room:", axiosError.message);
+    } else {
+      console.error("Unexpected error:", error);
+    }
+  }
+};
+
     const searchForGames = () => {
       console.log("Searching for existing games...");
     };
