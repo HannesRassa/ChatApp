@@ -38,10 +38,11 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from 'vue';
 import axios from 'axios';
 import { useUserStore } from '~/stores/userStore';
 
-export default {
+export default defineComponent({
   data() {
     return {
       usernameInput: '',
@@ -74,7 +75,7 @@ export default {
           password: this.passwordInput,
         };
 
-        const response = await axios.post('http://localhost:5180/Backend/Player', newPlayer);
+        await axios.post('http://localhost:5180/Backend/Player', newPlayer);
         this.username = this.usernameInput;
         this.loggedIn = true;
         this.signUpMode = false;
@@ -95,7 +96,7 @@ export default {
         if (response.data) {
           const userStore = useUserStore();
           userStore.setUser(response.data.id, response.data.username);  // Store user ID and username
-          
+
           this.username = response.data.username;
           this.userId = response.data.id;
           this.loggedIn = true;
@@ -128,10 +129,10 @@ export default {
       this.showUserOptions = false;
     },
     redirectToChatPage() {
-      this.$router.push({ name: 'MainMenu' });
+      this.$router.push({ name: 'MainMenu' }); // Now this should work
     },
   },
-};
+});
 </script>
 
 <style scoped>
