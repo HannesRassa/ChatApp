@@ -1,6 +1,7 @@
 using BackEnd.Data.Repos;
 using BackEnd.Models.Classes;
 using Microsoft.AspNetCore.Mvc;
+using static BackEnd.Models.Classes.GameRoom;
 
 namespace BackEnd.Controllers
 {
@@ -55,7 +56,19 @@ namespace BackEnd.Controllers
             var result = await repo.SaveGameRoomToDb(newGameRoom);
             return CreatedAtAction(nameof(SaveGameRoom), new { newGameRoom.Id }, result);
          }
+        [HttpPost("JoinRoom")]
+        public async Task<IActionResult> JoinRoom([FromBody] JoinRoomRequest request)
+        {
+            var player = await repo.GetPlayerById(request.PlayerId);
+            if (player == null) return NotFound("Player not found.");
 
+            var gameRoom = await repo.GetGameRoomByCode(request.RoomCode);
+            if (gameRoom == null) return NotFound("Game room not found.");
+
+            gameRoom.Players.Add(player);
+            await repo.UpdateGameRoom(gameRoom.Id, gameRoom);
+            return Ok(gameRoom);
+        }
 
 
         [HttpDelete("{id}")]

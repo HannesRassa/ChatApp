@@ -55,6 +55,12 @@
         <button type="submit">Submit Question</button>
       </form>
     </div>
+    <div v-if="showRoomCodeDropdown" class="room-code-dropdown">
+      <label for="roomCode">Enter Room Code:</label>
+      <input type="number" id="roomCode" v-model="roomCodeInput" placeholder="e.g., 1234" required />
+      <button @click="joinRoom">Join Room</button>
+      <p v-if="joinRoomError" class="error">{{ joinRoomError }}</p>
+    </div>
   </div>
 </template>
 
@@ -80,6 +86,9 @@ export default defineComponent({
       questionText: '',
       answerText: '',
       answerPoints: null as number | null,
+      showRoomCodeDropdown: false,
+      roomCodeInput: null as number | null,
+      joinRoomError: '',
     };
   },
   methods: {
@@ -187,6 +196,27 @@ export default defineComponent({
         console.error('Failed to create question:', error);
       }
     },
+    async joinRoom() {
+    const userStore = useUserStore();
+    if (!this.roomCodeInput) {
+      this.joinRoomError = 'Please enter a room code.';
+      return;
+    }
+    
+    try {
+      const response = await axios.post(
+        `http://localhost:5180/Backend/GameRoom/JoinRoom`,
+        { playerId: userStore.userId, roomCode: this.roomCodeInput },
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+
+      console.log("Joined game room:", response.data);
+      this.$router.push({ name: 'LobbyPage' });
+    } catch (error) {
+      console.error("Failed to join the game room:", error);
+      this.joinRoomError = 'Failed to join room. Please check the code and try again.';
+    }
+  },
     resetQuestionForm() {
       this.questionText = '';
       this.answerText = '';
@@ -194,7 +224,7 @@ export default defineComponent({
       this.isDropdownOpen = false;
     },
     searchForGames() {
-      console.log("Searching for existing games...");
+      this.showRoomCodeDropdown = !this.showRoomCodeDropdown;
     },
     browseQuestions() {
       this.$router.push({ name: 'BrowseQuestions' });

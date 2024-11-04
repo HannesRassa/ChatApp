@@ -8,6 +8,9 @@
     </ul>
     <p v-else>No questions available.</p>
     <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
+    <div class="top-left">
+      <li><NuxtLink to="/">Home</NuxtLink></li>
+    </div>
   </div>
 </template>
 
@@ -54,6 +57,11 @@ export default defineComponent({
   padding: 20px;
   max-width: 600px;
   margin: auto;
+}
+.top-left {
+  position: absolute;
+  top: 10px;
+  left: 10px;
 }
 
 .error {
