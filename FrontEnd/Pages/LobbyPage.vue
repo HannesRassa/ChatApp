@@ -49,7 +49,6 @@ export default {
       // Redirect to the game page
       router.push('Game/1'); // Replace with your actual path
     };
-
     return {
       startGame // Return the startGame method to be used in the template
     };
