@@ -28,6 +28,8 @@
 </template>
 
 <script>
+import { useRouter } from 'vue-router'; // Import useRouter
+
 export default {
   data() {
     return {
@@ -38,11 +40,19 @@ export default {
       rounds: 1
     };
   },
-  methods: {
-    startGame() {
+  setup() {
+    const router = useRouter(); // Access the router instance
+
+    // Define the startGame method
+    const startGame = () => {
       console.log("Game Started!");
-      
-    }
+      // Redirect to the game page
+      router.push('Game/1'); // Replace with your actual path
+    };
+
+    return {
+      startGame // Return the startGame method to be used in the template
+    };
   }
 };
 </script>
