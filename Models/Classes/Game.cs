@@ -8,7 +8,7 @@ namespace BackEnd.Models.Classes
         public int Id { get; init; }           
         public List<Player> Players { get; set; } = []; 
         [NotMapped]
-        public Dictionary<Player, int> PlayersPoints { get; set; } = []; // <Id, Points>
+         public Dictionary<string, int> PlayersPoints { get; set; } = new Dictionary<string, int>(); // Use player IDs or usernames as keys  PlayersPoints[player.PlayerID] = playerPoints;
         
         public List<Question> Questions { get; set; } = []; 
         
