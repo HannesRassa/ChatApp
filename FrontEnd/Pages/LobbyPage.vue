@@ -1,117 +1,141 @@
 <template>
   <div class="container">
-    <div class="main">
-      <button @click="startGame">Start</button>
-      <table class="users-table">
-        <thead>
-          <tr>
-            <th>User ID</th>
-            <th>Username</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(user, index) in users" :key="index">
-            <td>{{ user.id }}</td>
-            <td>{{ user.username }}</td>
-            <td>{{ user.status }}</td>
-          </tr>
-        </tbody>
-      </table>
+    <h1>Game Rooms</h1>
+    <div class="actions">
+      <button @click="createGameRoom">Create Game Room</button>
     </div>
-    <div class="sidebar">
-      <div class="game-info">
-        <p>Rounds: {{ rounds }}</p>
-      </div>
-    </div>
+    <table class="gamerooms-table">
+      <thead>
+        <tr>
+          <th>Room ID</th>
+          <th>Room Code</th>
+          <th>Admin Username</th>
+          <th>Players</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="room in gameRooms" :key="room.id">
+          <td>{{ room.id }}</td>
+          <td>{{ room.roomCode }}</td>
+          <td>{{ room.admin.username }}</td>
+          <td>{{ room.players.length }}</td>
+          <td>
+            <button @click="joinGameRoom(room.roomCode)">Join Room</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p v-if="error">{{ error }}</p>
   </div>
 </template>
 
 <script>
-import { useRouter } from 'vue-router'; // Import useRouter
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
 export default {
-  data() {
+  setup() {
+    const gameRooms = ref([]);
+    const error = ref(null);
+    const router = useRouter();
+
+    // Fetch all game rooms
+    const fetchGameRooms = async () => {
+      try {
+        const response = await fetch('http://localhost:5180/backend/gameroom');
+        if (!response.ok) throw new Error("Failed to fetch game rooms.");
+        gameRooms.value = await response.json();
+      } catch (err) {
+        error.value = err.message;
+      }
+    };
+
+    // Create a new game room
+    const createGameRoom = async () => {
+      const adminId = prompt("Enter your Player ID to create a game room:");
+      if (adminId) {
+        try {
+          const response = await fetch('http://localhost:5180/backend/gameroom', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(adminId),
+          });
+          if (!response.ok) throw new Error("Failed to create game room.");
+          await fetchGameRooms(); // Refresh the list after creation
+        } catch (err) {
+          error.value = err.message;
+        }
+      }
+    };
+
+    // Join an existing game room
+    const joinGameRoom = async (roomCode) => {
+      const playerId = prompt("Enter your Player ID to join the game room:");
+      if (playerId) {
+        try {
+          const response = await fetch('http://localhost:5180/backend/gameroom/joinroom', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ playerId: Number(playerId), roomCode: roomCode }),
+          });
+          if (!response.ok) throw new Error("Failed to join game room.");
+          alert("Successfully joined the game room!");
+          await fetchGameRooms(); // Refresh the list after joining
+        } catch (err) {
+          error.value = err.message;
+        }
+      }
+    };
+
+    // Fetch game rooms on component mount
+    onMounted(fetchGameRooms);
+
     return {
-      users: [
-        { id: 1, username: "PlayerOne", status: "Ready" },
-        { id: 2, username: "PlayerTwo", status: "Waiting" }
-      ],
-      rounds: 1
+      gameRooms,
+      error,
+      createGameRoom,
+      joinGameRoom,
     };
   },
-  setup() {
-    const router = useRouter(); // Access the router instance
-
-    // Define the startGame method
-    const startGame = () => {
-      console.log("Game Started!");
-      // Redirect to the game page
-      router.push('Game/1'); // Replace with your actual path
-    };
-
-    return {
-      startGame // Return the startGame method to be used in the template
-    };
-  }
 };
 </script>
 
 <style scoped>
-  .container {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start; 
-  align-items: flex-start;
-  height: 100vh;
-  background-color: #f4f4f4;
-  width: 100%; 
-  
-  }
-
-
-.main {
-  flex: 3; 
+.container {
   padding: 20px;
-  text-align: center;
 }
-.sidebar {
-  flex: 1; 
-  background-color: #f1f1f1;
-  padding: 20px;
-  border-left: 1px solid #ddd;
+
+.actions {
+  margin-bottom: 20px;
 }
-.game-info {
+
+.gamerooms-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.gamerooms-table th,
+.gamerooms-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+}
+
+.gamerooms-table th {
   background-color: #007bff;
   color: white;
-  padding: 10px;
-  border-radius: 5px;
-  text-align: center;
-  font-size: 20px;
 }
+
 button {
   background-color: #007bff;
   color: white;
-  padding: 10px 20px;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-  margin-bottom: 20px; 
-}
-.users-table {
-  background-color: #007bff;
-  color: white;
-  margin-top: 20px;
-  width: 80%;
-  border-collapse: collapse;
-}
-.users-table th,
-.users-table td {
-  
   padding: 10px;
-  border: 1px solid #ddd;
-}
-.users-table th {
-  background-color:  #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 </style>
