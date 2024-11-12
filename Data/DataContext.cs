@@ -16,7 +16,7 @@ public class DataContext(DbContextOptions options) : DbContext(options)
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<Question>().Property(x => x.Id).ValueGeneratedOnAdd();
+         modelBuilder.Entity<Question>().Property(x => x.Id).ValueGeneratedOnAdd();
         modelBuilder.Entity<Question>().HasData(
             new Question
             {
