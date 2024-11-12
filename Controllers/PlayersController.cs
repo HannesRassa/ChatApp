@@ -12,7 +12,7 @@ namespace BackEnd.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
-        {       
+        {
             var result = await repo.GetAllPlayers();
             return Ok(result);
         }
@@ -29,8 +29,8 @@ namespace BackEnd.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Player newPlayer)
         {
-            bool result = await repo.UpdatePlayer(id,newPlayer);
-            return result? NoContent() : NotFound();
+            bool result = await repo.UpdatePlayer(id, newPlayer);
+            return result ? NoContent() : NotFound();
         }
 
         [HttpPost]
@@ -38,18 +38,20 @@ namespace BackEnd.Controllers
         {
             var playerExists = await repo.PlayerExistsInDb(newPlayer.Id);
             if (playerExists) return Conflict();
-            var result = repo.SavePlayerToDb(newPlayer);
+
+            var result = await repo.SavePlayerToDb(newPlayer); // Ensure async call is awaited
             return CreatedAtAction(nameof(SavePlayer), new { newPlayer.Id }, result);
+
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePlayer([FromRoute] int id)
         {
-            bool isDeleted = await repo.DeletePlayerById(id);    
-            if (!isDeleted)  return NotFound();
+            bool isDeleted = await repo.DeletePlayerById(id);
+            if (!isDeleted) return NotFound();
             return NoContent();
         }
-                [HttpPost("Authenticate")]
+        [HttpPost("Authenticate")]
         public async Task<IActionResult> Authenticate([FromBody] LoginRequest request)
         {
             var player = await repo.Authenticate(request.Username, request.Password);
@@ -60,10 +62,10 @@ namespace BackEnd.Controllers
         }
     }
 
-        public record LoginRequest
-        {
-            public required string Username { get; init; }
-            public required string Password { get; init; }
-        }
-    
+    public record LoginRequest
+    {
+        public required string Username { get; init; }
+        public required string Password { get; init; }
+    }
+
 }

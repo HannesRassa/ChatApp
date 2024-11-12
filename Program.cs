@@ -8,7 +8,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
-builder.Services.AddDbContext<DataContext>(options => options.UseInMemoryDatabase("chatDb"))
+builder.Services.AddDbContext<DataContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("Default")))
     .AddScoped<AnswersRepo>()
     .AddScoped<GamesRepo>()
     .AddScoped<GameRoomsRepo>()

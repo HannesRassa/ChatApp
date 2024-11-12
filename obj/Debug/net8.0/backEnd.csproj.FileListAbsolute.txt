@@ -220,3 +220,6 @@ c:\Users\Admin\Desktop\ChatApp\yessss\itb2203-chatapp\obj\Debug\net8.0\refint\ba
 c:\Users\Admin\Desktop\ChatApp\yessss\itb2203-chatapp\obj\Debug\net8.0\backEnd.pdb
 C:\Users\Admin\Desktop\ChatApp\yessss\itb2203-chatapp\obj\Debug\net8.0\backEnd.genruntimeconfig.cache
 C:\Users\Admin\Desktop\ChatApp\yessss\itb2203-chatapp\obj\Debug\net8.0\ref\backEnd.dll
+c:\Users\Admin\Desktop\ChatApp\itb2203-chatapp\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Relational.dll
+c:\Users\Admin\Desktop\ChatApp\itb2203-chatapp\bin\Debug\net8.0\Npgsql.dll
+c:\Users\Admin\Desktop\ChatApp\itb2203-chatapp\bin\Debug\net8.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
