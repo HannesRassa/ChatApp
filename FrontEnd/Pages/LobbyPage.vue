@@ -56,7 +56,7 @@
         </div>
       </div>
 
-      <!-- Package Display -->
+      <!-- Package Display -->       
       <div class="package-display">
         <p>Package: {{ selectedPackage }}</p>
       </div>
