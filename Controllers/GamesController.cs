@@ -37,7 +37,7 @@ namespace BackEnd.Controllers
         {
             var gameExists = await repo.GameExistsInDb(newGame.Id);
             if (gameExists) return Conflict();
-            var result = repo.SaveGameToDb(newGame);
+            var result = await repo.SaveGameToDb(newGame);
             return CreatedAtAction(nameof(SaveGame), new { newGame.Id }, result);
         }
 

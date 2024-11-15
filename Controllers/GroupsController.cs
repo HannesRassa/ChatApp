@@ -37,7 +37,7 @@ namespace BackEnd.Controllers
         {
             var groupExists = await repo.GroupExistsInDb(newGroup.Id);
             if (groupExists) return Conflict();
-            var result = repo.SaveGroupToDb(newGroup);
+            var result = await repo.SaveGroupToDb(newGroup);
             return CreatedAtAction(nameof(SaveGroup), new { newGroup.Id }, result);
         }
 

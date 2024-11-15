@@ -39,7 +39,7 @@ namespace BackEnd.Controllers
             var playerExists = await repo.PlayerExistsInDb(newPlayer.Id);
             if (playerExists) return Conflict();
 
-            var result = await repo.SavePlayerToDb(newPlayer); // Ensure async call is awaited
+            var result = await repo.SavePlayerToDb(newPlayer); 
             return CreatedAtAction(nameof(SavePlayer), new { newPlayer.Id }, result);
 
         }
