@@ -68,6 +68,7 @@
 
 <script>
 import axios from "axios";
+import { onMounted, onBeforeUnmount } from "vue";
 
 
 export default {
@@ -83,17 +84,17 @@ export default {
     };
   },
   created() {
-      // Fetch users when the component is created
-      this.fetchUsers();
-      this.pollInterval = setInterval(this.pollNewPlayers, 5000);
-  },
-  
-  beforeDestroy() {
-      // Clear polling interval when the component is destroyed
-      if (this.pollInterval) {
-        clearInterval(this.pollInterval);
-      }
-  },
+  if (typeof window !== "undefined") {
+    this.fetchUsers();
+    this.pollInterval = setInterval(this.pollNewPlayers, 5000);
+  }
+},
+
+beforeDestroy() {
+  if (this.pollInterval) {
+    clearInterval(this.pollInterval);
+  }
+},
 
   methods: {
     // Fetch all players initially
