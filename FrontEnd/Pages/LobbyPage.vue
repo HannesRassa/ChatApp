@@ -6,7 +6,7 @@
         <button @click="startGame">Start</button>
         <button @click="openPackages">Packages</button>
       </div>
-      <!-- Nickname Display -->
+      <!-- RoomCode Display -->
       <div class="roomCode-display">
           {{ roomCode }}
       </div>
@@ -21,7 +21,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(user, index) in users" :key="index">
+          <tr v-for="user in users" :key="user.id">
             <td>{{ user.id }}</td>
             <td>{{ user.username }}</td>
             <td>{{ user.status }}</td>
@@ -67,23 +67,76 @@
 </template>
 
 <script>
+import axios from "axios";
+
+
 export default {
   data() {
     return {
-      users: [
-        { id: 1, username: "PlayerOne", status: "Ready" },
-        { id: 2, username: "PlayerTwo", status: "Waiting" }
-      ],
-      rounds: 1,
-      roomCode: "RoomCode: xxxx",  // Set this to the personal nickname
-      roundTime: 60,  // Default round time in seconds
-      selectedPackage: "Default Package"  // Default package nam
+      users: [],
+      roomCode: null,
+      rounds: 3,
+      roundTime: 60,
+      selectedPackage: null,
+      pollInterval: null,
+      loading: false,
     };
   },
+  created() {
+      // Fetch users when the component is created
+      this.fetchUsers();
+      this.pollInterval = setInterval(this.pollNewPlayers, 5000);
+  },
+  
+  beforeDestroy() {
+      // Clear polling interval when the component is destroyed
+      if (this.pollInterval) {
+        clearInterval(this.pollInterval);
+      }
+  },
+
   methods: {
+    // Fetch all players initially
+    async fetchUsers() {
+      try {
+        this.loading = true;
+        const response = await axios.get("http://localhost:5180/Backend/Player");
+        this.users = response.data.map((user) => ({
+          id: user.id,
+          username: user.username,
+          status: user.status || "Active",
+        }));
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        this.users = []; // Clear table on error
+      } finally {
+        this.loading = false;
+      }
+    },
+
+  async pollNewPlayers() {
+    try {
+      const response = await axios.get("http://localhost:5180/Backend/Player");
+      const newPlayers = response.data;
+
+      const currentIds = new Set(this.users.map(user => user.id));
+      newPlayers.forEach((player) => {
+        if (!currentIds.has(player.id)) {
+          this.users.push({
+            id: player.id,
+            username: player.username,
+            status: player.status || "Active",
+          });
+        }
+      });
+    } catch (error) {
+      console.error("Error polling for new players:", error);
+    }
+  },
+
     startGame() {
       console.log("Game Started!");
-    },
+    },     
     openPackages() {
       console.log("Opening Packages...");
     },
@@ -97,10 +150,12 @@ export default {
       this.roundTime += 10;
     },
     decreaseTime() {
-      if (this.roundTime > 10) this.roundTime -= 10;
+      this.roundTime -= 10;
     }
+
   }
-};
+
+}
 </script>
 
 <style scoped>
@@ -133,7 +188,7 @@ export default {
     
   }
 
-  /* Nickname display */
+  /* RoomCode display */
   .roomCode-display {
     position: absolute;
     top: 70px;
@@ -144,6 +199,8 @@ export default {
     background-color: rgba(255, 255, 255, 0.8); /* Optional background */
     padding: 5px 10px;
     border-radius: 5px;
+    
+
   }
 
   button {
