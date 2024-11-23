@@ -137,10 +137,37 @@ export default {
     async startGame() {
       try {
         const response = await axios.post("http://localhost:5180/Backend/Game", {
-          roomCode: this.roomCode,
-          rounds: this.rounds,
-          roundTime: this.roundTime,
-          selectedPackage: this.selectedPackage,
+          id: 0,          
+          playersPoints: {        
+            additionalProp1: 0,
+            additionalProp2: 0,
+            additionalProp3: 0
+          },
+          rounds: [
+            {
+              id: 0,
+              groups: [
+                {
+                  id: 0,
+                  players: this.users.map(user => ({
+                    id: user.id,
+                    username: user.username,
+                  })),                  
+                  answers: [
+                    {
+                      id: 0,
+                      question: {
+                        id: 0,
+                        questionText: "string" // Placeholder, should be replaced with real data
+                      },
+                      answerText: "string",
+                      answerPoints: 0
+                    }
+                  ]
+                }
+              ],              
+            }
+          ]
         });
         console.log("Game Started!", response.data);
       } catch (error) {
