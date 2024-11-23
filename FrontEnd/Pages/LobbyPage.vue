@@ -134,8 +134,18 @@ export default {
     }
   },
 
-    startGame() {
-      console.log("Game Started!");
+    async startGame() {
+      try {
+        const response = await axios.post("http://localhost:5180/Backend/Game", {
+          roomCode: this.roomCode,
+          rounds: this.rounds,
+          roundTime: this.roundTime,
+          selectedPackage: this.selectedPackage,
+        });
+        console.log("Game Started!", response.data);
+      } catch (error) {
+        console.error("Error starting game:", error);
+      }
     },     
     openPackages() {
       console.log("Opening Packages...");

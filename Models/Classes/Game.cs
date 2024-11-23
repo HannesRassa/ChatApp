@@ -11,10 +11,11 @@ namespace BackEnd.Models.Classes
          public Dictionary<string, int> PlayersPoints { get; set; } = new Dictionary<string, int>(); // Use player IDs or usernames as keys  PlayersPoints[player.PlayerID] = playerPoints;
         
         public List<Question> Questions { get; set; } = []; 
+        public List<Round> Rounds { get; set; } = []; 
         
         
         [Range(1, 100, ErrorMessage = "The numbers of rounds can be from 1 to 100")]
-        public int Rounds { get; set; } = 5;           
+        public int RoundsAmount { get; set; } = 5;           
 
         [Range(5, 300, ErrorMessage = "The timer can last from 5 sec to 5 min")]
         public int TimerForAnsweringInSec { get; set; } = 30;                           
