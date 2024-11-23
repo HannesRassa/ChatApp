@@ -60,6 +60,16 @@
       <div class="package-display">
         <p>Package: {{ selectedPackage }}</p>
       </div>
+      
+      <div class="group-settings">
+        <p>Divide players by: {{ groupCount }} groups</p>
+        <div class="group-controls">
+          <button2 @click="decreaseGroups">-</button2>
+          <button2 @click="increaseGroups">+</button2>
+        </div>
+      </div>
+
+      
 
     </div>
 
@@ -81,6 +91,7 @@ export default {
       selectedPackage: null,
       pollInterval: null,
       loading: false,
+      groupCount: 2,
     };
   },
   created() {
@@ -96,7 +107,8 @@ beforeDestroy() {
   }
 },
 
-  methods: {
+  methods: {   
+  
     // Fetch all players initially
     async fetchUsers() {
       try {
@@ -151,7 +163,34 @@ beforeDestroy() {
       this.roundTime += 10;
     },
     decreaseTime() {
-      this.roundTime -= 10;
+      if (this.roundTime > 10) this.roundTime -= 10;
+    },
+     // Increase group count
+     increaseGroups() {
+      this.groupCount += 1;
+    },
+
+    // Decrease group count
+    decreaseGroups() {
+      if (this.groupCount > 2) {
+        this.groupCount -= 1;
+      }
+    },
+
+    // Divide players into groups
+    dividePlayersIntoGroups() {
+      if (this.users.length === 0) {
+        console.warn("No players available to divide.");
+        return;
+      }
+
+      const groups = Array.from({ length: this.groupCount }, () => []);
+      this.users.forEach((user, index) => {
+        groups[index % this.groupCount].push(user);
+      });
+
+      console.log("Divided players into groups:", groups);
+      return groups; // Optional: return the groups if needed
     }
 
   }
@@ -357,6 +396,29 @@ beforeDestroy() {
     color: white;
     margin: 0;
   }
+
+  .group-settings {
+  display: flex;
+  flex-direction: row;
+  gap: 50px;
+  background-color: #c7a6d9; /* Light purple background */
+  padding: 10px;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.group-settings p {
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+}
+
+.group-controls {
+  display: flex;
+  gap: 15px; /* Horizontal space between the buttons */
+}
+
 
 
 </style>
