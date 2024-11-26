@@ -410,3 +410,7 @@ C:\TalTech\3 Semester\ISA 3\ChatApp\chatapp\itb2203-chatapp\bin\Debug\net8.0\tr\
 C:\TalTech\3 Semester\ISA 3\ChatApp\chatapp\itb2203-chatapp\bin\Debug\net8.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 C:\TalTech\3 Semester\ISA 3\ChatApp\chatapp\itb2203-chatapp\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.resources.dll
 C:\TalTech\3 Semester\ISA 3\ChatApp\chatapp\itb2203-chatapp\bin\Debug\net8.0\runtimes\browser\lib\net8.0\System.Text.Encodings.Web.dll
+C:\TalTech\3 Semester\ISA 3\ChatApp\chatapp\itb2203-chatapp\bin\Debug\net8.0\FrontEnd\itb2203-chatapp\package.json
+C:\TalTech\3 Semester\ISA 3\ChatApp\chatapp\itb2203-chatapp\bin\Debug\net8.0\FrontEnd\itb2203-chatapp\tsconfig.app.json
+C:\TalTech\3 Semester\ISA 3\ChatApp\chatapp\itb2203-chatapp\bin\Debug\net8.0\FrontEnd\itb2203-chatapp\tsconfig.json
+C:\TalTech\3 Semester\ISA 3\ChatApp\chatapp\itb2203-chatapp\bin\Debug\net8.0\FrontEnd\itb2203-chatapp\tsconfig.node.json

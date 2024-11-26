@@ -108,12 +108,8 @@ export default defineComponent({
           username: this.usernameInput,
           password: this.passwordInput,
         });
-
-        const userStore = useUserStore();
-        userStore.setUser(response.data.id, this.usernameInput); // Save user info in the store
-
-        this.loggedIn = true;
         this.username = this.usernameInput;
+        this.loggedIn = true;
         this.signUpMode = false;
         this.errorMessage = '';
       } catch (error) {
@@ -126,13 +122,12 @@ export default defineComponent({
           username: this.usernameInput,
           password: this.passwordInput,
         });
-
         if (response.data) {
-          const userStore = useUserStore();
-          userStore.setUser(response.data.id, response.data.username); // Save user info in the store
-
-          this.loggedIn = true;
+          const userStore = useUserStore();          
+          userStore.setUser(response.data.id, response.data.username);
           this.username = response.data.username;
+          this.userId = response.data.id;
+          this.loggedIn = true;
           this.loginMode = false;
           this.errorMessage = '';
         } else {

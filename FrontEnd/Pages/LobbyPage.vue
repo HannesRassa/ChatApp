@@ -60,6 +60,16 @@
       <div class="package-display">
         <p>Package: {{ selectedPackage }}</p>
       </div>
+      
+      <div class="group-settings">
+        <p>Divide players by: {{ groupCount }} groups</p>
+        <div class="group-controls">
+          <button2 @click="decreaseGroups">-</button2>
+          <button2 @click="increaseGroups">+</button2>
+        </div>
+      </div>
+
+      
 
     </div>
 
@@ -68,6 +78,7 @@
 
 <script>
 import axios from "axios";
+import { onMounted, onBeforeUnmount } from "vue";
 
 
 export default {
@@ -80,22 +91,24 @@ export default {
       selectedPackage: null,
       pollInterval: null,
       loading: false,
+      groupCount: 2,
     };
   },
   created() {
-      // Fetch users when the component is created
-      this.fetchUsers();
-      this.pollInterval = setInterval(this.pollNewPlayers, 5000);
-  },
-  
-  beforeDestroy() {
-      // Clear polling interval when the component is destroyed
-      if (this.pollInterval) {
-        clearInterval(this.pollInterval);
-      }
+  if (typeof window !== "undefined") {
+    this.fetchUsers();
+    this.pollInterval = setInterval(this.pollNewPlayers, 5000);
+  }
   },
 
-  methods: {
+  beforeDestroy() {
+    if (this.pollInterval) {
+      clearInterval(this.pollInterval);
+    }
+  },
+
+  methods: {   
+  
     // Fetch all players initially
     async fetchUsers() {
       try {
@@ -114,7 +127,7 @@ export default {
       }
     },
 
-  async pollNewPlayers() {
+    async pollNewPlayers() {
     try {
       const response = await axios.get("http://localhost:5180/Backend/Player");
       const newPlayers = response.data;
@@ -128,52 +141,124 @@ export default {
             status: player.status || "Active",
           });
         }
-      });
-    } catch (error) {
+      });} 
+    catch (error) {
       console.error("Error polling for new players:", error);
-    }
-  },
-
+    }},
+    
     async startGame() {
       try {
-        const response = await axios.post("http://localhost:5180/Backend/Game", {
-          id: 0,          
-          playersPoints: {        
-            additionalProp1: 0,
-            additionalProp2: 0,
-            additionalProp3: 0
-          },
-          rounds: [
-            {
+        const _players = this.users;
+        
+        // ROUNDS
+        const rounds = [];
+        for (let i = 0; i < this.roundsAmount; i++) {
+          const _groups = [];
+          const usedPlayers = [];
+        
+          // GROUPS
+          for (let i = 0; i < this.groupCount; i++) {      
+            const _question = [{         // NOT DONE YET, IT WILL USE QUESTION PACKS
               id: 0,
-              groups: [
-                {
-                  id: 0,
-                  players: this.users.map(user => ({
-                    id: user.id,
-                    username: user.username,
-                  })),                  
-                  answers: [
-                    {
-                      id: 0,
-                      question: {
-                        id: 0,
-                        questionText: "string" // Placeholder, should be replaced with real data
-                      },
-                      answerText: "string",
-                      answerPoints: 0
-                    }
-                  ]
-                }
-              ],              
+              questionText: "Question"
+            }];
+
+            const playersInGroup = [];
+            const playersCount = _players.length/this.groupCount;
+            while (_players.length > 0 && (playersInGroup.length < playersCount || 
+            (playersCount < _players.length - playersInGroup.length < 2 * playersCount))) {
+              const randomIndex = Math.floor(Math.random() * _players.length);
+              const selectedPlayer = allPlayers.splice(randomIndex, 1)[0];
+
+              if (!usedPlayers.has(selectedPackage.id)){
+                playersInGroup.push(selectedPlayer);
+                usedPlayers.add(selectedPlayer.id)
+              }
             }
-          ]
-        });
-        console.log("Game Started!", response.data);
-      } catch (error) {
-        console.error("Error starting game:", error);
+            groups.push({
+              id: 0, 
+              players: playersInGroup,
+              question: _question,
+              answer: [{
+                id: 0,
+                question: _question,
+                answerText: "",
+                answerPoints: 0,
+              }],
+            });
+          }        
+          // END GROUP
+
+          // CONTINUE ROUNDS
+          rounds.push({
+            id: 0, 
+            groups: _gourps, 
+          });
+        }
+        
+        const game = {
+          playersPoints: this.players.reduce((acc, player) => {
+            acc[player.username] = 0; 
+            return acc;
+          }, {}),
+          rounds: rounds,
+        };
+
+        const response = await axios.post("http://localhost:5180/Backend/Game", game);
+        console.log("Game Created!", response.data); 
+      } 
+      catch (error) {
+        console.error("Error creating game:", error);
       }
-    },     
+    },
+  
+
+    // async startGame() {
+    //   try {
+    //     const response = await axios.post("http://localhost:5180/Backend/Game", {
+    //       id: 0,          
+    //       playersPoints: {        
+    //         additionalProp1: 0,
+    //         additionalProp2: 0,
+    //         additionalProp3: 0
+    //       },
+    //       rounds: [
+    //         {
+    //           id: 0,
+    //           groups: [
+    //             {
+    //               id: 0,
+    //               players: this.users.map(user => ({
+    //                 id: user.id,
+    //                 username: user.username,
+    //               })),
+    //               question: [
+    //                 {
+    //                   id: 0,
+    //                   question: "string"
+    //                 }
+    //               ],                  
+    //               answers: [
+    //                 {
+    //                   id: 0,
+    //                   question: {
+    //                     id: 0,
+    //                     questionText: "string" // Placeholder, should be replaced with real data
+    //                   },
+    //                   answerText: "string",
+    //                   answerPoints: 0
+    //                 }
+    //               ]
+    //             }
+    //           ],              
+    //         }
+    //       ]
+    //     });
+    //     console.log("Game Started!", response.data);
+    //   } catch (error) {
+    //     console.error("Error starting game:", error);
+    //   }
+    // },     
     openPackages() {
       console.log("Opening Packages...");
     },
@@ -187,11 +272,38 @@ export default {
       this.roundTime += 10;
     },
     decreaseTime() {
-      this.roundTime -= 10;
+      if (this.roundTime > 10) this.roundTime -= 10;
+    },
+     // Increase group count
+     increaseGroups() {
+      this.groupCount += 1;
+    },
+
+    // Decrease group count
+    decreaseGroups() {
+      if (this.groupCount > 2) {
+        this.groupCount -= 1;
+      }
+    },
+
+    // Divide players into groups
+    dividePlayersIntoGroups() {
+      if (this.users.length === 0) {
+        console.warn("No players available to divide.");
+        return;
+      }
+
+      const groups = Array.from({ length: this.groupCount }, () => []);
+      this.users.forEach((user, index) => {
+        groups[index % this.groupCount].push(user);
+      });
+
+      console.log("Divided players into groups:", groups);
+      return groups; // Optional: return the groups if needed
     }
 
   }
-
+  
 }
 </script>
 
@@ -393,6 +505,29 @@ export default {
     color: white;
     margin: 0;
   }
+
+  .group-settings {
+  display: flex;
+  flex-direction: row;
+  gap: 50px;
+  background-color: #c7a6d9; /* Light purple background */
+  padding: 10px;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.group-settings p {
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+}
+
+.group-controls {
+  display: flex;
+  gap: 15px; /* Horizontal space between the buttons */
+}
+
 
 
 </style>
