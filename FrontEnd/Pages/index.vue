@@ -123,7 +123,7 @@ export default defineComponent({
           password: this.passwordInput,
         });
         if (response.data) {
-          const userStore = useUserStore();          
+          const userStore = useUserStore();
           userStore.setUser(response.data.id, response.data.username);
           this.username = response.data.username;
           this.userId = response.data.id;

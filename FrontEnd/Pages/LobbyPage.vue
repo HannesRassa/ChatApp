@@ -99,13 +99,13 @@ export default {
     this.fetchUsers();
     this.pollInterval = setInterval(this.pollNewPlayers, 5000);
   }
-  },
+},
 
-  beforeDestroy() {
-    if (this.pollInterval) {
-      clearInterval(this.pollInterval);
-    }
-  },
+beforeDestroy() {
+  if (this.pollInterval) {
+    clearInterval(this.pollInterval);
+  }
+},
 
   methods: {   
   
@@ -519,6 +519,20 @@ export default {
   border-radius: 8px;
   width: 100%;
 }
+
+.group-settings p {
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+}
+
+.group-controls {
+  display: flex;
+  gap: 15px; /* Horizontal space between the buttons */
+}
+
+
 
 .group-settings p {
   font-size: 18px;
