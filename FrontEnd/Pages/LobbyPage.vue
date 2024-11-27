@@ -171,10 +171,13 @@ export default {
               const selectedPlayer = allPlayers.splice(randomIndex, 1)[0];
 
               if (!usedPlayers.has(selectedPackage.id)){
+                console.log(selectedPlayer)
                 playersInGroup.push(selectedPlayer);
                 usedPlayers.add(selectedPlayer.id)
+                console.log(usedPlayers)
               }
             }
+            console.log(playersInGroup)
             groups.push({
               id: 0, 
               players: playersInGroup,
@@ -186,6 +189,7 @@ export default {
                 answerPoints: 0,
               }],
             });
+            console.log(groups)
           }        
           // END GROUP
 
@@ -194,15 +198,15 @@ export default {
             id: 0, 
             groups: _gourps, 
           });
+          console.log(rounds)
         }
         
-        const game = {
-          playersPoints: this.players.reduce((acc, player) => {
-            acc[player.username] = 0; 
-            return acc;
-          }, {}),
+        const game = [];
+        game.push({
+          playersPoints: Object.fromEntries(this.users.map(user => [user.username, 0])),
           rounds: rounds,
-        };
+        });
+        console.log(game)
 
         const response = await axios.post("http://localhost:5180/Backend/Game", game);
         console.log("Game Created!", response.data); 
