@@ -224,7 +224,8 @@ export default defineComponent({
       this.isDropdownOpen = false;
     },
     searchForGames() {
-      this.showRoomCodeDropdown = !this.showRoomCodeDropdown;
+      //this.showRoomCodeDropdown = !this.showRoomCodeDropdown;
+      this.$router.push(`GameRooms`)
     },
     browseQuestions() {
       this.$router.push({ name: 'BrowseQuestions' });

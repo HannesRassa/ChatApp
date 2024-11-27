@@ -127,7 +127,7 @@ beforeDestroy() {
       }
     },
 
-  async pollNewPlayers() {
+    async pollNewPlayers() {
     try {
       const response = await axios.get("http://localhost:5180/Backend/Player");
       const newPlayers = response.data;
@@ -141,15 +141,128 @@ beforeDestroy() {
             status: player.status || "Active",
           });
         }
-      });
-    } catch (error) {
+      });} 
+    catch (error) {
       console.error("Error polling for new players:", error);
-    }
-  },
+    }},
+    
+    async startGame() {
+      try {
+        const _players = this.users;
+        
+        // ROUNDS
+        const rounds = [];
+        for (let i = 0; i < this.roundsAmount; i++) {
+          const _groups = [];
+          const usedPlayers = [];
+        
+          // GROUPS
+          for (let i = 0; i < this.groupCount; i++) {      
+            const _question = [{         // NOT DONE YET, IT WILL USE QUESTION PACKS
+              id: 0,
+              questionText: "Question"
+            }];
 
-    startGame() {
-      console.log("Game Started!");
-    },     
+            const playersInGroup = [];
+            const playersCount = _players.length/this.groupCount;
+            while (_players.length > 0 && (playersInGroup.length < playersCount || 
+            (playersCount < _players.length - playersInGroup.length < 2 * playersCount))) {
+              const randomIndex = Math.floor(Math.random() * _players.length);
+              const selectedPlayer = allPlayers.splice(randomIndex, 1)[0];
+
+              if (!usedPlayers.has(selectedPackage.id)){
+                console.log(selectedPlayer)
+                playersInGroup.push(selectedPlayer);
+                usedPlayers.add(selectedPlayer.id)
+                console.log(usedPlayers)
+              }
+            }
+            console.log(playersInGroup)
+            groups.push({
+              id: 0, 
+              players: playersInGroup,
+              question: _question,
+              answer: [{
+                id: 0,
+                question: _question,
+                answerText: "",
+                answerPoints: 0,
+              }],
+            });
+            console.log(groups)
+          }        
+          // END GROUP
+
+          // CONTINUE ROUNDS
+          rounds.push({
+            id: 0, 
+            groups: _gourps, 
+          });
+          console.log(rounds)
+        }
+        
+        const game = [];
+        game.push({
+          playersPoints: Object.fromEntries(this.users.map(user => [user.username, 0])),
+          rounds: rounds,
+        });
+        console.log(game)
+
+        const response = await axios.post("http://localhost:5180/Backend/Game", game);
+        console.log("Game Created!", response.data); 
+      } 
+      catch (error) {
+        console.error("Error creating game:", error);
+      }
+    },
+  
+
+    // async startGame() {
+    //   try {
+    //     const response = await axios.post("http://localhost:5180/Backend/Game", {
+    //       id: 0,          
+    //       playersPoints: {        
+    //         additionalProp1: 0,
+    //         additionalProp2: 0,
+    //         additionalProp3: 0
+    //       },
+    //       rounds: [
+    //         {
+    //           id: 0,
+    //           groups: [
+    //             {
+    //               id: 0,
+    //               players: this.users.map(user => ({
+    //                 id: user.id,
+    //                 username: user.username,
+    //               })),
+    //               question: [
+    //                 {
+    //                   id: 0,
+    //                   question: "string"
+    //                 }
+    //               ],                  
+    //               answers: [
+    //                 {
+    //                   id: 0,
+    //                   question: {
+    //                     id: 0,
+    //                     questionText: "string" // Placeholder, should be replaced with real data
+    //                   },
+    //                   answerText: "string",
+    //                   answerPoints: 0
+    //                 }
+    //               ]
+    //             }
+    //           ],              
+    //         }
+    //       ]
+    //     });
+    //     console.log("Game Started!", response.data);
+    //   } catch (error) {
+    //     console.error("Error starting game:", error);
+    //   }
+    // },     
     openPackages() {
       console.log("Opening Packages...");
     },
@@ -194,7 +307,7 @@ beforeDestroy() {
     }
 
   }
-
+  
 }
 </script>
 
@@ -406,6 +519,20 @@ beforeDestroy() {
   border-radius: 8px;
   width: 100%;
 }
+
+.group-settings p {
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+}
+
+.group-controls {
+  display: flex;
+  gap: 15px; /* Horizontal space between the buttons */
+}
+
+
 
 .group-settings p {
   font-size: 18px;
