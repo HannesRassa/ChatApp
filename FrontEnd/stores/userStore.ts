@@ -4,18 +4,29 @@ export const useUserStore = defineStore('user', {
   state: () => ({
     userId: null as number | null,
     username: '',
-    loggedIn: false,
   }),
   actions: {
     setUser(id: number, username: string) {
       this.userId = id;
       this.username = username;
-      this.loggedIn = true;
+
+      // Save to localStorage
+      localStorage.setItem('user', JSON.stringify({ id, username }));
     },
     logOut() {
       this.userId = null;
       this.username = '';
-      this.loggedIn = false;
+
+      // Remove from localStorage
+      localStorage.removeItem('user');
+    },
+    loadUser() {
+      const user = localStorage.getItem('user');
+      if (user) {
+        const { id, username } = JSON.parse(user);
+        this.userId = id;
+        this.username = username;
+      }
     },
   },
 });
