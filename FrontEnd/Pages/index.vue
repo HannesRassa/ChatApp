@@ -55,11 +55,11 @@
         <button type="submit">Submit Question</button>
       </form>
     </div>
-    <div v-if="showRoomCodeDropdown" class="room-code-dropdown">
-      <label for="roomCode">Enter Room Code:</label>
-      <input type="number" id="roomCode" v-model="roomCodeInput" placeholder="e.g., 1234" required />
-      <button @click="joinRoom">Join Room</button>
-      <p v-if="joinRoomError" class="error">{{ joinRoomError }}</p>
+    <div v-if="showLobbyCodeDropdown" class="lobby-code-dropdown">
+      <label for="lobbyCode">Enter Lobby Code:</label>
+      <input type="number" id="lobbyCode" v-model="lobbyCodeInput" placeholder="e.g., 1234" required />
+      <button @click="joinLobby">Join Lobby</button>
+      <p v-if="joinLobbyError" class="error">{{ joinLobbyError }}</p>
     </div>
   </div>
 </template>
@@ -86,9 +86,9 @@ export default defineComponent({
       questionText: '',
       answerText: '',
       answerPoints: null as number | null,
-      showRoomCodeDropdown: false,
-      roomCodeInput: null as number | null,
-      joinRoomError: '',
+      showLobbyCodeDropdown: false,
+      lobbyCodeInput: null as number | null,
+      joinLobbyError: '',
     };
   },
   methods: {
@@ -161,13 +161,13 @@ export default defineComponent({
         return;
       }
 
-      axios.post('http://localhost:5180/Backend/GameRoom', userStore.userId, {
+      axios.post('http://localhost:5180/Backend/GameLobby', userStore.userId, {
         headers: {
           'Content-Type': 'application/json',
         },
       })
       .then(response => {
-        console.log("Game room created:", response.data);
+        console.log("Game lobby created:", response.data);
         this.$router.push({ name: 'LobbyPage' });
       })
       .catch(error => {
@@ -196,25 +196,25 @@ export default defineComponent({
         console.error('Failed to create question:', error);
       }
     },
-    async joinRoom() {
+    async joinLobby() {
     const userStore = useUserStore();
-    if (!this.roomCodeInput) {
-      this.joinRoomError = 'Please enter a room code.';
+    if (!this.lobbyCodeInput) {
+      this.joinLobbyError = 'Please enter a lobby code.';
       return;
     }
     
     try {
       const response = await axios.post(
-        `http://localhost:5180/Backend/GameRoom/JoinRoom`,
-        { playerId: userStore.userId, roomCode: this.roomCodeInput },
+        `http://localhost:5180/Backend/GameLobby/JoinLobby`,
+        { playerId: userStore.userId, lobbyCode: this.lobbyCodeInput },
         { headers: { 'Content-Type': 'application/json' } }
       );
 
-      console.log("Joined game room:", response.data);
+      console.log("Joined game lobby:", response.data);
       this.$router.push({ name: 'LobbyPage' });
     } catch (error) {
-      console.error("Failed to join the game room:", error);
-      this.joinRoomError = 'Failed to join room. Please check the code and try again.';
+      console.error("Failed to join the game lobby:", error);
+      this.joinLobbyError = 'Failed to join lobby. Please check the code and try again.';
     }
   },
     resetQuestionForm() {
@@ -224,8 +224,8 @@ export default defineComponent({
       this.isDropdownOpen = false;
     },
     searchForGames() {
-      //this.showRoomCodeDropdown = !this.showRoomCodeDropdown;
-      this.$router.push(`GameRooms`)
+      //this.showLobbyCodeDropdown = !this.showLobbyCodeDropdown;
+      this.$router.push(`GameLobbys`)
     },
     browseQuestions() {
       this.$router.push({ name: 'BrowseQuestions' });

@@ -7,7 +7,7 @@ public class DataContext(DbContextOptions options) : DbContext(options)
 {
     public DbSet<Answer> Answers { get; set; }
     public DbSet<Game> Games { get; set; }
-    public DbSet<GameRoom> GameRooms { get; set; }
+    public DbSet<Lobby> Lobbies { get; set; }
     public DbSet<Group> Groups { get; set; }
     public DbSet<Player> Players { get; set; }
     public DbSet<Question> Questions { get; set; }

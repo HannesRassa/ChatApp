@@ -11,7 +11,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<DataContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("Default")))
     .AddScoped<AnswersRepo>()
     .AddScoped<GamesRepo>()
-    .AddScoped<GameRoomsRepo>()
+    .AddScoped<LobbiesRepo>()
     .AddScoped<GroupsRepo>()
     .AddScoped<PlayersRepo>()
     .AddScoped<QuestionsRepo>()
