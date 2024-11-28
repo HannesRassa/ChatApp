@@ -108,7 +108,10 @@ export default defineComponent({
           username: this.usernameInput,
           password: this.passwordInput,
         });
-        this.username = this.usernameInput;
+        const userStore = useUserStore();
+        userStore.setUser(response.data.id, response.data.username);
+        this.username = userStore.username;
+        this.userId = userStore.userId;
         this.loggedIn = true;
         this.signUpMode = false;
         this.errorMessage = '';
@@ -125,8 +128,8 @@ export default defineComponent({
         if (response.data) {
           const userStore = useUserStore();
           userStore.setUser(response.data.id, response.data.username);
-          this.username = response.data.username;
-          this.userId = response.data.id;
+          this.username = userStore.username;
+          this.userId = userStore.userId;
           this.loggedIn = true;
           this.loginMode = false;
           this.errorMessage = '';
@@ -154,6 +157,7 @@ export default defineComponent({
       this.passwordInput = '';
       this.errorMessage = '';
     },
+
     startNewGame() {
       const userStore = useUserStore();
       if (userStore.userId === null) {
@@ -230,6 +234,12 @@ export default defineComponent({
     browseQuestions() {
       this.$router.push({ name: 'BrowseQuestions' });
     },
+  },
+  mounted() {
+    const userStore = useUserStore();
+    userStore.loadUser();
+    this.loggedIn = !!userStore.userId;
+    this.username = userStore.username;
   },
 });
 </script>
