@@ -165,14 +165,14 @@ export default defineComponent({
         return;
       }
 
-      axios.post('http://localhost:5180/Backend/GameLobby', userStore.userId, {
+      axios.post('http://localhost:5180/Backend/Lobby', userStore.userId, {
         headers: {
           'Content-Type': 'application/json',
         },
       })
       .then(response => {
         console.log("Game lobby created:", response.data);
-        this.$router.push({ name: 'LobbyPage' });
+        this.$router.push({ name: 'Lobby' });
       })
       .catch(error => {
         console.error("Failed to start a new game:", error);
@@ -209,7 +209,7 @@ export default defineComponent({
     
     try {
       const response = await axios.post(
-        `http://localhost:5180/Backend/GameLobby/JoinLobby`,
+        `http://localhost:5180/Backend/Lobby/JoinLobby`,
         { playerId: userStore.userId, lobbyCode: this.lobbyCodeInput },
         { headers: { 'Content-Type': 'application/json' } }
       );
@@ -229,7 +229,7 @@ export default defineComponent({
     },
     searchForGames() {
       //this.showLobbyCodeDropdown = !this.showLobbyCodeDropdown;
-      this.$router.push(`GameLobbys`)
+      this.$router.push(`Lobbies`)
     },
     browseQuestions() {
       this.$router.push({ name: 'BrowseQuestions' });

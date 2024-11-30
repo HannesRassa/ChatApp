@@ -81,12 +81,20 @@ namespace BackEnd.Controllers
             if (!isDeleted) return NotFound();
             return NoContent();
         }
-        [HttpGet("Player/{playerId}")]
-        public async Task<IActionResult> GetPlayerById([FromRoute] int playerId)
+         [HttpGet("Player/{playerId}")]
+        public async Task<IActionResult> GetLobbyIdByPlayerId([FromRoute] int playerId)
         {
-            var player = await repo.GetPlayerById(playerId);
-            if (player == null) return NotFound();
-            return Ok(player);
+            var lobbies = await repo.GetAllLobbies();
+
+            var lobby = lobbies.FirstOrDefault(gr => gr.Players.Any(p => p.Id == playerId));
+
+            if (lobby == null)
+            {
+                return NotFound(new { Message = "Player not found in any lobby." });
+            }
+
+            return Ok(new { LobbyId = lobby.Id });
         }
+
     }
 }
