@@ -213,7 +213,8 @@ export default {
         const rounds = [];
         for (let i = 0; i < this.roundsAmount; i++) {
           const _groups = [];
-          const usedPlayers = [];
+          const usedPlayers = new Set();
+          // const usedPlayers = [];
 
           // GROUPS
           for (let i = 0; i < this.groupCount; i++) {
@@ -235,7 +236,7 @@ export default {
                   2 * playersCount)
             ) {
               const randomIndex = Math.floor(Math.random() * _players.length);
-              const selectedPlayer = allPlayers.splice(randomIndex, 1)[0];
+              const selectedPlayer = this.users.splice(randomIndex, 1)[0]; //changed allplayers to this.users
 
               if (!usedPlayers.has(selectedPackage.id)) {
                 console.log(selectedPlayer);
@@ -270,18 +271,22 @@ export default {
           console.log(rounds);
         }
 
-        const game = [];
-        game.push({
+        const game = {
           playersPoints: Object.fromEntries(
             this.users.map((user) => [user.username, 0])
           ),
           rounds: rounds,
-        });
-        console.log(`game post request:${JSON.stringify(game)}`);
+        };
+        console.log("Game data:", JSON.stringify(game, null, 2));
 
         const response = await axios.post(
-          "http://localhost:5180/Backend/Game",
-          game
+          `http://localhost:5180/Backend/Game`,
+          game,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
         );
         console.log("Game Created!", response.data);
       } catch (error) {
