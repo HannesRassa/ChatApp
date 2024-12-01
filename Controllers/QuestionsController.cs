@@ -37,7 +37,9 @@ namespace BackEnd.Controllers
         {
             var questionExists = await repo.QuestionExistsInDb(newQuesiton.Id);
             if (questionExists) return Conflict();
-            var result = repo.SaveQuestionToDb(newQuesiton);
+
+            var result = await repo.SaveQuestionToDb(newQuesiton);
+
             return CreatedAtAction(nameof(SaveQuestion), new { newQuesiton.Id }, result);
         }
 

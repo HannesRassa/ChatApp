@@ -9,7 +9,59 @@ public class GroupsRepo(DataContext context)
     //CREATE
     public async Task<Group> SaveGroupToDb(Group group)
     {
-        context.Add(group);
+        // Check if players already exist and attach if necessary
+        foreach (var player in group.Players)
+        {
+            var existingPlayer = await context.Players.FindAsync(player.Id);
+            if (existingPlayer == null)
+            {
+                context.Players.Attach(player);
+            }
+        }
+
+        // Check if the question exists and attach it
+        if (group.Question != null)
+        {
+            var existingQuestion = await context.Questions.FindAsync(group.Question.Id);
+            if (existingQuestion == null)
+            {
+                context.Questions.Attach(group.Question);
+            }
+            else
+            {
+                group.Question = existingQuestion; // Use the existing question
+            }
+        }
+
+        // Check if answers and their questions exist
+        foreach (var answer in group.Answers)
+        {
+            var existingAnswer = await context.Answers.FindAsync(answer.Id);
+            if (existingAnswer == null)
+            {
+                // Attach the question associated with the answer
+                if (answer.Question != null)
+                {
+                    var existingAnswerQuestion = await context.Questions.FindAsync(answer.Question.Id);
+                    if (existingAnswerQuestion == null)
+                    {
+                        context.Questions.Attach(answer.Question);
+                    }
+                    else
+                    {
+                        answer.Question = existingAnswerQuestion; // Use the existing question
+                    }
+                }
+                context.Answers.Attach(answer);
+            }
+            else
+            {
+                answer.Question = existingAnswer.Question; // Ensure the question is consistent
+            }
+        }
+
+        // Add the new group
+        context.Groups.Add(group);
         await context.SaveChangesAsync();
         return group;
     }
@@ -17,7 +69,15 @@ public class GroupsRepo(DataContext context)
     //READ
     public async Task<List<Group>> GetAllGroups() => await context.Groups.ToListAsync(); 
 
-    public async Task<Group?> GetGroupById(int id) => await context.Groups.FindAsync(id);
+    public async Task<Group?> GetGroupById(int id)
+    {
+        return await context.Groups
+            .Include(g => g.Players)          
+            .Include(g => g.Question)        
+            .Include(g => g.Answers)          
+            .FirstOrDefaultAsync(g => g.Id == id); 
+    }
+
     public async Task<bool> GroupExistsInDb(int id) => await context.Groups.AnyAsync(x => x.Id == id);
     
     //UPDATE

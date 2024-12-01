@@ -98,4 +98,11 @@ public class LobbiesRepo
         int changesCount = await context.SaveChangesAsync();
         return changesCount == 1;
     }
+    public async Task<Lobby> GetLobbyByPlayerId(int playerId)
+    {
+        return await context.Lobbies
+                            .Include(gr => gr.Players) // Include players for the game room
+                            .FirstOrDefaultAsync(gr => gr.Players.Any(p => p.Id == playerId));
+    }
+
 }

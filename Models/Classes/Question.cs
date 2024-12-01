@@ -3,7 +3,6 @@ namespace BackEnd.Models.Classes;
 
 public record Question {
     
-    [Key]
     public int Id { get; init; }
     public required string QuestionText { get; init; }
     

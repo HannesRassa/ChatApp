@@ -81,19 +81,29 @@ namespace BackEnd.Controllers
             if (!isDeleted) return NotFound();
             return NoContent();
         }
-         [HttpGet("Player/{playerId}")]
+        [HttpGet("Player/{playerId}")]
         public async Task<IActionResult> GetLobbyIdByPlayerId([FromRoute] int playerId)
         {
-            var lobbies = await repo.GetAllLobbies();
-
-            var lobby = lobbies.FirstOrDefault(gr => gr.Players.Any(p => p.Id == playerId));
-
-            if (lobby == null)
+            try
             {
-                return NotFound(new { Message = "Player not found in any lobby." });
+                // Fetch the game room for the player
+                var gameRoom = await repo.GetLobbyByPlayerId(playerId);
+
+                // If the game room is null, return a 404 Not Found
+                if (gameRoom == null)
+                {
+                    return NotFound($"No room found for player with ID {playerId}");
+                }
+
+                // Return the room's ID (or RoomCode, depending on what you want to return)
+                return Ok(gameRoom.Id); // Or gameRoom.RoomCode if that's what you prefer to return
+            }
+            catch
+            {
+                // Return a generic server error message if something goes wrong
+                return StatusCode(500, "Internal server error");
             }
 
-            return Ok(new { LobbyId = lobby.Id });
         }
 
     }
