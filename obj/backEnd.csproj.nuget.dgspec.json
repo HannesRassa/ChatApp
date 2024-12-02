@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\backEnd.csproj": {}
+    "c:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\backEnd.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\backEnd.csproj": {
+    "c:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\backEnd.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\backEnd.csproj",
+        "projectUniqueName": "c:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\backEnd.csproj",
         "projectName": "backEnd",
-        "projectPath": "C:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\backEnd.csproj",
+        "projectPath": "c:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\backEnd.csproj",
         "packagesPath": "C:\\Users\\Tabasalu Vapista\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\obj\\",
+        "outputPath": "c:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Tabasalu Vapista\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -60,6 +60,12 @@
             "Microsoft.EntityFrameworkCore.InMemory": {
               "target": "Package",
               "version": "[8.0.8, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.0, )"
             },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",

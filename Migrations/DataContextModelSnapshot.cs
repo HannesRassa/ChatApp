@@ -39,6 +39,9 @@ namespace backEnd.Migrations
                     b.Property<int?>("GroupId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("PlayerId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("QuestionId")
                         .HasColumnType("integer");
 
@@ -59,12 +62,44 @@ namespace backEnd.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("PlayersPerGroup")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Rounds")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TimerForAnsweringInSec")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.ToTable("Games");
                 });
 
-            modelBuilder.Entity("BackEnd.Models.Classes.GameRoom", b =>
+            modelBuilder.Entity("BackEnd.Models.Classes.Group", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("QuestionId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("RoundId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("RoundId");
+
+                    b.ToTable("Groups");
+                });
+
+            modelBuilder.Entity("BackEnd.Models.Classes.Lobby", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -82,30 +117,7 @@ namespace backEnd.Migrations
 
                     b.HasIndex("AdminId");
 
-                    b.ToTable("GameRooms");
-                });
-
-            modelBuilder.Entity("BackEnd.Models.Classes.Group", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("QuestionId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("RoundId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuestionId");
-
-                    b.HasIndex("RoundId");
-
-                    b.ToTable("Groups");
+                    b.ToTable("Lobbies");
                 });
 
             modelBuilder.Entity("BackEnd.Models.Classes.Player", b =>
@@ -116,10 +128,7 @@ namespace backEnd.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("GameRoomId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("GroupId")
+                    b.Property<int?>("LobbyId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Password")
@@ -132,25 +141,9 @@ namespace backEnd.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GameRoomId");
-
-                    b.HasIndex("GroupId");
+                    b.HasIndex("LobbyId");
 
                     b.ToTable("Players");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Password = "1234",
-                            Username = "Player1"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Password = "0000",
-                            Username = "Player2"
-                        });
                 });
 
             modelBuilder.Entity("BackEnd.Models.Classes.Question", b =>
@@ -168,18 +161,6 @@ namespace backEnd.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Questions");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            QuestionText = "Text1"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            QuestionText = "Text2"
-                        });
                 });
 
             modelBuilder.Entity("BackEnd.Models.Classes.Round", b =>
@@ -200,6 +181,36 @@ namespace backEnd.Migrations
                     b.ToTable("Rounds");
                 });
 
+            modelBuilder.Entity("GamePlayer", b =>
+                {
+                    b.Property<int>("GameId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PlayersId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("GameId", "PlayersId");
+
+                    b.HasIndex("PlayersId");
+
+                    b.ToTable("GamePlayer");
+                });
+
+            modelBuilder.Entity("GroupPlayer", b =>
+                {
+                    b.Property<int>("GroupId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PlayersId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("GroupId", "PlayersId");
+
+                    b.HasIndex("PlayersId");
+
+                    b.ToTable("GroupPlayer");
+                });
+
             modelBuilder.Entity("BackEnd.Models.Classes.Answer", b =>
                 {
                     b.HasOne("BackEnd.Models.Classes.Group", null)
@@ -215,7 +226,22 @@ namespace backEnd.Migrations
                     b.Navigation("Question");
                 });
 
-            modelBuilder.Entity("BackEnd.Models.Classes.GameRoom", b =>
+            modelBuilder.Entity("BackEnd.Models.Classes.Group", b =>
+                {
+                    b.HasOne("BackEnd.Models.Classes.Question", "Question")
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("BackEnd.Models.Classes.Round", null)
+                        .WithMany("Groups")
+                        .HasForeignKey("RoundId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Question");
+                });
+
+            modelBuilder.Entity("BackEnd.Models.Classes.Lobby", b =>
                 {
                     b.HasOne("BackEnd.Models.Classes.Player", "Admin")
                         .WithMany()
@@ -226,53 +252,63 @@ namespace backEnd.Migrations
                     b.Navigation("Admin");
                 });
 
-            modelBuilder.Entity("BackEnd.Models.Classes.Group", b =>
-                {
-                    b.HasOne("BackEnd.Models.Classes.Question", "Question")
-                        .WithMany()
-                        .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BackEnd.Models.Classes.Round", null)
-                        .WithMany("Groups")
-                        .HasForeignKey("RoundId");
-
-                    b.Navigation("Question");
-                });
-
             modelBuilder.Entity("BackEnd.Models.Classes.Player", b =>
                 {
-                    b.HasOne("BackEnd.Models.Classes.GameRoom", null)
+                    b.HasOne("BackEnd.Models.Classes.Lobby", null)
                         .WithMany("Players")
-                        .HasForeignKey("GameRoomId");
-
-                    b.HasOne("BackEnd.Models.Classes.Group", null)
-                        .WithMany("Players")
-                        .HasForeignKey("GroupId");
+                        .HasForeignKey("LobbyId");
                 });
 
             modelBuilder.Entity("BackEnd.Models.Classes.Round", b =>
                 {
                     b.HasOne("BackEnd.Models.Classes.Game", null)
-                        .WithMany("Rounds")
-                        .HasForeignKey("GameId");
+                        .WithMany("GameRounds")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("GamePlayer", b =>
+                {
+                    b.HasOne("BackEnd.Models.Classes.Game", null)
+                        .WithMany()
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BackEnd.Models.Classes.Player", null)
+                        .WithMany()
+                        .HasForeignKey("PlayersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("GroupPlayer", b =>
+                {
+                    b.HasOne("BackEnd.Models.Classes.Group", null)
+                        .WithMany()
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BackEnd.Models.Classes.Player", null)
+                        .WithMany()
+                        .HasForeignKey("PlayersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BackEnd.Models.Classes.Game", b =>
                 {
-                    b.Navigation("Rounds");
-                });
-
-            modelBuilder.Entity("BackEnd.Models.Classes.GameRoom", b =>
-                {
-                    b.Navigation("Players");
+                    b.Navigation("GameRounds");
                 });
 
             modelBuilder.Entity("BackEnd.Models.Classes.Group", b =>
                 {
                     b.Navigation("Answers");
+                });
 
+            modelBuilder.Entity("BackEnd.Models.Classes.Lobby", b =>
+                {
                     b.Navigation("Players");
                 });
 

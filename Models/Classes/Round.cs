@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 namespace BackEnd.Models.Classes;
 
-public record Round {
-    
-    public int Id { get; init; }
-    public required List<Group> Groups { get; set; }       
+public class Round
+{
+    public int Id { get; set; }
+    public List<Group> Groups { get; set; } = new();
 }

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "6Rk+oFYPWs0=",
+  "dgSpecHash": "d+7jYfDQM5o=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\backEnd.csproj",
+  "projectFilePath": "c:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\backEnd.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Tabasalu Vapista\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Tabasalu Vapista\\.nuget\\packages\\microsoft.aspnetcore.openapi\\8.0.8\\microsoft.aspnetcore.openapi.8.0.8.nupkg.sha512",
@@ -21,6 +21,7 @@
     "C:\\Users\\Tabasalu Vapista\\.nuget\\packages\\microsoft.entityframeworkcore.design\\9.0.0\\microsoft.entityframeworkcore.design.9.0.0.nupkg.sha512",
     "C:\\Users\\Tabasalu Vapista\\.nuget\\packages\\microsoft.entityframeworkcore.inmemory\\8.0.8\\microsoft.entityframeworkcore.inmemory.8.0.8.nupkg.sha512",
     "C:\\Users\\Tabasalu Vapista\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\9.0.0\\microsoft.entityframeworkcore.relational.9.0.0.nupkg.sha512",
+    "C:\\Users\\Tabasalu Vapista\\.nuget\\packages\\microsoft.entityframeworkcore.tools\\9.0.0\\microsoft.entityframeworkcore.tools.9.0.0.nupkg.sha512",
     "C:\\Users\\Tabasalu Vapista\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
     "C:\\Users\\Tabasalu Vapista\\.nuget\\packages\\microsoft.extensions.caching.abstractions\\9.0.0\\microsoft.extensions.caching.abstractions.9.0.0.nupkg.sha512",
     "C:\\Users\\Tabasalu Vapista\\.nuget\\packages\\microsoft.extensions.caching.memory\\9.0.0\\microsoft.extensions.caching.memory.9.0.0.nupkg.sha512",
