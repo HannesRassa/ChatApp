@@ -33,6 +33,20 @@ namespace BackEnd.Controllers
             return result? NoContent() : NotFound();
         }
 
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateGame([FromBody] Game newGame)
+        {
+            try
+            {
+                var createdGame = await repo.SaveGameToDb(newGame);
+                return CreatedAtAction(nameof(CreateGame), new { id = createdGame.Id }, createdGame);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> SaveGame([FromBody] Game newGame)
         {

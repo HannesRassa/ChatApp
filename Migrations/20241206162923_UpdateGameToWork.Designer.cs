@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace backEnd.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241202143026_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20241206162923_UpdateGameToWork")]
+    partial class UpdateGameToWork
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,7 +39,10 @@ namespace backEnd.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("GroupId")
+                    b.Property<int>("GroupId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("GroupId1")
                         .HasColumnType("integer");
 
                     b.Property<int>("PlayerId")
@@ -51,6 +54,8 @@ namespace backEnd.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("GroupId");
+
+                    b.HasIndex("GroupId1");
 
                     b.HasIndex("QuestionId");
 
@@ -90,7 +95,10 @@ namespace backEnd.Migrations
                     b.Property<int?>("QuestionId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("RoundId")
+                    b.Property<int>("RoundId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RoundId1")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -98,6 +106,8 @@ namespace backEnd.Migrations
                     b.HasIndex("QuestionId");
 
                     b.HasIndex("RoundId");
+
+                    b.HasIndex("RoundId1");
 
                     b.ToTable("Groups");
                 });
@@ -157,11 +167,16 @@ namespace backEnd.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("GameId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("QuestionText")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GameId");
 
                     b.ToTable("Questions");
                 });
@@ -174,12 +189,17 @@ namespace backEnd.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("GameId")
+                    b.Property<int>("GameId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("GameId1")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("GameId");
+
+                    b.HasIndex("GameId1");
 
                     b.ToTable("Rounds");
                 });
@@ -218,13 +238,23 @@ namespace backEnd.Migrations
                 {
                     b.HasOne("BackEnd.Models.Classes.Group", null)
                         .WithMany("Answers")
-                        .HasForeignKey("GroupId");
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BackEnd.Models.Classes.Group", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BackEnd.Models.Classes.Question", "Question")
                         .WithMany()
                         .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Group");
 
                     b.Navigation("Question");
                 });
@@ -239,9 +269,18 @@ namespace backEnd.Migrations
                     b.HasOne("BackEnd.Models.Classes.Round", null)
                         .WithMany("Groups")
                         .HasForeignKey("RoundId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BackEnd.Models.Classes.Round", "Round")
+                        .WithMany()
+                        .HasForeignKey("RoundId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Question");
+
+                    b.Navigation("Round");
                 });
 
             modelBuilder.Entity("BackEnd.Models.Classes.Lobby", b =>
@@ -262,12 +301,28 @@ namespace backEnd.Migrations
                         .HasForeignKey("LobbyId");
                 });
 
+            modelBuilder.Entity("BackEnd.Models.Classes.Question", b =>
+                {
+                    b.HasOne("BackEnd.Models.Classes.Game", null)
+                        .WithMany("GameQuestions")
+                        .HasForeignKey("GameId");
+                });
+
             modelBuilder.Entity("BackEnd.Models.Classes.Round", b =>
                 {
                     b.HasOne("BackEnd.Models.Classes.Game", null)
                         .WithMany("GameRounds")
                         .HasForeignKey("GameId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BackEnd.Models.Classes.Game", "Game")
+                        .WithMany()
+                        .HasForeignKey("GameId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
                 });
 
             modelBuilder.Entity("GamePlayer", b =>
@@ -302,6 +357,8 @@ namespace backEnd.Migrations
 
             modelBuilder.Entity("BackEnd.Models.Classes.Game", b =>
                 {
+                    b.Navigation("GameQuestions");
+
                     b.Navigation("GameRounds");
                 });
 

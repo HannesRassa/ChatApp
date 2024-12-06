@@ -17,6 +17,9 @@ namespace BackEnd.Models.Classes
         // List of rounds in the game
         public List<Round> GameRounds { get; set; } = new();
 
+        // List of questions specific to the game
+        public List<Question> GameQuestions { get; set; } = new();
+
         // Number of rounds in the game
         [Range(1, 100, ErrorMessage = "The numbers of rounds can be from 1 to 100")]
         public int Rounds { get; set; } = 5;
@@ -30,3 +33,4 @@ namespace BackEnd.Models.Classes
         public int PlayersPerGroup { get; set; } = 2;
     }
 }
+

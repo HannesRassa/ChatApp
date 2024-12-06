@@ -1,10 +1,21 @@
 using System.ComponentModel.DataAnnotations;
 namespace BackEnd.Models.Classes;
 
-public record Group {
-    
+public record Group
+{
     public int Id { get; init; }
+
+    // Foreign key to Round
+    public int RoundId { get; set; }
+    public Round Round { get; set; } = null!;
+
+    // List of players in the group
     public List<Player>? Players { get; set; } = new();
-    public Question? Question{ get; set; }
-    public required List<Answer> Answers { get; set; }
+
+    // Question assigned to the group
+    public Question? Question { get; set; }
+
+    // List of answers provided by players
+    public List<Answer>? Answers { get; set; } = new();
 }
+
