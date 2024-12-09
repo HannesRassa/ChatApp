@@ -512,3 +512,7 @@ C:\Users\Tabasalu Vapista\Desktop\itb2203-chatapp\obj\Debug\net8.0\refint\backEn
 C:\Users\Tabasalu Vapista\Desktop\itb2203-chatapp\obj\Debug\net8.0\backEnd.pdb
 C:\Users\Tabasalu Vapista\Desktop\itb2203-chatapp\obj\Debug\net8.0\backEnd.genruntimeconfig.cache
 C:\Users\Tabasalu Vapista\Desktop\itb2203-chatapp\obj\Debug\net8.0\ref\backEnd.dll
+c:\Users\Tabasalu Vapista\Desktop\itb2203-chatapp\bin\Debug\net8.0\Microsoft.AspNetCore.JsonPatch.dll
+c:\Users\Tabasalu Vapista\Desktop\itb2203-chatapp\bin\Debug\net8.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+c:\Users\Tabasalu Vapista\Desktop\itb2203-chatapp\bin\Debug\net8.0\Newtonsoft.Json.dll
+c:\Users\Tabasalu Vapista\Desktop\itb2203-chatapp\bin\Debug\net8.0\Newtonsoft.Json.Bson.dll
