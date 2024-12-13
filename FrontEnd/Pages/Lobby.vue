@@ -1,4 +1,4 @@
-<template>
+<!--<template>
   <div class="flex-layout">
     <div class="main">
       <div class="button-wrapper">
@@ -485,4 +485,4 @@ button.flex-layout {
   display: flex;
   gap: 15px; /* Horizontal space between the buttons */
 }
-</style>
+</style> -->
