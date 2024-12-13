@@ -56,6 +56,7 @@
 import axios from "axios";
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { useUserStore } from "@/stores/userStore";
+import axiosInstance, { isTokenExpired } from "~/utils/axiosInstance";
 
 const userStore = useUserStore();
 // Define interfaces for the data
@@ -174,49 +175,51 @@ onBeforeUnmount(() => {
 });
 
 const startGame = async (): Promise<void> => {
+  const userStore = useUserStore();
+
   try {
-    loading.value = true; 
+    if (!userStore.token || isTokenExpired(userStore.tokenExpiration)) {
+      alert('Your session has expired. Please log in again.');
+      userStore.logOut();
+      window.location.href = '/'; // Redirect to login
+      return;
+    }
+
+    loading.value = true;
 
     const requestBody = {
       players: users.value.map((user) => ({
         id: user.id,
-        username: user.username,
-        password: "string", //Siia vaja lisada token pärast
+        username: user.username
       })),
       rounds: rounds.value,
       timerForAnsweringInSec: roundTime.value,
       playersPerGroup: groupCount.value,
     };
 
-    console.log("Request body for creating the game:", requestBody);
+    console.log('Request body for creating the game:', requestBody);
 
-    const response = await axios.post(
-      "http://localhost:5180/Backend/Game/create",
-      requestBody,
-      {
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    const response = await axiosInstance.post('Game/create', requestBody);
 
-    console.log("Game creation response:", response.data);
+    console.log('Game creation response:', response.data);
 
     const firstRound = response.data.gameRounds[0];
     const firstGroup = firstRound.groups[0];
 
     if (!firstRound || !firstGroup) {
-      console.error("No round or group data available for redirection.");
+      console.error('No round or group data available for redirection.');
       return;
     }
 
     const redirectUrl = `/Game/${firstRound.id}/${firstGroup.id}`;
-    console.log("Redirecting to:", redirectUrl);
+    console.log('Redirecting to:', redirectUrl);
 
-    window.location.href = redirectUrl; 
+    window.location.href = redirectUrl;
   } catch (error) {
-    console.error("Error starting the game:", error);
-    alert("Failed to start the game. Please try again.");
+    console.error('Error starting the game:', error);
+    alert('Failed to start the game. Please try again.');
   } finally {
-    loading.value = false; 
+    loading.value = false;
   }
 };
 

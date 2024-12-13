@@ -516,3 +516,11 @@ c:\Users\Tabasalu Vapista\Desktop\itb2203-chatapp\bin\Debug\net8.0\Microsoft.Asp
 c:\Users\Tabasalu Vapista\Desktop\itb2203-chatapp\bin\Debug\net8.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
 c:\Users\Tabasalu Vapista\Desktop\itb2203-chatapp\bin\Debug\net8.0\Newtonsoft.Json.dll
 c:\Users\Tabasalu Vapista\Desktop\itb2203-chatapp\bin\Debug\net8.0\Newtonsoft.Json.Bson.dll
+c:\Users\Tabasalu Vapista\Desktop\itb2203-chatapp\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+c:\Users\Tabasalu Vapista\Desktop\itb2203-chatapp\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
+c:\Users\Tabasalu Vapista\Desktop\itb2203-chatapp\bin\Debug\net8.0\Microsoft.IdentityModel.JsonWebTokens.dll
+c:\Users\Tabasalu Vapista\Desktop\itb2203-chatapp\bin\Debug\net8.0\Microsoft.IdentityModel.Logging.dll
+c:\Users\Tabasalu Vapista\Desktop\itb2203-chatapp\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
+c:\Users\Tabasalu Vapista\Desktop\itb2203-chatapp\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+c:\Users\Tabasalu Vapista\Desktop\itb2203-chatapp\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
+c:\Users\Tabasalu Vapista\Desktop\itb2203-chatapp\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
