@@ -9,7 +9,11 @@ public class GroupsRepo(DataContext context)
     //CREATE
     public async Task<Group> SaveGroupToDb(Group group)
     {
-        context.Add(group);
+        foreach (var player in group.Players)
+        {
+            context.Entry(player).State = EntityState.Unchanged;
+        }
+        context.Groups.Add(group);
         await context.SaveChangesAsync();
         return group;
     }
@@ -17,7 +21,15 @@ public class GroupsRepo(DataContext context)
     //READ
     public async Task<List<Group>> GetAllGroups() => await context.Groups.ToListAsync(); 
 
-    public async Task<Group?> GetGroupById(int id) => await context.Groups.FindAsync(id);
+    public async Task<Group?> GetGroupById(int id)
+    {
+        return await context.Groups
+            .Include(g => g.Players)          
+            .Include(g => g.Question)        
+            .Include(g => g.Answers)          
+            .FirstOrDefaultAsync(g => g.Id == id); 
+    }
+
     public async Task<bool> GroupExistsInDb(int id) => await context.Groups.AnyAsync(x => x.Id == id);
     
     //UPDATE

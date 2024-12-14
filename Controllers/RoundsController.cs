@@ -40,7 +40,7 @@ namespace BackEnd.Controllers
 
             if (roundExists) return Conflict();
 
-            var result = repo.SaveRoundToDb(newRound);
+            var result = await repo.SaveRoundToDb(newRound);
             return CreatedAtAction(nameof(SaveRound), new { newRound.Id }, result);
         }
 

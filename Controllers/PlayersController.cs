@@ -1,16 +1,24 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using BackEnd.Data.Repos;
 using BackEnd.Models.Classes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BackEnd.Controllers
 {
     [Route("Backend/Player")]
     [ApiController]
-    public class PlayerController(PlayersRepo repo) : ControllerBase
+    public class PlayerController(PlayersRepo repo, IConfiguration configuration) : ControllerBase
     {
-        private readonly PlayersRepo repo = repo;
+        private readonly PlayersRepo _repo = repo;
+        private readonly IConfiguration _configuration = configuration;
+
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAll()
         {
             var result = await repo.GetAllPlayers();
@@ -18,6 +26,7 @@ namespace BackEnd.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var player = await repo.GetPlayerById(id);
@@ -58,7 +67,31 @@ namespace BackEnd.Controllers
             if (player == null)
                 return Unauthorized("Invalid username or password.");
 
-            return Ok(new { player.Id, player.Username });
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, player.Username),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim("playerId", player.Id.ToString())
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: configuration["Jwt:Issuer"],
+                audience: configuration["Jwt:Issuer"],
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(2),
+                signingCredentials: creds
+            );
+
+            return Ok(new
+            {
+                id = player.Id,
+                token = new JwtSecurityTokenHandler().WriteToken(token),
+                expiration = token.ValidTo
+            });
+
         }
     }
 

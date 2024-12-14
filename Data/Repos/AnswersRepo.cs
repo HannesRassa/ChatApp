@@ -9,6 +9,7 @@ public class AnswersRepo(DataContext context)
     //CREATE
     public async Task<Answer> SaveAnswerToDb(Answer answer)
     {
+        context.Questions.Attach(answer.Question);
         context.Add(answer);
         await context.SaveChangesAsync();
         return answer;

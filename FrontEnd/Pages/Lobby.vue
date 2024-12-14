@@ -1,17 +1,15 @@
 <template>
   <div class="flex-layout">
     <div class="main">
-      <!-- Button Wrapper -->
       <div class="button-wrapper">
-        <button @click="startGame">Start</button>
-        <button @click="openPackages">Packages</button>
-      </div>
-      <!-- LobbyCode Display -->
-      <div class="lobbyCode-display">
-        {{ lobbyCode }}
+        <button class="custom-style" @click="startGame">Start</button>
+        <button class="custom-style" @click="openPackages">Packages</button>
       </div>
 
-      <!-- Users Table -->
+      <div class="roomCode-display">
+        {{ roomCode }}
+      </div>
+
       <table class="users-table">
         <thead>
           <tr>
@@ -28,413 +26,250 @@
           </tr>
         </tbody>
       </table>
-
-      <!-- Leaderboard Section -->
-      <div v-if="leaderboardVisible" class="leaderboard">
-        <h3>Leaderboard</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Username</th>
-              <th>Points</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="user in leaderboardData" :key="user.username">
-              <td>{{ user.username }}</td>
-              <td>{{ user.points }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Next Round Button -->
-      <button @click="nextRound">Next Round</button>
     </div>
 
-    <!-- Sidebar -->
     <div class="sidebar">
-      <!-- Settings Header -->
       <div class="settings-header">
         <p>Settings</p>
       </div>
 
-      <!-- Rounds Settings -->
       <div class="rounds-settings">
         <p>Rounds: {{ rounds }}</p>
         <div class="rounds-controls">
-          <button @click="decreaseRounds">-</button>
-          <button @click="increaseRounds">+</button>
+          <button class="custom-style" @click="decreaseRounds">-</button>
+          <button class="custom-style" @click="increaseRounds">+</button>
         </div>
       </div>
 
-      <!-- Timer Settings -->
       <div class="timer-settings">
         <p>Timer: {{ roundTime }} sec</p>
         <div class="timer-controls">
-          <button @click="decreaseTime">-</button>
-          <button @click="increaseTime">+</button>
-        </div>
-      </div>
-
-      <!-- Package Display -->
-      <div class="package-display">
-        <p>Package: {{ selectedPackage }}</p>
-      </div>
-
-      <div class="group-settings">
-        <p>Divide players by: {{ groupCount }} groups</p>
-        <div class="group-controls">
-          <button @click="decreaseGroups">-</button>
-          <button @click="increaseGroups">+</button>
+          <button class="custom-style" @click="decreaseTime">-</button>
+          <button class="custom-style" @click="increaseTime">+</button>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<script>
+<script lang="ts" setup>
 import axios from "axios";
-import { onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import { useUserStore } from "@/stores/userStore";
+import axiosInstance, { isTokenExpired } from "~/utils/axiosInstance";
 
-export default {
-  data() {
-    return {
-      users: [],
-      lobbyCode: null,
-      lobbyId: null,
-      rounds: 3,
-      roundTime: 10,
-      currentRond: 0,
-      selectedPackage: null,
-      pollInterval: null,
-      loading: false,
-      groupCount: 2,
+const userStore = useUserStore();
+// Define interfaces for the data
+interface User {
+  id: number;
+  username: string;
+  status: string;
+}
+const fetchLoggedInUserGameRoomId = async (): Promise<number | null> => {
+  try {
+    const userId = userStore.userId;
+    console.log(userId)
+    const response = await axios.get(`https://localhost:7269/Backend/Lobby/Player/${userId}` ,{
+      headers: {
+          'Content-Type': 'application/json',
+        },
+    });
+    const roomId = response.data; // Assuming response.data is directly the room ID
+    console.log("AAAAAAAAAAAAAAAAAFetched Game Room ID:", roomId);
+    return roomId;
+  } catch (error) {
+    console.error("Error fetching game room ID:", error);
+    return null;
+  }
+};
+// State variables
+const users = ref<User[]>([]);
+const roomCode = ref<string | null>(null);
+const roomId = ref<number | null>(null);
+const rounds = ref<number>(3);
+const roundTime = ref<number>(60);
+const selectedPackage = ref<null | string>(null);
+const pollInterval = ref<null | number>(null);
+const loading = ref<boolean>(false);
+const groupCount = ref<number>(2);
+
+// Fetch all players initially
+const fetchUsers = async (): Promise<void> => {
+
+  try {
+    const response = await axios.get(
+      `https://localhost:7269/Backend/Lobby/${roomId.value}`, {
+      headers: {
+          'Content-Type': 'application/json',
+        },
+  });
+    const newPlayers: User[] = response.data.players || [];
+    console.log(
+      `fetched response.data: ${JSON.stringify(response.data, null, 2)}`
+    );
+    console.log(`fetched newPlayers: ${JSON.stringify(newPlayers, null, 2)}`);
+
+    const currentIds = new Set(users.value.map((user) => user.id));
+    newPlayers.forEach((player) => {
+      if (!currentIds.has(player.id)) {
+        users.value.push({
+          id: player.id,
+          username: player.username,
+          status: player.status || "Active",
+        });
+      }
+    });
+  } catch (error) {
+    console.error("Error polling for new players:", error);
+  }
+};
+
+// Poll for new players
+const pollNewPlayers = async (): Promise<void> => {
+  try {
+    const response = await axios.get(
+      `https://localhost:7269/Backend/Lobby/${roomId.value}`
+    );
+    const newPlayers: User[] = response.data.players || [];
+    console.log(
+      `fetched response.data: ${JSON.stringify(response.data, null, 2)}`
+    );
+    console.log(`fetched newPlayers: ${JSON.stringify(newPlayers, null, 2)}`);
+
+    const currentIds = new Set(users.value.map((user) => user.id));
+    newPlayers.forEach((player) => {
+      if (!currentIds.has(player.id)) {
+        users.value.push({
+          id: player.id,
+          username: player.username,
+          status: player.status || "Active",
+        });
+      }
+    });
+  } catch (error) {
+    console.error("Error polling for new players:", error);
+  }
+};
+
+// Lifecycle hooks
+onMounted(async () => {
+  if (typeof window !== "undefined") {
+    // Fetch the logged-in user's game room ID first
+    const gameRoomId = await fetchLoggedInUserGameRoomId();
+
+    // Once the game room ID is fetched, fetch the users
+    if (gameRoomId !== null) {
+      roomId.value = gameRoomId; // Update the roomId state with the fetched value
+      fetchUsers(); // Now fetch the users for that room
+    }
+    
+    // Start polling for new players
+    pollInterval.value = window.setInterval(pollNewPlayers, 5000);
+  }
+});
+
+onBeforeUnmount(() => {
+  if (pollInterval.value !== null) {
+    clearInterval(pollInterval.value);
+  }
+});
+
+const startGame = async (): Promise<void> => {
+  const userStore = useUserStore();
+
+  try {
+    if (!userStore.token || isTokenExpired(userStore.tokenExpiration)) {
+      alert('Your session has expired. Please log in again.');
+      userStore.logOut();
+      window.location.href = '/'; // Redirect to login
+      return;
+    }
+
+    loading.value = true;
+
+    const requestBody = {
+      players: users.value.map((user) => ({
+        id: user.id,
+        username: user.username
+      })),
+      rounds: rounds.value,
+      timerForAnsweringInSec: roundTime.value,
+      playersPerGroup: groupCount.value,
     };
-  },
-  created() {
-    if (typeof window !== "undefined") {
-      this.fetchLoggedInUserLobbyId().then((lobbyId) => {
-        if (lobbyId) {
-          this.lobbyId = lobbyId; // Assign the lobby ID to lobbyId or handle as needed
-        }
-      });
-      this.fetchUsers();
-      this.pollInterval = setInterval(this.pollNewPlayers, 5000);
+
+    console.log('Request body for creating the game:', requestBody);
+
+    const response = await axiosInstance.post('Game/create', requestBody);
+
+    console.log('Game creation response:', response.data);
+
+    const firstRound = response.data.gameRounds[0];
+    const firstGroup = firstRound.groups[0];
+
+    if (!firstRound || !firstGroup) {
+      console.error('No round or group data available for redirection.');
+      return;
     }
-  },
 
-  beforeDestroy() {
-    if (this.pollInterval) {
-      clearInterval(this.pollInterval);
-    }
-  },
+    const redirectUrl = `/Game/${firstRound.id}/${firstGroup.id}`;
+    console.log('Redirecting to:', redirectUrl);
 
-  methods: {
-    async fetchLoggedInUserLobbyId() {
-      try {
-        const userId = 1; //useUserStore.userId;
-        console.log(`fetched user Id:${JSON.stringify(userId, null, 2)}`);
-        const response = await axios.get(
-          `http://localhost:5180/Backend/Lobby/Player/1`
-        ); //change "1" to ${userId}!!!!!!!!!!!!! userId doesn`t work here even if
-        // it`s static and equalt to 1
-        // {
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //   },
-        // };
-        const newLobbyId = response.data.lobbyId; // Assuming response.data is the room ID
-        console.log("Fetched Game Room ID:", newLobbyId);
-        return newLobbyId;
-      } catch (error) {
-        console.error("Error fetching game room ID:", error);
-        return null;
-      }
-    },
+    window.location.href = redirectUrl;
+  } catch (error) {
+    console.error('Error starting the game:', error);
+    alert('Failed to start the game. Please try again.');
+  } finally {
+    loading.value = false;
+  }
+};
 
-    // Fetch all players initially
-    async fetchUsers() {
-      try {
-        const response = await axios.get(
-          `http://localhost:5180/Backend/Lobby/3` // change 3 to ${this.lobbyID}
-        );
-        //console.log(`${JSON.stringify(response,null,2)}`);  // LOG TO SEE JSON RESPONSE
+const openPackages = (): void => {
+  console.log("Opening Packages...");
+};
 
-        const newPlayers = response.data.players || [];
+const increaseRounds = (): void => {
+  rounds.value += 1;
+};
 
-        const existingUserIds = new Set(this.users.map((user) => user.id));
-        newPlayers.forEach((player) => {
-          if (!existingUserIds.has(player.id)) {
-            this.users.push({
-              id: player.id,
-              username: player.username,
-              status: player.status || "Active",
-            });
-          }
-        });
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    },
+const decreaseRounds = (): void => {
+  if (rounds.value > 1) rounds.value -= 1;
+};
 
-    async pollNewPlayers() {
-      try {
-        const response = await axios.get(
-          `http://localhost:5180/Backend/Lobby/3` // change 3 to ${this.lobbyID}
-        );
-        const newPlayers = response.data.players || [];
+const increaseTime = (): void => {
+  roundTime.value += 10;
+};
 
-        const currentIds = new Set(this.users.map((user) => user.id));
-        newPlayers.forEach((player) => {
-          if (!currentIds.has(player.id)) {
-            this.users.push({
-              id: player.id,
-              username: player.username,
-              status: player.status || "Active",
-            });
-          }
-        });
-      } catch (error) {
-        console.error("Error polling for new players:", error);
-      }
-    },
+const decreaseTime = (): void => {
+  if (roundTime.value > 10) roundTime.value -= 10;
+};
 
-    async startGame() {
-      try {
-        console.log(`start game pressed`);
+const increaseGroups = (): void => {
+  groupCount.value += 1;
+};
 
-        const _players = this.users;
+const decreaseGroups = (): void => {
+  if (groupCount.value > 2) {
+    groupCount.value -= 1;
+  }
+};
 
-        console.log(`_players:${JSON.stringify(_players)}`);
+const dividePlayersIntoGroups = (): User[][] | void => {
+  if (users.value.length === 0) {
+    console.warn("No players available to divide.");
+    return;
+  }
 
-        // ROUNDS
-        const rounds = [];
-        for (let i = 0; i < this.roundsAmount; i++) {
-          const _groups = [];
-          const usedPlayers = new Set();
-          // const usedPlayers = [];
+  const groups: User[][] = Array.from({ length: groupCount.value }, () => []);
+  users.value.forEach((user, index) => {
+    groups[index % groupCount.value].push(user);
+  });
 
-          // GROUPS
-          for (let i = 0; i < this.groupCount; i++) {
-            const _question = [
-              {
-                // NOT DONE YET, IT WILL USE QUESTION PACKS
-                id: 0,
-                questionText: "Question",
-              },
-            ];
-
-            const playersInGroup = [];
-            const playersCount = _players.length / this.groupCount;
-            while (
-              _players.length > 0 &&
-              (playersInGroup.length < playersCount ||
-                playersCount <
-                  _players.length - playersInGroup.length <
-                  2 * playersCount)
-            ) {
-              const randomIndex = Math.floor(Math.random() * _players.length);
-              const selectedPlayer = this.users.splice(randomIndex, 1)[0]; //changed allplayers to this.users
-
-              if (!usedPlayers.has(selectedPackage.id)) {
-                console.log(selectedPlayer);
-                playersInGroup.push(selectedPlayer);
-                usedPlayers.add(selectedPlayer.id);
-                console.log(usedPlayers);
-              }
-            }
-            console.log(playersInGroup);
-            groups.push({
-              id: 0,
-              players: playersInGroup,
-              question: _question,
-              answer: [
-                {
-                  id: 0,
-                  question: _question,
-                  answerText: "",
-                  answerPoints: 0,
-                },
-              ],
-            });
-            console.log(groups);
-          }
-          // END GROUP
-
-          // CONTINUE ROUNDS
-          rounds.push({
-            id: 0,
-            groups: _groups,
-          });
-          console.log(rounds);
-        }
-
-        const game = {
-          playersPoints: Object.fromEntries(
-            this.users.map((user) => [user.username, 0])
-          ),
-          rounds: rounds,
-        };
-        console.log("Game data:", JSON.stringify(game, null, 2));
-
-        const response = await axios.post(
-          `http://localhost:5180/Backend/Game`,
-          game,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        console.log("Game Created!", response.data);
-      } catch (error) {
-        console.error("Error creating game:", error);
-      }
-    },
-    checkRound() {
-      // If the current round matches the total game rounds, display the leaderboard
-      if (this.currentRound === this.RoundInGame) {
-        this.showLeaderboard();
-      } else {
-        console.log(`Current Round: ${this.currentRound}`);
-      }
-    },
-    showLeaderboard() {
-      // Example logic to generate leaderboard data
-      this.leaderboardData = this.users
-        .map((user) => ({
-          username: user.username,
-          points: Math.floor(Math.random() * 100), // Replace with actual scoring logic
-        }))
-        .sort((a, b) => b.points - a.points); // Sort by points descending
-
-      this.leaderboardVisible = true; // Show leaderboard
-      console.log("Leaderboard:", this.leaderboardData);
-    },
-    nextRound() {
-      if (this.currentRound < this.RoundInGame) {
-        this.currentRound++;
-        this.leaderboardVisible = false; // Hide leaderboard for next round
-      } else {
-        console.warn("No more rounds available!");
-      }
-
-      this.checkRound();
-    },
-    // async startGame() {
-    //   try {
-    //     const response = await axios.post("http://localhost:5180/Backend/Game", {
-    //       id: 0,
-    //       playersPoints: {
-    //         additionalProp1: 0,
-    //         additionalProp2: 0,
-    //         additionalProp3: 0
-    //       },
-    //       rounds: [
-    //         {
-    //           id: 0,
-    //           groups: [
-    //             {
-    //               id: 0,
-    //               players: this.users.map(user => ({
-    //                 id: user.id,
-    //                 username: user.username,
-    //               })),
-    //               question: [
-    //                 {
-    //                   id: 0,
-    //                   question: "string"
-    //                 }
-    //               ],
-    //               answers: [
-    //                 {
-    //                   id: 0,
-    //                   question: {
-    //                     id: 0,
-    //                     questionText: "string" // Placeholder, should be replaced with real data
-    //                   },
-    //                   answerText: "string",
-    //                   answerPoints: 0
-    //                 }
-    //               ]
-    //             }
-    //           ],
-    //         }
-    //       ]
-    //     });
-    //     console.log("Game Started!", response.data);
-    //   } catch (error) {
-    //     console.error("Error starting game:", error);
-    //   }
-    // },
-    openPackages() {
-      console.log("Opening Packages...");
-    },
-    increaseRounds() {
-      this.rounds += 1;
-    },
-    decreaseRounds() {
-      if (this.rounds > 1) this.rounds -= 1;
-    },
-    increaseTime() {
-      this.roundTime += 10;
-    },
-    decreaseTime() {
-      if (this.roundTime > 10) this.roundTime -= 10;
-    },
-    // Increase group count
-    increaseGroups() {
-      this.groupCount += 1;
-    },
-
-    // Decrease group count
-    decreaseGroups() {
-      if (this.groupCount > 2) {
-        this.groupCount -= 1;
-      }
-    },
-
-    // Divide players into groups
-    dividePlayersIntoGroups() {
-      if (this.users.length === 0) {
-        console.warn("No players available to divide.");
-        return;
-      }
-
-      const groups = Array.from({ length: this.groupCount }, () => []);
-      this.users.forEach((user, index) => {
-        groups[index % this.groupCount].push(user);
-      });
-
-      console.log("Divided players into groups:", groups);
-      return groups; // Optional: return the groups if needed
-    },
-  },
+  console.log("Divided players into groups:", groups);
+  return groups; // Optional: return the groups if needed
 };
 </script>
 
 <style scoped>
-.leaderboard {
-  border: 1px solid #ccc;
-  padding: 10px;
-  margin-top: 20px;
-  background: #f9f9f9;
-}
-
-.leaderboard table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.leaderboard th,
-.leaderboard td {
-  padding: 8px;
-  text-align: left;
-  border: 1px solid #ddd;
-}
-
 .flex-layout {
   display: flex;
   height: 100vh; /* Full viewport height */
@@ -462,8 +297,8 @@ export default {
   margin-top: 30px; /* Increased space above the buttons */
 }
 
-/* lobbyCode display */
-.lobbyCode-display {
+/* RoomCode display */
+.roomCode-display {
   position: absolute;
   top: 70px;
   left: 50px;
@@ -650,16 +485,4 @@ button.flex-layout {
   display: flex;
   gap: 15px; /* Horizontal space between the buttons */
 }
-
-.group-settings p {
-  font-size: 18px;
-  font-weight: bold;
-  color: white;
-  margin: 0;
-}
-
-.group-controls {
-  display: flex;
-  gap: 15px; /* Horizontal space between the buttons */
-}
-</style>
+</style> 

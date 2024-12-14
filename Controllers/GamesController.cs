@@ -1,6 +1,7 @@
-    using BackEnd.Data.Repos;
+using BackEnd.Data.Repos;
 using BackEnd.Models.Classes;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BackEnd.Controllers
 {
@@ -32,6 +33,20 @@ namespace BackEnd.Controllers
             return result? NoContent() : NotFound();
         }
 
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateGame([FromBody] Game newGame)
+        {
+            try
+            {
+                var createdGame = await repo.SaveGameToDb(newGame);
+                return CreatedAtAction(nameof(CreateGame), new { id = createdGame.Id }, createdGame);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> SaveGame([FromBody] Game newGame)
         {
@@ -40,6 +55,15 @@ namespace BackEnd.Controllers
             var result = await repo.SaveGameToDb(newGame);
             return CreatedAtAction(nameof(SaveGame), new { newGame.Id }, result);
         }
+        [HttpPost("{id}/add-round")]
+        public async Task<IActionResult> AddRound(int id, [FromBody] Round newRound)
+        {
+            var updatedGame = await repo.AddRoundToGame(id, newRound);
+            if (updatedGame == null)
+                return NotFound($"Game with ID {id} not found.");
+            return Ok(updatedGame);
+        }
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGame([FromRoute] int id)

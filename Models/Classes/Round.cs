@@ -1,9 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 namespace BackEnd.Models.Classes;
 
-public record Round {
-    
-    [Key]
-    public int Id { get; init; }
-    public required List<Group> Groups { get; set; }       
+public class Round
+{
+    public int Id { get; set; }
+
+    public int GameId { get; set; }
+    public Game Game { get; set; } = null!;
+
+    public List<Group> Groups { get; set; } = new();
 }

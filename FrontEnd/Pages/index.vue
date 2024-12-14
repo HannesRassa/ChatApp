@@ -69,6 +69,7 @@
 import axios from 'axios';
 import { defineComponent } from 'vue';
 import { useUserStore } from '@/stores/userStore';
+import axiosInstance, { isTokenExpired } from '~/utils/axiosInstance';
 
 export default defineComponent({
   data() {
@@ -80,7 +81,7 @@ export default defineComponent({
       signUpMode: false,
       loginMode: false,
       errorMessage: '',
-      userId: null,
+      userId: null as number | null,
       showDropdown: false,
       isDropdownOpen: false,
       questionText: '',
@@ -104,30 +105,36 @@ export default defineComponent({
     },
     async signUp() {
       try {
-        const response = await axios.post('http://localhost:5180/Backend/Player', {
+        const response = await axiosInstance.post('Player', {
           username: this.usernameInput,
           password: this.passwordInput,
         });
+
         const userStore = useUserStore();
-        userStore.setUser(response.data.id, response.data.username);
+
+        // Update user state with playerId
+        userStore.setUser(response.data.id, response.data.username, response.data.token, response.data.expiration);
+
         this.username = userStore.username;
-        this.userId = userStore.userId;
+        this.userId = null;
         this.loggedIn = true;
         this.signUpMode = false;
         this.errorMessage = '';
+        console.log(this.userId);
       } catch (error) {
         this.errorMessage = 'Error signing up. Please try again.';
+        console.error('Sign-up error:', error);
       }
-    },
-    async logIn() {
       try {
-        const response = await axios.post('http://localhost:5180/Backend/Player/Authenticate', {
+        const response = await axiosInstance.post('Player/Authenticate', {
           username: this.usernameInput,
           password: this.passwordInput,
         });
         if (response.data) {
           const userStore = useUserStore();
-          userStore.setUser(response.data.id, response.data.username);
+          // Update user state with playerId
+          userStore.setUser(response.data.id, this.usernameInput, response.data.token, response.data.expiration);
+
           this.username = userStore.username;
           this.userId = userStore.userId;
           this.loggedIn = true;
@@ -138,6 +145,31 @@ export default defineComponent({
         }
       } catch (error) {
         this.errorMessage = 'Error logging in. Please try again.';
+        console.error('Login error:', error);
+      }
+    },
+    async logIn() {
+      try {
+        const response = await axiosInstance.post('Player/Authenticate', {
+          username: this.usernameInput,
+          password: this.passwordInput,
+        });
+        if (response.data) {
+          const userStore = useUserStore();
+          // Update user state with playerId
+          userStore.setUser(response.data.id, this.usernameInput, response.data.token, response.data.expiration);
+
+          this.username = userStore.username;
+          this.userId = userStore.userId;
+          this.loggedIn = true;
+          this.loginMode = false;
+          this.errorMessage = '';
+        } else {
+          this.errorMessage = 'Invalid credentials';
+        }
+      } catch (error) {
+        this.errorMessage = 'Error logging in. Please try again.';
+        console.error('Login error:', error);
       }
     },
     toggleDropdown() {
@@ -165,7 +197,7 @@ export default defineComponent({
         return;
       }
 
-      axios.post('http://localhost:5180/Backend/Lobby', userStore.userId, {
+      axios.post('https://localhost:7269/Backend/Lobby', userStore.userId, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -189,7 +221,7 @@ export default defineComponent({
       }
 
       try {
-        const response = await axios.post('http://localhost:5180/Backend/Answer', {
+        const response = await axios.post('https://localhost:7269/Backend/Answer', {
           question: { questionText: this.questionText },
           answerText: this.answerText,
           answerPoints: this.answerPoints,
@@ -201,26 +233,26 @@ export default defineComponent({
       }
     },
     async joinLobby() {
-    const userStore = useUserStore();
-    if (!this.lobbyCodeInput) {
-      this.joinLobbyError = 'Please enter a lobby code.';
-      return;
-    }
-    
-    try {
-      const response = await axios.post(
-        `http://localhost:5180/Backend/Lobby/JoinLobby`,
-        { playerId: userStore.userId, lobbyCode: this.lobbyCodeInput },
-        { headers: { 'Content-Type': 'application/json' } }
-      );
+      const userStore = useUserStore();
+      if (!this.lobbyCodeInput) {
+        this.joinLobbyError = 'Please enter a lobby code.';
+        return;
+      }
+      
+      try {
+        const response = await axios.post(
+          `https://localhost:7269/Backend/Lobby/JoinLobby`,
+          { playerId: userStore.userId, lobbyCode: this.lobbyCodeInput },
+          { headers: { 'Content-Type': 'application/json' } }
+        );
 
-      console.log("Joined game lobby:", response.data);
-      this.$router.push({ name: 'LobbyPage' });
-    } catch (error) {
-      console.error("Failed to join the game lobby:", error);
-      this.joinLobbyError = 'Failed to join lobby. Please check the code and try again.';
-    }
-  },
+        console.log("Joined game lobby:", response.data);
+        this.$router.push({ name: 'Lobby' });
+      } catch (error) {
+        console.error("Failed to join the game lobby:", error);
+        this.joinLobbyError = 'Failed to join lobby. Please check the code and try again.';
+      }
+    },
     resetQuestionForm() {
       this.questionText = '';
       this.answerText = '';
@@ -238,8 +270,16 @@ export default defineComponent({
   mounted() {
     const userStore = useUserStore();
     userStore.loadUser();
-    this.loggedIn = !!userStore.userId;
-    this.username = userStore.username;
+    if (userStore.token && !isTokenExpired(userStore.tokenExpiration)) {
+      this.loggedIn = true;
+      this.username = userStore.username;
+    } else {
+      userStore.logOut();
+      this.loggedIn = false;
+      this.username = '';
+      console.warn('Session expired. Please log in again.');
+    }
+
   },
 });
 </script>
