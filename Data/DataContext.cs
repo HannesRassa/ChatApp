@@ -34,7 +34,7 @@ public class DataContext : DbContext
         // Group -> Answers
         modelBuilder.Entity<Group>()
             .HasMany(g => g.Answers)
-            .WithOne(a => a.Group)
+            .WithOne()//.WithOne(a => a.Group)
             .HasForeignKey(a => a.GroupId)
             .OnDelete(DeleteBehavior.Cascade);
 

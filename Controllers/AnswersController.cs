@@ -11,9 +11,9 @@ namespace BackEnd.Controllers
         private readonly AnswersRepo repo = repo;
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] Question? question, [FromQuery] Player? player)
+        public async Task<IActionResult> GetAll()
         {       
-            var result = await repo.GetAllAnswers(question, player);
+            var result = await repo.GetAllAnswers();
             return Ok(result);
         }
 

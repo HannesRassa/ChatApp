@@ -13,7 +13,7 @@ namespace BackEnd.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
-        {       
+        {
             var result = await repo.GetAllGames();
             return Ok(result);
         }
@@ -29,8 +29,8 @@ namespace BackEnd.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Game newGame)
         {
-            bool result = await repo.UpdateGame(id,newGame);
-            return result? NoContent() : NotFound();
+            bool result = await repo.UpdateGame(id, newGame);
+            return result ? NoContent() : NotFound();
         }
 
         [HttpPost("create")]
@@ -63,13 +63,29 @@ namespace BackEnd.Controllers
                 return NotFound($"Game with ID {id} not found.");
             return Ok(updatedGame);
         }
+        [HttpPost("{id}/next-round")]
+        public async Task<IActionResult> NextRound(int id)
+        {
+            var game = await repo.GetGameById(id);
+            if (game == null) return NotFound($"Game with ID {id} not found.");
+
+            if (game.GameRounds.Count >= game.Rounds)
+            {
+                return BadRequest("All rounds are already completed.");
+            }
+
+            var newRound = new Round();
+            var updatedGame = await repo.AddRoundToGame(id, newRound);
+
+            return Ok(updatedGame);
+        }
 
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGame([FromRoute] int id)
         {
-            bool isDeleted = await repo.DeleteGameById(id);    
-            if (!isDeleted)  return NotFound();
+            bool isDeleted = await repo.DeleteGameById(id);
+            if (!isDeleted) return NotFound();
             return NoContent();
         }
     }
