@@ -59,6 +59,10 @@ public class GamesRepo(DataContext context)
                 context.Entry(group.Question).State = EntityState.Unchanged;
             }
         }
+        var playersPoints = newGame.PlayersPoints;
+        foreach (var player in newGame.Players){
+            playersPoints[player.Username] = 0;
+        }
 
         // Save the game to the database
         context.Add(newGame);
