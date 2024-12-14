@@ -197,7 +197,7 @@ export default defineComponent({
         return;
       }
 
-      axios.post('http://localhost:5180/Backend/Lobby', userStore.userId, {
+      axios.post('https://localhost:7269/Backend/Lobby', userStore.userId, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -221,7 +221,7 @@ export default defineComponent({
       }
 
       try {
-        const response = await axios.post('http://localhost:5180/Backend/Answer', {
+        const response = await axios.post('https://localhost:7269/Backend/Answer', {
           question: { questionText: this.questionText },
           answerText: this.answerText,
           answerPoints: this.answerPoints,
@@ -241,13 +241,13 @@ export default defineComponent({
       
       try {
         const response = await axios.post(
-          `http://localhost:5180/Backend/Lobby/JoinLobby`,
+          `https://localhost:7269/Backend/Lobby/JoinLobby`,
           { playerId: userStore.userId, lobbyCode: this.lobbyCodeInput },
           { headers: { 'Content-Type': 'application/json' } }
         );
 
         console.log("Joined game lobby:", response.data);
-        this.$router.push({ name: 'LobbyPage' });
+        this.$router.push({ name: 'Lobby' });
       } catch (error) {
         console.error("Failed to join the game lobby:", error);
         this.joinLobbyError = 'Failed to join lobby. Please check the code and try again.';

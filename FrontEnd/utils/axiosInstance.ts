@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useUserStore } from '@/stores/userStore';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5180/Backend/',
+  baseURL: 'https://localhost:7269/Backend/',
 });
 
 axiosInstance.interceptors.request.use(

@@ -1,4 +1,4 @@
-<!--<template>
+<template>
   <div class="flex-layout">
     <div class="main">
       <div class="button-wrapper">
@@ -69,7 +69,7 @@ const fetchLoggedInUserGameRoomId = async (): Promise<number | null> => {
   try {
     const userId = userStore.userId;
     console.log(userId)
-    const response = await axios.get(`http://localhost:5180/Backend/Lobby/Player/${userId}` ,{
+    const response = await axios.get(`https://localhost:7269/Backend/Lobby/Player/${userId}` ,{
       headers: {
           'Content-Type': 'application/json',
         },
@@ -98,7 +98,7 @@ const fetchUsers = async (): Promise<void> => {
 
   try {
     const response = await axios.get(
-      `http://localhost:5180/Backend/Lobby/${roomId.value}`, {
+      `https://localhost:7269/Backend/Lobby/${roomId.value}`, {
       headers: {
           'Content-Type': 'application/json',
         },
@@ -128,7 +128,7 @@ const fetchUsers = async (): Promise<void> => {
 const pollNewPlayers = async (): Promise<void> => {
   try {
     const response = await axios.get(
-      `http://localhost:5180/Backend/Lobby/${roomId.value}`
+      `https://localhost:7269/Backend/Lobby/${roomId.value}`
     );
     const newPlayers: User[] = response.data.players || [];
     console.log(
@@ -485,4 +485,4 @@ button.flex-layout {
   display: flex;
   gap: 15px; /* Horizontal space between the buttons */
 }
-</style> -->
+</style> 
