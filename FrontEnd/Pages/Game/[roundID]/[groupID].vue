@@ -38,7 +38,7 @@ import { useUserStore } from "@/stores/userStore";
 const userStore = useUserStore();
 const route = useRoute();
 
-const playerId = ref<number | null>(Number(userStore.userId));
+const playerId = userStore.userId;
 const roundID = ref<number>(Number(route.params.roundID));
 const groupID = ref<number>(Number(route.params.groupID));
 const questionId = ref<number>(0);
@@ -62,6 +62,8 @@ let timer: number | null = null;
 const fetchLoggedInUserGameId = async (): Promise<number | null> => {
   try {
     const userId = userStore.userId;
+    console.log(playerId);
+    console.log(userId);
     const response = await axios.get(
       `http://localhost:5180/Backend/Game/Player/${userId}`,
       {
@@ -71,6 +73,7 @@ const fetchLoggedInUserGameId = async (): Promise<number | null> => {
       }
     );
     const gameId = response.data;
+    console.log(gameId);
     return gameId;
   } catch (error) {
     console.error("Error fetching game room ID:", error);
@@ -101,7 +104,7 @@ const findCurrentGroup = async () => {
 
     return response.data; // Return the data from the response
   } catch (error) {
-    console.log(`error for findCurentGroup Resposne:${currentRoundIndex},${playerId.value}`);
+    console.log(`error for findCurentGroup Resposne:${currentRoundIndex},${playerId}`);
 
     console.error("Error fetching the group:", error);
     throw error; // Re-throw the error if needed
@@ -110,7 +113,7 @@ const findCurrentGroup = async () => {
 const fetchGameData = async () => {
   try {
     loading.value = true;
-    const response = await axios.get(`http://localhost:5180/Backend/Game/10`); //${gameId.value}
+    const response = await axios.get(`http://localhost:5180/Backend/Game/${gameId.value}`); //${gameId.value}
     gameData.value = response.data;
     roundTime.value = gameData.value.timerForAnsweringInSec;
     console.log(`gameData: ${JSON.stringify(gameData.value, null, 2)}`);
@@ -182,8 +185,11 @@ const stopTimer = () => {
 };
 
 onMounted(async () => {
+  userStore.loadUser();
   const gameId = fetchLoggedInUserGameId();
-  await fetchGameData();
+  if (userStore.userId) {
+    await fetchLoggedInUserGameId();
+  }
   await fetchGroupData();
   await findCurrentGroup();
   startTimer();

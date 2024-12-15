@@ -52,7 +52,8 @@ public class DataContext : DbContext
         // Game -> Players (Many-to-Many)
         modelBuilder.Entity<Game>()
             .HasMany(g => g.Players)
-            .WithMany();
+            .WithMany(p => p.Games)
+            .UsingEntity(j => j.ToTable("GamePlayer"));
 
         // Lobby -> Players
         modelBuilder.Entity<Lobby>()

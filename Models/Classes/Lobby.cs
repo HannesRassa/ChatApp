@@ -20,9 +20,9 @@ public record Lobby {
         RoomCode = new Random().Next(1000, 9999); // Assign a random 4-digit room code
     }
     public class JoinLobbyRequest
-{
-    public int PlayerId { get; set; }
-    public int RoomCode { get; set; }
-}
+    {
+        public int PlayerId { get; set; }
+        public int RoomCode { get; set; }
+    }
 }
 
