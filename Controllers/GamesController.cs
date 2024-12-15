@@ -26,6 +26,48 @@ namespace BackEnd.Controllers
             return Ok(game);
         }
 
+        [HttpGet("find-group/{roundNumber}/{playerId}")]
+        public async Task<IActionResult> FindGroupNumberIdByRoundNumberAndPlayerId([FromRoute] int roundNumber, [FromRoute] int playerId)
+        {
+            if (roundNumber <= 0 || playerId <= 0)
+            {
+                return BadRequest("Invalid round number or player ID.");
+            }
+
+            var groupId = await repo.FindGroupNumberByRoundNumberAndPlayerId(roundNumber, playerId);
+            if (groupId == null)
+            {
+                return NotFound($"No group found for player ID {playerId} in round {roundNumber}.");
+            }
+
+            return Ok(groupId);
+        }
+
+        [HttpGet("Player/{playerId}")]
+        public async Task<IActionResult> GetGameIdByPlayerId([FromRoute] int playerId)
+        {
+            try
+            {
+                // Fetch the game room for the player
+                var gameRoom = await repo.GetGameByPlayerId(playerId);
+
+                // If the game room is null, return a 404 Not Found
+                if (gameRoom == null)
+                {
+                    return NotFound($"No room found for player with ID {playerId}");
+                }
+
+                // Return the room's ID (or RoomCode, depending on what you want to return)
+                return Ok(gameRoom.Id); // Or gameRoom.RoomCode if that's what you prefer to return
+            }
+            catch
+            {
+                // Return a generic server error message if something goes wrong
+                return StatusCode(500, "Internal server error");
+            }
+
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Game newGame)
         {
@@ -63,22 +105,9 @@ namespace BackEnd.Controllers
                 return NotFound($"Game with ID {id} not found.");
             return Ok(updatedGame);
         }
-        [HttpPost("{id}/next-round")]
-        public async Task<IActionResult> NextRound(int id)
-        {
-            var game = await repo.GetGameById(id);
-            if (game == null) return NotFound($"Game with ID {id} not found.");
 
-            if (game.GameRounds.Count >= game.Rounds)
-            {
-                return BadRequest("All rounds are already completed.");
-            }
+        
 
-            var newRound = new Round();
-            var updatedGame = await repo.AddRoundToGame(id, newRound);
-
-            return Ok(updatedGame);
-        }
 
 
         [HttpDelete("{id}")]

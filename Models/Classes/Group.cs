@@ -4,7 +4,7 @@ namespace BackEnd.Models.Classes;
 public record Group
 {
     public int Id { get; init; }
-
+    public int GroupNumber{get;init;}
     // Foreign key to Round
     public int RoundId { get; set; }
     public Round Round { get; set; } = null!;

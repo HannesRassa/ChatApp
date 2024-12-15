@@ -81,7 +81,7 @@ namespace BackEnd.Controllers
                 issuer: configuration["Jwt:Issuer"],
                 audience: configuration["Jwt:Issuer"],
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(2),
+                expires: DateTime.Now.AddHours(3),
                 signingCredentials: creds
             );
 

@@ -1,20 +1,20 @@
 <template>
   <div>
-    <h1>Game Round {{ roundID }} - Group {{ groupID }}</h1>
+    <h1>Game Round {{ currentRoundIndex }} - Group {{ currentGroupIndex }}</h1>
     <div v-if="loading">Loading...</div>
     <div v-else-if="error">Error: {{ error }}</div>
     <div v-else>
       <div>
         <h2>Players</h2>
         <ul>
-          <li v-for="player in group.players" :key="player.id">
+          <li v-for="player in currentGroup?.players" :key="player.id">
             {{ player.username }}
           </li>
         </ul>
       </div>
       <div>
         <h2>Question</h2>
-        <p>{{ group.question?.questionText }}</p>
+        <p>{{ currentGroup?.question?.questionText }}</p>
       </div>
       <div>
         <h2>Your Answer</h2>
@@ -25,7 +25,7 @@
         <h2>Time Left: {{ timeLeft }} seconds</h2>
       </div>
     </div>
-    <button @click="goToNextRound">Next Round</button>
+    <button @click="goToNextGroupOrRound">Next Round</button>
   </div>
 </template>
 
@@ -33,20 +33,50 @@
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
+import { useUserStore } from "@/stores/userStore";
 
+const userStore = useUserStore();
 const route = useRoute();
 
-const playerId = Number(1); //change to dynamic
-const roundTime = 60; // Change to dynamic
-
+const playerId = ref<number | null>(Number(userStore.userId));
 const roundID = ref<number>(Number(route.params.roundID));
 const groupID = ref<number>(Number(route.params.groupID));
-const group = ref<any>(null);
+const questionId = ref<number>(0);
+
+let currentRoundIndex: number = 1;
+let currentGroupIndex: number = 1;
+
+const gameData = ref<any>(null);
+const currentGroup = ref<any>(null);
+
 const loading = ref(true);
+const roundTime = ref<number>(420)
 const error = ref<string | null>(null);
+const gameId = ref<number | null>(null);
 const answer = ref<string>("");
-const timeLeft = ref<number>(roundTime);
+
+const timeLeft = ref<number>(roundTime.value);
 let timer: number | null = null;
+
+
+const fetchLoggedInUserGameId = async (): Promise<number | null> => {
+  try {
+    const userId = userStore.userId;
+    const response = await axios.get(
+      `http://localhost:5180/Backend/Game/Player/${userId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const gameId = response.data;
+    return gameId;
+  } catch (error) {
+    console.error("Error fetching game room ID:", error);
+    return null;
+  }
+};
 
 const fetchGroupData = async () => {
   try {
@@ -54,10 +84,39 @@ const fetchGroupData = async () => {
     const response = await axios.get(
       `http://localhost:5180/Backend/Group/${groupID.value}`
     );
-    group.value = response.data;
+    currentGroup.value = response.data;
   } catch (err) {
     console.error(err);
     error.value = "Failed to fetch group data.";
+  } finally {
+    loading.value = false;
+  }
+};
+
+const findCurrentGroup = async () => {
+  try {
+    const response = await axios.get(
+      `http://localhost:5180/Backend/Game/find-group/${currentRoundIndex}/1` //${playerId.value}
+    );  
+
+    return response.data; // Return the data from the response
+  } catch (error) {
+    console.log(`error for findCurentGroup Resposne:${currentRoundIndex},${playerId.value}`);
+
+    console.error("Error fetching the group:", error);
+    throw error; // Re-throw the error if needed
+  }
+};
+const fetchGameData = async () => {
+  try {
+    loading.value = true;
+    const response = await axios.get(`http://localhost:5180/Backend/Game/10`); //${gameId.value}
+    gameData.value = response.data;
+    roundTime.value = gameData.value.timerForAnsweringInSec;
+    console.log(`gameData: ${JSON.stringify(gameData.value, null, 2)}`);
+  } catch (err) {
+    console.error(err);
+    error.value = "Failed to fetch game data.";
   } finally {
     loading.value = false;
   }
@@ -68,13 +127,13 @@ const submitAnswer = async () => {
     alert("Answer cannot be empty.");
     return;
   }
-
   try {
     await axios.post(`http://localhost:5180/Backend/Answer/`, {
-      groupId:groupID.value,
+      groupId: groupID.value,
       playerId,
-      roundId:roundID.value,
-      questionText: group.value.question.questionText.value,
+      questionId: currentGroup.value.question.id,
+      roundId: roundID.value,
+      questionText: currentGroup.value.question.questionText.value,
       answerText: answer.value,
     });
     alert("Answer submitted successfully!");
@@ -82,47 +141,35 @@ const submitAnswer = async () => {
   } catch (err) {
     console.error(err);
     console.log(
-      `grId:${groupID}, plId:${playerId}, rndId:${roundID}, ansTxt:${
+      `grId:${groupID}, plId:${playerId},ansId:${questionId} rndId:${roundID}, ansTxt:${
         answer.value
-      }, questin:${JSON.stringify(group.value?.question)}`
+      }, questin:${JSON.stringify(currentGroup.value?.question)}`
     );
     alert("Failed to submit answer.");
   }
 };
 
-const goToNextRound = async () => {
-  alert("Time is up! Moving to the next round.");
-
-  try {
-    // Making an API call to move to the next round
-    const response = await axios.post(
-      `http://localhost:5180/Backend/Game/${roundID}/next-round`
-    );
-    console.log(`NextRound post response${response}`);
-
-    if (response.status === 200) {
-      // Update the roundID and groupID based on the new round data
-      roundID.value = response.data.roundID;
-      groupID.value = response.data.groupID; 
-
-      // Refetch the group data for the new round
-      fetchGroupData();
-    } else {
-      alert("Failed to transition to the next round.");
-    }
-  } catch (error) {
-    console.error(error);
-    alert("Error transitioning to the next round.");
+const goToNextGroupOrRound = async () => {
+  if (currentRoundIndex < gameData.value.rounds) {
+    currentRoundIndex++;
+    stopTimer(); // Stop the current timer
+    timeLeft.value = roundTime.value; // Reset the timer to the initial round time
+    startTimer(); // Start the timer again for the new round
+  } else {
+    // No more rounds left, end the game
+    alert("Insert Logic to Redirect");
   }
 };
 const startTimer = () => {
+  stopTimer();
+  timeLeft.value = roundTime.value;
+
   timer = window.setInterval(() => {
     if (timeLeft.value > 0) {
       timeLeft.value--;
     } else {
-      clearInterval(timer!);
-      timer = null;
-      goToNextRound();
+      stopTimer();
+      goToNextGroupOrRound();
     }
   }, 1000);
 };
@@ -134,10 +181,14 @@ const stopTimer = () => {
   }
 };
 
-onMounted(() => {
-  fetchGroupData();
+onMounted(async () => {
+  const gameId = fetchLoggedInUserGameId();
+  await fetchGameData();
+  await fetchGroupData();
+  await findCurrentGroup();
   startTimer();
 });
+
 onUnmounted(() => {
   stopTimer();
 });
