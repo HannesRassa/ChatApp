@@ -107,7 +107,7 @@ const findCurrentGroup = async () => {
     return response.data; // Return the data from the response
   } catch (error) {
     console.log(
-      `error for findCurentGroup Resposne:${currentRoundIndex},${playerId}`//playerId here is null WHY?
+      `error for findCurentGroup Resposne:${currentRoundIndex},${userId}`//playerId here is null WHY?
     );
 
     console.error("Error fetching the group:", error);
@@ -133,6 +133,7 @@ const fetchGameData = async () => {
 };
 
 const submitAnswer = async () => {
+  const userId = userStore.userId;
   if (!answer.value.trim()) {
     alert("Answer cannot be empty.");
     return;
@@ -140,7 +141,7 @@ const submitAnswer = async () => {
   try {
     await axios.post(`http://localhost:5180/Backend/Answer/`, {
       groupId: groupID.value,
-      playerId,
+      playerId:userId,
       questionId: currentGroup.value.question.id,
       roundId: roundID.value,
       questionText: currentGroup.value.question.questionText.value,
