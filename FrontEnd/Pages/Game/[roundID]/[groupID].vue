@@ -97,15 +97,17 @@ const fetchGroupData = async () => {
 };
 
 const findCurrentGroup = async () => {
+  const userId = userStore.userId;
+
   try {
     const response = await axios.get(
-      `http://localhost:5180/Backend/Game/find-group/${currentRoundIndex}/${playerId}`
+      `http://localhost:5180/Backend/Game/find-group/${currentRoundIndex}/${userId}`
     );
 
     return response.data; // Return the data from the response
   } catch (error) {
     console.log(
-      `error for findCurentGroup Resposne:${currentRoundIndex},${playerId}`
+      `error for findCurentGroup Resposne:${currentRoundIndex},${playerId}`//playerId here is null WHY?
     );
 
     console.error("Error fetching the group:", error);
@@ -115,10 +117,10 @@ const findCurrentGroup = async () => {
 const fetchGameData = async () => {
   try {
     loading.value = true;
-    console.log(`game Id:`,gameId);
+    console.log(`game Id:`,gameId.value);
     const response = await axios.get(
       `http://localhost:5180/Backend/Game/${gameId.value}`
-    ); //${gameId.value}
+    ); 
     gameData.value = response.data;
     roundTime.value = gameData.value.timerForAnsweringInSec;
     console.log(`gameData: ${JSON.stringify(gameData.value, null, 2)}`);
@@ -196,6 +198,11 @@ const stopTimer = () => {
 
 onMounted(async () => {
   userStore.loadUser();
+  if (!userStore.userId) {
+    console.error("User ID is not set. Ensure the user is logged in.");
+    return;
+  }
+  console.log("Loaded userId:", userStore.userId);
   gameId.value = await fetchLoggedInUserGameId();
   if (userStore.userId) {
     await fetchLoggedInUserGameId();
