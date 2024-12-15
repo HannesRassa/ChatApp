@@ -18,7 +18,6 @@ namespace BackEnd.Controllers
 
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetAll()
         {
             var result = await repo.GetAllPlayers();
@@ -26,7 +25,6 @@ namespace BackEnd.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var player = await repo.GetPlayerById(id);

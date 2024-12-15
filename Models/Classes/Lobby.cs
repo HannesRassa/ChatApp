@@ -12,7 +12,6 @@ public record Lobby {
   
     public Lobby() { }
 
-    // Constructor that takes an admin
     public Lobby(Player admin)
     {
         Admin = admin;
