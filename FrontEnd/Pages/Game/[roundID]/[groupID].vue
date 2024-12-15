@@ -50,20 +50,19 @@ const gameData = ref<any>(null);
 const currentGroup = ref<any>(null);
 
 const loading = ref(true);
-const roundTime = ref<number>(420)
+const roundTime = ref<number>(420);
 const error = ref<string | null>(null);
-const gameId = ref<number | null>(null);
+let gameId = ref<number  | null>(null);
 const answer = ref<string>("");
 
 const timeLeft = ref<number>(roundTime.value);
 let timer: number | null = null;
 
-
 const fetchLoggedInUserGameId = async (): Promise<number | null> => {
   try {
     const userId = userStore.userId;
-    console.log(playerId);
-    console.log(userId);
+    console.log(`player id :${playerId}`);
+    console.log(`user ID :${userId}`);
     const response = await axios.get(
       `http://localhost:5180/Backend/Game/Player/${userId}`,
       {
@@ -72,8 +71,9 @@ const fetchLoggedInUserGameId = async (): Promise<number | null> => {
         },
       }
     );
+    
     const gameId = response.data;
-    console.log(gameId);
+    console.log(`fetched gameId: ${gameId}`);//here its 1
     return gameId;
   } catch (error) {
     console.error("Error fetching game room ID:", error);
@@ -99,12 +99,14 @@ const fetchGroupData = async () => {
 const findCurrentGroup = async () => {
   try {
     const response = await axios.get(
-      `http://localhost:5180/Backend/Game/find-group/${currentRoundIndex}/1` //${playerId.value}
-    );  
+      `http://localhost:5180/Backend/Game/find-group/${currentRoundIndex}/${playerId}`
+    );
 
     return response.data; // Return the data from the response
   } catch (error) {
-    console.log(`error for findCurentGroup Resposne:${currentRoundIndex},${playerId}`);
+    console.log(
+      `error for findCurentGroup Resposne:${currentRoundIndex},${playerId}`
+    );
 
     console.error("Error fetching the group:", error);
     throw error; // Re-throw the error if needed
@@ -113,7 +115,10 @@ const findCurrentGroup = async () => {
 const fetchGameData = async () => {
   try {
     loading.value = true;
-    const response = await axios.get(`http://localhost:5180/Backend/Game/${gameId.value}`); //${gameId.value}
+    console.log(`game Id:`,gameId);
+    const response = await axios.get(
+      `http://localhost:5180/Backend/Game/${gameId.value}`
+    ); //${gameId.value}
     gameData.value = response.data;
     roundTime.value = gameData.value.timerForAnsweringInSec;
     console.log(`gameData: ${JSON.stringify(gameData.value, null, 2)}`);
@@ -139,14 +144,19 @@ const submitAnswer = async () => {
       questionText: currentGroup.value.question.questionText.value,
       answerText: answer.value,
     });
+
+    console.log();
+    `grId:${JSON.stringify(groupID.value)}, plId:${JSON.stringify(
+      playerId
+    )},qId:${JSON.stringify(currentGroup.value.question.id)} rndId:${
+      roundID.value
+    }, ansTxt:${answer.value}, questin:${answer.value}`;
     alert("Answer submitted successfully!");
     answer.value = "";
   } catch (err) {
     console.error(err);
     console.log(
-      `grId:${groupID}, plId:${playerId},ansId:${questionId} rndId:${roundID}, ansTxt:${
-        answer.value
-      }, questin:${JSON.stringify(currentGroup.value?.question)}`
+      `grId:${groupID.value}, plId:${playerId},qId:${currentGroup.value.question.id} rndId:${roundID.value}, ansTxt:${answer.value}, questin:${answer.value}`
     );
     alert("Failed to submit answer.");
   }
@@ -186,10 +196,11 @@ const stopTimer = () => {
 
 onMounted(async () => {
   userStore.loadUser();
-  const gameId = fetchLoggedInUserGameId();
+  gameId.value = await fetchLoggedInUserGameId();
   if (userStore.userId) {
     await fetchLoggedInUserGameId();
   }
+  await fetchGameData();
   await fetchGroupData();
   await findCurrentGroup();
   startTimer();
