@@ -10,23 +10,19 @@
       </ul>
     </div>
 
-    <!-- Main Content Section -->
+
     <div class="main-content">
-      <!-- Timer at the Top -->
       <h2 class="timer">{{ timeLeft }} seconds</h2>
 
-      <!-- Question -->
       <div class="question">
         <p>{{ currentGroup?.question?.questionText }}</p>
       </div>
 
-      <!-- Submit Answer Section -->
       <div v-if="!isAnswerSubmitted" class="submit-answer">
         <input v-model="answer" type="text" placeholder="Enter your answer" />
         <button @click="submitAnswer">Submit Answer</button>
       </div>
 
-      <!-- Display Submitted Answer -->
       <div v-else class="submitted-answer">
         <h2>Submitted Answer</h2>
         <p>{{ submittedAnswer }}</p>
@@ -45,7 +41,7 @@ const userStore = useUserStore();
 const route = useRoute();
 const router = useRouter();
 
-// Fetch and assign userId
+
 onMounted(() => {
   userStore.loadUser(); // Load user data from localStorage
 });
@@ -154,7 +150,7 @@ const checkIfGameIsOver = () => {
     const firstGroupID = gameDetails.value.gameRounds[0]?.groups[0]?.id;
 
     router.push({
-      path: `/Game/${firstRoundID}/${firstGroupID}/Voting`,
+      path: `/Game/Voting`,
     });
   } else {
     redirectToNextGroupOrRound();
