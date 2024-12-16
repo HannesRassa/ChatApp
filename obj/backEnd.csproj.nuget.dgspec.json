@@ -1,25 +1,32 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\backEnd.csproj": {}
+    "C:\\Users\\User\\Desktop\\itb2203-chatapp\\backEnd.csproj": {}
   },
   "projects": {
-    "c:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\backEnd.csproj": {
+    "C:\\Users\\User\\Desktop\\itb2203-chatapp\\backEnd.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\backEnd.csproj",
+        "projectUniqueName": "C:\\Users\\User\\Desktop\\itb2203-chatapp\\backEnd.csproj",
         "projectName": "backEnd",
-        "projectPath": "c:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\backEnd.csproj",
-        "packagesPath": "C:\\Users\\Tabasalu Vapista\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\Tabasalu Vapista\\Desktop\\itb2203-chatapp\\obj\\",
+        "projectPath": "C:\\Users\\User\\Desktop\\itb2203-chatapp\\backEnd.csproj",
+        "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\User\\Desktop\\itb2203-chatapp\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\Tabasalu Vapista\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
