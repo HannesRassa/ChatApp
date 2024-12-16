@@ -14,6 +14,7 @@ public class DataContext : DbContext
     public DbSet<Lobby> Lobbies { get; set; } = null!;
     public DbSet<Question> Questions { get; set; } = null!;
     public DbSet<Answer> Answers { get; set; } = null!;
+    public DbSet<PlayerPoint> PlayerPoints { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -52,13 +53,25 @@ public class DataContext : DbContext
         // Game -> Players (Many-to-Many)
         modelBuilder.Entity<Game>()
             .HasMany(g => g.Players)
-            .WithMany(p => p.Games)
+            .WithMany()
             .UsingEntity(j => j.ToTable("GamePlayer"));
 
         // Lobby -> Players
         modelBuilder.Entity<Lobby>()
             .HasMany(l => l.Players)
             .WithOne()
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<PlayerPoint>()
+   .HasOne<Player>() // Player relationship
+   .WithMany()
+   .HasForeignKey(pp => pp.PlayerId)
+   .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<PlayerPoint>()
+            .HasOne<Game>() // Game relationship
+            .WithMany()
+            .HasForeignKey(pp => pp.GameId)
             .OnDelete(DeleteBehavior.Cascade);
 
     }
