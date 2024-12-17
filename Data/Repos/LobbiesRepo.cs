@@ -16,7 +16,23 @@ public class LobbiesRepo
     // CREATE
     public async Task<Lobby> SaveLobbyToDb(Lobby lobby)
     {
-        context.Add(lobby);
+        // Attach Admin if it's not tracked
+        if (!context.Players.Local.Any(p => p.Id == lobby.AdminId))
+        {
+            context.Players.Attach(lobby.Admin);
+        }
+
+        // Ensure Players are tracked
+        foreach (var player in lobby.Players)
+        {
+            if (!context.Players.Local.Any(p => p.Id == player.Id))
+            {
+                context.Players.Attach(player);
+            }
+        }
+
+        // Add and save
+        context.Lobbies.Add(lobby);
         await context.SaveChangesAsync();
         return lobby;
     }

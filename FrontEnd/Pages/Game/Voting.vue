@@ -208,14 +208,108 @@ onUnmounted(() => {
 });
 </script>
 
-  
-  
-  <style scoped>
-  .answer {
-    margin-bottom: 10px;
-  }
-  button {
-    margin-left: 10px;
-  }
-  </style>
+<style scoped>
+.voting-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: #f4f0ff;
+  height: 100vh;
+}
+
+.timer {
+  background-color: #c7a6d9;
+  color: #fff;
+  padding: 15px 30px;
+  border-radius: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.question-section {
+  text-align: center;
+  padding: 20px;
+  background-color: #e0d4f7;
+  border-radius: 15px;
+  width: 80%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.question-section h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #7d3c98;
+  margin-bottom: 10px;
+}
+
+.question-section .question {
+  background-color: #c7a6d9;
+  color: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  margin: 20px 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.answers {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.answer-card {
+  background-color: #d9c5e5;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.answer-card.voted {
+  background-color: #7d3c98;
+  color: #fff;
+}
+
+button {
+  background-color: #7d3c98;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+button:hover {
+  background-color: #5b2c6f;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.progress {
+  margin-top: 20px;
+}
+
+.progress button {
+  background-color: #5b2c6f;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.progress button:hover {
+  background-color: #3e1d47;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+</style>
   

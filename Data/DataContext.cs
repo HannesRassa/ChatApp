@@ -35,44 +35,46 @@ public class DataContext : DbContext
         // Group -> Answers
         modelBuilder.Entity<Group>()
             .HasMany(g => g.Answers)
-            .WithOne()//.WithOne(a => a.Group)
+            .WithOne()
             .HasForeignKey(a => a.GroupId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Group -> Question (optional relationship)
+        // Group -> Question (optional)
         modelBuilder.Entity<Group>()
             .HasOne(g => g.Question)
             .WithMany()
             .OnDelete(DeleteBehavior.SetNull);
 
-        // Group -> Players (Many-to-Many)
-        modelBuilder.Entity<Group>()
-            .HasMany(g => g.Players)
+        // Lobby -> Players (Many-to-Many)
+        modelBuilder.Entity<Lobby>()
+            .HasOne(l => l.Admin)
+            .WithMany()
+            .HasForeignKey(l => l.AdminId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Lobby>()
+            .HasMany(l => l.Players)
             .WithMany();
 
         // Game -> Players (Many-to-Many)
         modelBuilder.Entity<Game>()
             .HasMany(g => g.Players)
             .WithMany()
-            .UsingEntity(j => j.ToTable("GamePlayer"));
+            .UsingEntity(j => j.ToTable("GamePlayers"));
 
-        // Lobby -> Players
-        modelBuilder.Entity<Lobby>()
-            .HasMany(l => l.Players)
-            .WithMany();
-
-
+        // PlayerPoint -> Player
         modelBuilder.Entity<PlayerPoint>()
-            .HasOne<Player>() // Player relationship
+            .HasOne<Player>()
             .WithMany()
             .HasForeignKey(pp => pp.PlayerId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        // PlayerPoint -> Game
         modelBuilder.Entity<PlayerPoint>()
-            .HasOne<Game>() // Game relationship
+            .HasOne<Game>()
             .WithMany()
             .HasForeignKey(pp => pp.GameId)
             .OnDelete(DeleteBehavior.Cascade);
-
     }
+
 }

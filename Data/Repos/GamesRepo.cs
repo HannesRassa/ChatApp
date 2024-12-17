@@ -159,31 +159,31 @@ public class GamesRepo(DataContext context)
         return players;
     }
     //FIND GROUP BY ROUND NUMBER AND PLAYER ID
-    public async Task<int?> FindGroupNumberByRoundNumberAndPlayerId(int roundNumber, int playerId)
-    {
-        if (roundNumber <= 0 || playerId <= 0)
+        public async Task<(int? RoundNumber, int? GroupNumber)> FindGroupNumberByRoundNumberAndPlayerId(int roundNumber, int playerId)
         {
-            throw new ArgumentException("Invalid round number or player ID.");
+            if (roundNumber <= 0 || playerId <= 0)
+            {
+                throw new ArgumentException("Invalid round number or player ID.");
+            }
+
+            // Find the round that matches the round number and contains the player
+            var round = await context.Rounds
+                .Include(r => r.Groups)
+                    .ThenInclude(g => g.Players)
+                .FirstOrDefaultAsync(r => r.RoundNumber == roundNumber &&
+                                        r.Groups.Any(g => g.Players.Any(p => p.Id == playerId)));
+
+            if (round == null)
+            {
+                return (null, null);
+            }
+
+            // Find the group in that round containing the player
+            var group = round.Groups.FirstOrDefault(g => g.Players.Any(p => p.Id == playerId));
+
+            // Return both the round number and group number
+            return (round.RoundNumber, group?.GroupNumber);
         }
-
-        // Find the round that matches the round number
-        var round = await context.Rounds
-            .Include(r => r.Groups)
-                .ThenInclude(g => g.Players)
-            .FirstOrDefaultAsync(r => r.RoundNumber == roundNumber &&
-                                     r.Groups.Any(g => g.Players.Any(p => p.Id == playerId)));
-
-        if (round == null)
-        {
-            return null;
-        }
-
-        // Find the group in that round containing the player
-        var group = round.Groups.FirstOrDefault(g => g.Players.Any(p => p.Id == playerId));
-
-        // Return the group ID, or null if no matching group is found
-        return group?.GroupNumber;
-    }
 
     public async Task<bool> GameExistsInDb(int id) => await context.Games.AnyAsync(x => x.Id == id);
 

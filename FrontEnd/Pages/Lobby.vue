@@ -211,7 +211,7 @@ const startGame = async (): Promise<void> => {
       return;
     }
 
-    const redirectUrl = `/Game/${firstRound.id}/${firstGroup.id}`;
+    const redirectUrl = `/Game/Answering`;
     console.log('Redirecting to:', redirectUrl);
 
     window.location.href = redirectUrl;

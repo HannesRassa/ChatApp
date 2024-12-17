@@ -34,13 +34,16 @@ namespace BackEnd.Controllers
                 return BadRequest("Invalid round number or player ID.");
             }
 
-            var groupId = await repo.FindGroupNumberByRoundNumberAndPlayerId(roundNumber, playerId);
-            if (groupId == null)
+            // Fetch round and group information
+            var (roundId, groupId) = await repo.FindGroupNumberByRoundNumberAndPlayerId(roundNumber, playerId);
+
+            if (roundId == null || groupId == null)
             {
                 return NotFound($"No group found for player ID {playerId} in round {roundNumber}.");
             }
 
-            return Ok(groupId);
+            // Return both the round ID and group ID as a JSON object
+            return Ok(new { roundId, groupId });
         }
 
         [HttpGet("Player/{playerId}")]
