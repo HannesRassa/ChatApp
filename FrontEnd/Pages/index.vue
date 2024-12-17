@@ -285,190 +285,129 @@ export default defineComponent({
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
 .main-menu {
+  background: linear-gradient(to bottom right, #f8f9fd, #e9e4f5);
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  text-align: center;
   padding: 20px;
-  background-color: #f4f0ff; /* Light lavender background for the layout */
 }
 
 .top-right {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 20px;
+  right: 20px;
   display: flex;
-  gap: 10px;
+  gap: 15px;
 }
 
 button {
-  background-color: #7d3c98; /* Dark purple button */
-  color: white;
-  padding: 15px 50px;
-  border-radius: 8px;
+  background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+  border: none;
+  padding: 12px 24px;
+  border-radius: 30px;
+  color: #fff;
   font-size: 16px;
   cursor: pointer;
-  border: none;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 button:hover {
-  background-color: #5b2c6f; /* Slightly darker purple on hover */
+  background: #5c51c6;
+  transform: translateY(-2px);
 }
 
 .form-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-  background-color: #e0d4f7; /* Light purple background for the form */
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+  margin: 20px 0;
+  text-align: center;
 }
 
 .form-container h2 {
-  margin: 0;
-  font-size: 24px;
-  color: #5b2c6f; /* Darker purple for headings */
+  margin-bottom: 20px;
+  color: #6c5ce7;
 }
 
-.form-container div {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 5px;
+.form-container label {
+  display: block;
+  text-align: left;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
 }
 
-label {
-  font-size: 14px;
-  font-weight: bold;
-  color: #5b2c6f;
-}
-
-input {
-  padding: 8px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+.form-container input {
   width: 100%;
-  box-sizing: border-box;
+  padding: 10px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  transition: border 0.3s;
 }
 
-input:focus {
-  border-color: #7d3c98;
+.form-container input:focus {
+  border-color: #6c5ce7;
   outline: none;
 }
 
 .menu-options {
+  margin-top: 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 20px;
+  gap: 15px;
+  align-items: center;
 }
 
 .menu-options button {
-  background-color: #7d3c98;
-  color: white;
-  padding: 10px 30px;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: background-color 0.3s;
-}
-
-.menu-options button:hover {
-  background-color: #5b2c6f;
+  width: 220px;
 }
 
 .dropdown-menu {
+  background: white;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  border-radius: 8px;
   position: absolute;
-  top: 40px;
-  right: 10px;
-  background-color: #e0d4f7; /* Light purple background */
-  border: 1px solid #ccc;
-  padding: 10px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  top: 50px;
+  right: 0;
 }
 
-.dropdown-menu button {
-  padding: 10px;
-  font-size: 14px;
-  background: none;
-  border: none;
-  text-align: left;
-  width: 100%;
-  color: #5b2c6f;
-  cursor: pointer;
-}
-
-.dropdown-menu button:hover {
-  background-color: #f4f0ff; /* Light lavender hover effect */
-}
-
-.error {
-  color: red;
-  font-size: 14px;
-  margin-top: 10px;
-}
-
-.question-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 20px;
-  background-color: #e0d4f7;
+.question-form,
+.lobby-code-dropdown {
+  background: #ffffff;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  width: 100%;
+  max-width: 400px;
 }
 
 .question-form label {
-  display: flex;
-  flex-direction: column;
+  margin-bottom: 8px;
+}
+
+.error {
+  color: #ff4757;
+  margin-top: 10px;
   font-size: 14px;
-  font-weight: bold;
-  color: #5b2c6f;
-}
-
-.lobby-code-dropdown {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 20px;
-  align-items: center;
-  background-color: #e0d4f7;
-  padding: 20px;
-  border-radius: 8px;
-}
-
-.lobby-code-dropdown label {
-  font-size: 14px;
-  font-weight: bold;
-  color: #5b2c6f;
-}
-
-.lobby-code-dropdown input {
-  padding: 8px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.lobby-code-dropdown button {
-  background-color: #7d3c98;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: background-color 0.3s;
-}
-
-.lobby-code-dropdown button:hover {
-  background-color: #5b2c6f;
 }
 </style>
