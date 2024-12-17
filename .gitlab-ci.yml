@@ -29,6 +29,7 @@ variables:
     - deploy
 
   build:back-end:
+  stage: build
   image:
     name: docker:27.3.1-alpine3.20
   services:
@@ -45,13 +46,14 @@ variables:
     - docker push ${DOCKER_REGISTRY}/back:${CI_COMMIT_SHA}
   after_script:
     - docker logout ${DOCKER_REGISTRY}
-  stage: build
+  
   artifacts:
     paths:
   tags:
     - itb2203
 
 build:front-end:
+  stage: build
   image:
     name: docker:27.3.1-alpine3.20
   services:
@@ -68,7 +70,7 @@ build:front-end:
     - docker push ${DOCKER_REGISTRY}/front:${CI_COMMIT_SHA}
   after_script:
     - docker logout ${DOCKER_REGISTRY}
-  stage: build
+  
   artifacts:
     paths:
   tags:
