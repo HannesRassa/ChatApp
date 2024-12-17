@@ -1,51 +1,55 @@
 <template>
   <div class="flex-layout">
+    <!-- Main Section -->
     <div class="main">
       <div class="button-wrapper">
-        <button class="custom-style" @click="startGame">Start</button>
-        <button class="custom-style" @click="openPackages">Packages</button>
+        <button class="button-start" @click="startGame">Start</button>
+        <button class="button-secondary" @click="openPackages">Packages</button>
       </div>
 
+      <!-- Room Code Display -->
       <div class="roomCode-display">
-        {{ roomCode }}
+        Room Code: <span>{{ roomCode }}</span>
       </div>
 
-      <table class="users-table">
-        <thead>
-          <tr>
-            <th>User ID</th>
-            <th>Username</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="user in users" :key="user.id">
-            <td>{{ user.id }}</td>
-            <td>{{ user.username }}</td>
-            <td>{{ user.status }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- Players Table -->
+      <div class="table-container">
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>User ID</th>
+              <th>Username</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="user in users" :key="user.id">
+              <td>{{ user.id }}</td>
+              <td>{{ user.username }}</td>
+              <td>{{ user.status }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
+    <!-- Sidebar Settings -->
     <div class="sidebar">
-      <div class="settings-header">
-        <p>Settings</p>
-      </div>
+      <div class="settings-header">Settings</div>
 
-      <div class="rounds-settings">
-        <p>Rounds: {{ rounds }}</p>
-        <div class="rounds-controls">
-          <button class="custom-style" @click="decreaseRounds">-</button>
-          <button class="custom-style" @click="increaseRounds">+</button>
+      <div class="settings-section">
+        <p>Rounds: <strong>{{ rounds }}</strong></p>
+        <div class="controls">
+          <button @click="decreaseRounds">-</button>
+          <button @click="increaseRounds">+</button>
         </div>
       </div>
 
-      <div class="timer-settings">
-        <p>Timer: {{ roundTime }} sec</p>
-        <div class="timer-controls">
-          <button class="custom-style" @click="decreaseTime">-</button>
-          <button class="custom-style" @click="increaseTime">+</button>
+      <div class="settings-section">
+        <p>Timer: <strong>{{ roundTime }} sec</strong></p>
+        <div class="controls">
+          <button @click="decreaseTime">-</button>
+          <button @click="increaseTime">+</button>
         </div>
       </div>
     </div>
@@ -272,217 +276,127 @@ const dividePlayersIntoGroups = (): User[][] | void => {
 <style scoped>
 .flex-layout {
   display: flex;
-  height: 100vh; /* Full viewport height */
+  height: 100vh;
+  background: linear-gradient(135deg, #f4f4ff, #e6d8f7);
+  gap: 10px;
   padding: 20px;
-  background-color: #f4f0ff; /* Light lavender background for the layout */
+  box-sizing: border-box;
 }
 
 .main {
-  flex: 4; /* Takes up 4/6 of the available width (more space than the sidebar) */
+  flex: 3;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  text-align: center;
-  background-color: #e0d4f7; /* Light purple background */
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* Aligns content to the top */
-  align-items: center; /* Centers content horizontally */
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
-}
-
-/* Button wrapper */
-.button-wrapper {
-  display: flex;
-  gap: 120px; /* Space between buttons */
-  margin-top: 30px; /* Increased space above the buttons */
-}
-
-/* RoomCode display */
-.roomCode-display {
-  position: absolute;
-  top: 70px;
-  left: 50px;
-  font-size: 16px;
-  color: #7d3c98;
-  font-weight: bold;
-  background-color: rgba(255, 255, 255, 0.8); /* Optional background */
-  padding: 5px 10px;
-  border-radius: 5px;
-}
-
-button {
-  background-color: #7d3c98; /* Dark purple button */
-  color: white;
-  padding: 15px 50px;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-  border: none;
-  transition: background-color 0.3s;
-}
-
-button:hover {
-  background-color: #5b2c6f; /* Slightly darker purple on hover */
-}
-
-.users-table {
-  background-color: #7d3c98; /* Purple table header */
-  color: white;
-  width: 70%;
-  border-collapse: collapse;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid #ddd;
-  margin-top: 100px; /* Adds space between button and table */
-}
-
-.users-table th,
-.users-table td {
-  padding: 10px;
-}
-
-.users-table th {
-  background-color: #a569bd; /* Slightly lighter purple for table header */
-}
-
-.users-table tr:nth-child(even) {
-  background-color: #d3bce7; /* Light purple for even rows */
-}
-
-.users-table tr:nth-child(odd) {
-  background-color: #c7a6d9; /* Medium purple for odd rows */
+  align-items: center;
 }
 
 .sidebar {
-  flex: 1; /* Takes up 1/4 of the available width */
-  height: 100%; /* Full height of .flex-layout container */
-  background-color: #e0d4f7; /* Medium purple background for sidebar */
+  flex: 1;
+  background: #7d3c98;
+  color: white;
+  border-radius: 10px;
   padding: 20px;
-  border-left: 3px solid #a569bd; /* Purple border to separate sidebar */
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* Align content to the top */
-  gap: 20px; /* Spacing between each settings section */
+  gap: 20px;
 }
 
 .settings-header {
-  font-size: 22px;
+  font-size: 1.5rem;
   font-weight: bold;
-  color: #5b2c6f;
-  width: 100%;
   text-align: center;
-  background-color: #a569bd;
+  margin-bottom: 10px;
+}
+
+.settings-section {
+  background: #ffffff33;
   padding: 10px;
   border-radius: 8px;
-}
-
-.gameSettings {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  font-size: 16px;
-  color: #7d3c98;
-  font-weight: bold;
-  background-color: rgba(255, 255, 255, 0.8); /* Optional background */
-  padding: 5px 10px;
-  border-radius: 5px;
-}
-
-.package-display {
-  background-color: #c7a6d9; /* Darker purple for game info box */
-  color: white;
-  padding: 10px;
-  border-radius: 8px;
-  font-size: 20px;
-  width: 100%; /* Full width within sidebar */
   display: flex;
-  font-weight: bold;
-  font-size: 18px;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* Settings sections styling */
-.rounds-settings,
-.timer-settings {
+.button-wrapper {
   display: flex;
-  flex-direction: row;
-  gap: 50px;
-  background-color: #c7a6d9; /* Light purple background */
-  padding: 10px;
-  border-radius: 8px;
-  width: 100%;
-}
-
-.rounds-settings p,
-.timer-settings p {
-  font-size: 18px;
-  font-weight: bold;
-  color: white;
-  margin: 0;
-}
-
-.rounds-controls,
-.timer-controls {
-  display: flex;
-  gap: 15px; /* Horizontal space between the buttons */
+  gap: 20px;
+  margin-bottom: 30px;
 }
 
 button {
-  background-color: #7d3c98;
+  background-color: #8e44ad;
   color: white;
-  width: 30px;
-  height: 30px;
-  border-radius: 30%;
-  font-size: 18px;
-  cursor: pointer;
   border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s;
-}
-button.flex-layout {
-  background-color: #5b2c6f; /* Slightly darker purple on hover */
-}
-
-.rounds-controls button,
-.timer-controls button {
-  display: flex;
-  gap: 10px;
-}
-
-.rounds-controls button:hover,
-.timer-controls button:hover {
-  background-color: #5b2c6f;
-}
-
-.timer-settings p {
-  font-size: 18px;
-  font-weight: bold;
-  color: white;
-  margin: 0;
-}
-
-.group-settings {
-  display: flex;
-  flex-direction: row;
-  gap: 50px;
-  background-color: #c7a6d9; /* Light purple background */
-  padding: 10px;
+  padding: 10px 20px;
   border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+button:hover {
+  background-color: #732d91;
+  transform: scale(1.05);
+}
+
+.button-start {
+  background-color: #27ae60;
+}
+
+.button-secondary {
+  background-color: #f39c12;
+}
+
+.table-container {
+  margin-top: 20px;
+  overflow-x: auto;
   width: 100%;
 }
 
-.group-settings p {
-  font-size: 18px;
-  font-weight: bold;
-  color: white;
-  margin: 0;
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.group-controls {
+.users-table th {
+  background-color: #8e44ad;
+  color: white;
+  padding: 10px;
+  text-align: left;
+}
+
+.users-table td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.users-table tr:nth-child(even) {
+  background-color: #f4f4f9;
+}
+
+.roomCode-display {
+  margin-top: 10px;
+  font-size: 1.2rem;
+  color: #5b2c6f;
+  background: rgba(245, 245, 245, 0.8);
+  padding: 10px 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.controls button {
+  width: 40px;
+  height: 40px;
   display: flex;
-  gap: 15px; /* Horizontal space between the buttons */
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
 }
 </style>

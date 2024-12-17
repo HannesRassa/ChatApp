@@ -13,7 +13,7 @@
       </div>
     </div>
 
-
+    <!-- Login/Sign Up Form -->
     <div v-if="signUpMode || loginMode" class="form-container">
       <h2>{{ signUpMode ? "Sign Up" : "Log In" }}</h2>
       <form @submit.prevent="signUpMode ? signUp : logIn">
@@ -25,19 +25,20 @@
           <label for="password">Password:</label>
           <input type="password" id="password" v-model="passwordInput" required />
         </div>
-        <button v-if="signUpMode" @click="signUp">Sign Up</button>
-        <button v-if="loginMode" @click="logIn">Log In</button>
+        <button>{{ signUpMode ? "Sign Up" : "Log In" }}</button>
         <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
       </form>
     </div>
 
+    <!-- Menu Options -->
     <div v-if="loggedIn" class="menu-options">
       <button @click="startNewGame">Start New Game</button>
-      <button @click="searchForGames">Search for Existing Games</button>
+      <button @click="searchForGames">Search for Games</button>
       <button @click="toggleQuestionDropdown">Create Question</button>
       <button @click="browseQuestions">Browse Questions</button>
     </div>
 
+    <!-- Question Form -->
     <div v-if="isDropdownOpen" class="question-form">
       <form @submit.prevent="submitQuestion">
         <label>
@@ -55,14 +56,9 @@
         <button type="submit">Submit Question</button>
       </form>
     </div>
-    <div v-if="showLobbyCodeDropdown" class="lobby-code-dropdown">
-      <label for="lobbyCode">Enter Lobby Code:</label>
-      <input type="number" id="lobbyCode" v-model="lobbyCodeInput" placeholder="e.g., 1234" required />
-      <button @click="joinLobby">Join Lobby</button>
-      <p v-if="joinLobbyError" class="error">{{ joinLobbyError }}</p>
-    </div>
   </div>
 </template>
+
 
 
 <script lang="ts">
