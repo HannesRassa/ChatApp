@@ -59,14 +59,14 @@ public class DataContext : DbContext
         // Lobby -> Players
         modelBuilder.Entity<Lobby>()
             .HasMany(l => l.Players)
-            .WithOne()
-            .OnDelete(DeleteBehavior.Cascade);
+            .WithMany();
+
 
         modelBuilder.Entity<PlayerPoint>()
-   .HasOne<Player>() // Player relationship
-   .WithMany()
-   .HasForeignKey(pp => pp.PlayerId)
-   .OnDelete(DeleteBehavior.Cascade);
+            .HasOne<Player>() // Player relationship
+            .WithMany()
+            .HasForeignKey(pp => pp.PlayerId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<PlayerPoint>()
             .HasOne<Game>() // Game relationship

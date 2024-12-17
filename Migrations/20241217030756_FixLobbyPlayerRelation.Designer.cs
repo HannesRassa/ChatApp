@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace backEnd.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241215093013_FixGamePlayerRelationship")]
-    partial class FixGamePlayerRelationship
+    [Migration("20241217030756_FixLobbyPlayerRelation")]
+    partial class FixLobbyPlayerRelation
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -132,9 +132,6 @@ namespace backEnd.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("LobbyId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Password")
                         .HasColumnType("text");
 
@@ -143,8 +140,6 @@ namespace backEnd.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("LobbyId");
 
                     b.ToTable("Players");
                 });
@@ -194,13 +189,13 @@ namespace backEnd.Migrations
 
             modelBuilder.Entity("GamePlayer", b =>
                 {
-                    b.Property<int>("GamesId")
+                    b.Property<int>("GameId")
                         .HasColumnType("integer");
 
                     b.Property<int>("PlayersId")
                         .HasColumnType("integer");
 
-                    b.HasKey("GamesId", "PlayersId");
+                    b.HasKey("GameId", "PlayersId");
 
                     b.HasIndex("PlayersId");
 
@@ -220,6 +215,52 @@ namespace backEnd.Migrations
                     b.HasIndex("PlayersId");
 
                     b.ToTable("GroupPlayer");
+                });
+
+            modelBuilder.Entity("LobbyPlayer", b =>
+                {
+                    b.Property<int>("LobbyId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PlayersId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("LobbyId", "PlayersId");
+
+                    b.HasIndex("PlayersId");
+
+                    b.ToTable("LobbyPlayer");
+                });
+
+            modelBuilder.Entity("PlayerPoint", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("GameId1")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PlayerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Points")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId");
+
+                    b.HasIndex("GameId1");
+
+                    b.HasIndex("PlayerId");
+
+                    b.ToTable("PlayerPoints");
                 });
 
             modelBuilder.Entity("BackEnd.Models.Classes.Answer", b =>
@@ -260,14 +301,6 @@ namespace backEnd.Migrations
                     b.Navigation("Admin");
                 });
 
-            modelBuilder.Entity("BackEnd.Models.Classes.Player", b =>
-                {
-                    b.HasOne("BackEnd.Models.Classes.Lobby", null)
-                        .WithMany("Players")
-                        .HasForeignKey("LobbyId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("BackEnd.Models.Classes.Question", b =>
                 {
                     b.HasOne("BackEnd.Models.Classes.Game", null)
@@ -290,7 +323,7 @@ namespace backEnd.Migrations
                 {
                     b.HasOne("BackEnd.Models.Classes.Game", null)
                         .WithMany()
-                        .HasForeignKey("GamesId")
+                        .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -316,21 +349,52 @@ namespace backEnd.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("LobbyPlayer", b =>
+                {
+                    b.HasOne("BackEnd.Models.Classes.Lobby", null)
+                        .WithMany()
+                        .HasForeignKey("LobbyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BackEnd.Models.Classes.Player", null)
+                        .WithMany()
+                        .HasForeignKey("PlayersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PlayerPoint", b =>
+                {
+                    b.HasOne("BackEnd.Models.Classes.Game", null)
+                        .WithMany()
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BackEnd.Models.Classes.Game", null)
+                        .WithMany("PlayersPoints")
+                        .HasForeignKey("GameId1");
+
+                    b.HasOne("BackEnd.Models.Classes.Player", null)
+                        .WithMany()
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("BackEnd.Models.Classes.Game", b =>
                 {
                     b.Navigation("GameQuestions");
 
                     b.Navigation("GameRounds");
+
+                    b.Navigation("PlayersPoints");
                 });
 
             modelBuilder.Entity("BackEnd.Models.Classes.Group", b =>
                 {
                     b.Navigation("Answers");
-                });
-
-            modelBuilder.Entity("BackEnd.Models.Classes.Lobby", b =>
-                {
-                    b.Navigation("Players");
                 });
 
             modelBuilder.Entity("BackEnd.Models.Classes.Round", b =>
