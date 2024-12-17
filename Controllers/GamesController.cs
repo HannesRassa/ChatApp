@@ -26,20 +26,20 @@ namespace BackEnd.Controllers
             return Ok(game);
         }
 
-        [HttpGet("find-group/{roundNumber}/{playerId}")]
-        public async Task<IActionResult> FindGroupNumberIdByRoundNumberAndPlayerId([FromRoute] int roundNumber, [FromRoute] int playerId)
+        [HttpGet("find-group/{gameId}/{playerId}")]
+        public async Task<IActionResult> FindRoundAndGroupByGameIdAndPlayerId([FromRoute] int gameId, [FromRoute] int playerId)
         {
-            if (roundNumber <= 0 || playerId <= 0)
+            if (gameId <= 0 || playerId <= 0)
             {
-                return BadRequest("Invalid round number or player ID.");
+                return BadRequest("Invalid game ID or player ID.");
             }
 
-            // Fetch round and group information
-            var (roundId, groupId) = await repo.FindGroupNumberByRoundNumberAndPlayerId(roundNumber, playerId);
+            // Fetch round and group information using the repository method
+            var (roundId, groupId) = await repo.FindRoundAndGroupByGameIdAndPlayerId(gameId, playerId);
 
             if (roundId == null || groupId == null)
             {
-                return NotFound($"No group found for player ID {playerId} in round {roundNumber}.");
+                return NotFound($"No group found for player ID {playerId} in game ID {gameId}.");
             }
 
             // Return both the round ID and group ID as a JSON object

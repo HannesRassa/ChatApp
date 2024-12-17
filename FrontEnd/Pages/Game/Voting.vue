@@ -115,11 +115,11 @@ const fetchGroupData = async () => {
 // Submit Vote
 const voteForAnswer = async (answerId: number) => {
   try {
-    await axios.post(`http://localhost:5180/Backend/Vote`, {
+    await axios.post(`http://localhost:5180/Backend/PlayerPoints`, {
       playerId: playerId.value,
-      answerId,
-      groupId: groupID.value,
-      roundId: roundID.value,
+      gameId: gameId.value,
+      points: 100
+
     });
 
     votedAnswerId.value = answerId;

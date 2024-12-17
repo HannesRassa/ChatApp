@@ -60,7 +60,7 @@
       const response = await axios.get(
         `http://localhost:5180/Backend/Game/find-group/${gameId.value}/${playerId.value}`
       );
-      const { roundId, groupId } = response.data; // Assuming backend returns roundId and groupId
+      const { roundId, groupId } = response.data; 
   
       roundID.value = roundId;
       groupID.value = groupId;
@@ -73,41 +73,50 @@
   
   // Fetch the game ID for the player
   const fetchGameId = async () => {
+    if (!playerId.value) return;
+
     try {
-      const response = await axios.get(
+        const response = await axios.get(
         `http://localhost:5180/Backend/Game/Player/${playerId.value}`
-      );
-      gameId.value = response.data;
+        );
+        gameId.value = response.data;
     } catch (err) {
-      console.error("Failed to fetch game ID:", err);
+        console.error("Failed to fetch game ID:", err);
     }
-  };
+    };
+
   
   // Fetch game details
   const fetchGameDetails = async () => {
+    if (!gameId.value) return;
+
     try {
-      const response = await axios.get(
+        const response = await axios.get(
         `http://localhost:5180/Backend/Game/${gameId.value}`
-      );
-      gameDetails.value = response.data;
-  
-      timeLeft.value = gameDetails.value.timerForAnsweringInSec;
+        );
+        gameDetails.value = response.data;
+
+        timeLeft.value = gameDetails.value?.timerForAnsweringInSec || 30; // Default to 30 seconds
     } catch (err) {
-      console.error("Failed to fetch game details:", err);
+        console.error("Failed to fetch game details:", err);
     }
-  };
+    };
+
   
   // Fetch group data
   const fetchGroupData = async () => {
+    if (!groupID.value) return;
+
     try {
-      const response = await axios.get(
+        const response = await axios.get(
         `http://localhost:5180/Backend/Group/${groupID.value}`
-      );
-      currentGroup.value = response.data;
+        );
+        currentGroup.value = response.data;
     } catch (err) {
-      console.error("Failed to fetch group data:", err);
+        console.error("Failed to fetch group data:", err);
     }
-  };
+    };
+
   
   // Submit Answer
   const submitAnswer = async () => {
@@ -159,18 +168,34 @@
   // Lifecycle hooks
   onMounted(async () => {
     userStore.loadUser();
+    
+    // Check for logged-in user
     if (!userStore.userId) {
-      console.error("User ID is not set. Ensure the user is logged in.");
-      return;
+        console.error("User ID is not set. Ensure the user is logged in.");
+        return;
     }
-  
-    playerId.value = userStore.userId;
-  
-    await fetchGameId();
-    await fetchGameDetails();
-    await fetchCurrentGroupAndRound();
-    startTimer();
-  });
+
+    try {
+        playerId.value = userStore.userId;
+
+        // Fetch gameId, gameDetails, and group data sequentially
+        await fetchGameId(); // Fetch gameId first
+        if (!gameId.value) throw new Error("Game ID could not be retrieved.");
+
+        await fetchGameDetails(); // Fetch game details after gameId is available
+        if (!gameDetails.value) throw new Error("Game details could not be retrieved.");
+
+        await fetchCurrentGroupAndRound(); // Fetch group and round data
+        if (!currentGroup.value) throw new Error("Current group data could not be retrieved.");
+
+        timeLeft.value = gameDetails.value.timerForAnsweringInSec || 30; // Ensure timeLeft is set
+
+        startTimer(); // Start timer after all data is initialized
+    } catch (err) {
+        console.error("Error during initialization:", err);
+    }
+    });
+
   
   onUnmounted(() => stopTimer());
   </script>
