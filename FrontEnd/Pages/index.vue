@@ -284,8 +284,6 @@ export default defineComponent({
 });
 </script>
 
-
-
 <style scoped>
 .main-menu {
   display: flex;
@@ -294,40 +292,183 @@ export default defineComponent({
   justify-content: center;
   height: 100vh;
   text-align: center;
+  padding: 20px;
+  background-color: #f4f0ff; /* Light lavender background for the layout */
 }
 
 .top-right {
   position: absolute;
   top: 10px;
   right: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+button {
+  background-color: #7d3c98; /* Dark purple button */
+  color: white;
+  padding: 15px 50px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #5b2c6f; /* Slightly darker purple on hover */
 }
 
 .form-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 20px;
+  gap: 15px;
+  background-color: #e0d4f7; /* Light purple background for the form */
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-container h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #5b2c6f; /* Darker purple for headings */
+}
+
+.form-container div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #5b2c6f;
+}
+
+input {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input:focus {
+  border-color: #7d3c98;
+  outline: none;
 }
 
 .menu-options {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-top: 20px;
 }
 
-button {
-  padding: 10px 20px;
+.menu-options button {
+  background-color: #7d3c98;
+  color: white;
+  padding: 10px 30px;
+  border-radius: 8px;
   font-size: 16px;
-  cursor: pointer;
   transition: background-color 0.3s;
 }
 
-button:hover {
-  background-color: #f0f0f0;
+.menu-options button:hover {
+  background-color: #5b2c6f;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 40px;
+  right: 10px;
+  background-color: #e0d4f7; /* Light purple background */
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-menu button {
+  padding: 10px;
+  font-size: 14px;
+  background: none;
+  border: none;
+  text-align: left;
+  width: 100%;
+  color: #5b2c6f;
+  cursor: pointer;
+}
+
+.dropdown-menu button:hover {
+  background-color: #f4f0ff; /* Light lavender hover effect */
 }
 
 .error {
   color: red;
   font-size: 14px;
+  margin-top: 10px;
+}
+
+.question-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+  background-color: #e0d4f7;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.question-form label {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  font-weight: bold;
+  color: #5b2c6f;
+}
+
+.lobby-code-dropdown {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+  align-items: center;
+  background-color: #e0d4f7;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.lobby-code-dropdown label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #5b2c6f;
+}
+
+.lobby-code-dropdown input {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.lobby-code-dropdown button {
+  background-color: #7d3c98;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.lobby-code-dropdown button:hover {
+  background-color: #5b2c6f;
 }
 </style>
