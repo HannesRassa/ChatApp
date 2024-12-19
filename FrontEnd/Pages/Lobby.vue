@@ -1,51 +1,55 @@
 <template>
   <div class="flex-layout">
+    <!-- Main Section -->
     <div class="main">
       <div class="button-wrapper">
-        <button class="custom-style" @click="startGame">Start</button>
-        <button class="custom-style" @click="openPackages">Packages</button>
+        <button class="button-start" @click="startGame">Start</button>
+        <button class="button-secondary" @click="openPackages">Packages</button>
       </div>
 
+      <!-- Room Code Display -->
       <div class="roomCode-display">
-        {{ roomCode }}
+        Room Code: <span>{{ roomCode }}</span>
       </div>
 
-      <table class="users-table">
-        <thead>
-          <tr>
-            <th>User ID</th>
-            <th>Username</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="user in users" :key="user.id">
-            <td>{{ user.id }}</td>
-            <td>{{ user.username }}</td>
-            <td>{{ user.status }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- Players Table -->
+      <div class="table-container">
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>User ID</th>
+              <th>Username</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="user in users" :key="user.id">
+              <td>{{ user.id }}</td>
+              <td>{{ user.username }}</td>
+              <td>{{ user.status }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
+    <!-- Sidebar Settings -->
     <div class="sidebar">
-      <div class="settings-header">
-        <p>Settings</p>
-      </div>
+      <div class="settings-header">Settings</div>
 
-      <div class="rounds-settings">
-        <p>Rounds: {{ rounds }}</p>
-        <div class="rounds-controls">
-          <button class="custom-style" @click="decreaseRounds">-</button>
-          <button class="custom-style" @click="increaseRounds">+</button>
+      <div class="settings-section">
+        <p>Rounds: <strong>{{ rounds }}</strong></p>
+        <div class="controls">
+          <button @click="decreaseRounds">-</button>
+          <button @click="increaseRounds">+</button>
         </div>
       </div>
 
-      <div class="timer-settings">
-        <p>Timer: {{ roundTime }} sec</p>
-        <div class="timer-controls">
-          <button class="custom-style" @click="decreaseTime">-</button>
-          <button class="custom-style" @click="increaseTime">+</button>
+      <div class="settings-section">
+        <p>Timer: <strong>{{ roundTime }} sec</strong></p>
+        <div class="controls">
+          <button @click="decreaseTime">-</button>
+          <button @click="increaseTime">+</button>
         </div>
       </div>
     </div>

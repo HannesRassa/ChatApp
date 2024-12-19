@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "beV6M01Ho/s=",
+  "dgSpecHash": "TAfEN8KuZcM=",
   "success": true,
-  "projectFilePath": "C:\\TalTech\\3 Semester\\ISA 3\\ChatApp\\2.0\\itb2203-chatapp\\backEnd.csproj",
+  "projectFilePath": "C:\\TalTech\\3 Semester\\ISA 3\\ChatApp\\chatapp\\itb2203-chatapp\\backEnd.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ilian\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\ilian\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\8.0.0\\microsoft.aspnetcore.authentication.jwtbearer.8.0.0.nupkg.sha512",
