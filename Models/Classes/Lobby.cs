@@ -8,6 +8,8 @@ public class Lobby
     public int Id { get; init; }
     public int RoomCode { get; init; }
 
+    public int GameStatus {get;set;} // 0 - not Ready; 1 - Ready
+
     public int AdminId { get; init; } // Foreign key reference
     [ForeignKey("AdminId")]
     public Player Admin { get; init; } = null!;

@@ -25,12 +25,28 @@ namespace BackEnd.Controllers
             if (lobby == null) return NotFound();
             return Ok(lobby);
         }
+         [HttpGet("{id}/status")]
+        public async Task<IActionResult> GetLobbyStatusById([FromRoute] int id)
+        {
+            var lobby = await repo.GetLobbyById(id);
+            if (lobby == null) return NotFound();
+            return Ok(lobby.GameStatus);
+        }
 
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Lobby newLobby)
         {
             bool result = await repo.UpdateLobby(id, newLobby);
+            return result ? NoContent() : NotFound();
+        }
+
+        //Change game status[1-ready, 0-not ready]
+        [HttpPut("{id}/status/{status}")]
+        public async Task<IActionResult> UpdateGameStatus(int id, int status)
+        {
+            bool result = await repo.UpdateGameStatus(id, status);
+
             return result ? NoContent() : NotFound();
         }
 

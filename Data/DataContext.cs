@@ -25,10 +25,11 @@ public class DataContext : DbContext
             .HasForeignKey(r => r.GameId)
             .OnDelete(DeleteBehavior.Cascade);
 
+
         // Round -> Groups
         modelBuilder.Entity<Round>()
             .HasMany(r => r.Groups)
-            .WithOne(g => g.Round)
+            .WithOne()
             .HasForeignKey(g => g.RoundId)
             .OnDelete(DeleteBehavior.Cascade);
 
@@ -44,6 +45,13 @@ public class DataContext : DbContext
             .HasOne(g => g.Question)
             .WithMany()
             .OnDelete(DeleteBehavior.SetNull);
+
+
+        // Group -> Players (Many-to-Many)
+        modelBuilder.Entity<Group>()
+            .HasMany(g => g.Players)
+            .WithMany();
+
 
         // Lobby -> Players (Many-to-Many)
         modelBuilder.Entity<Lobby>()

@@ -132,7 +132,7 @@ const voteForAnswer = async (answerId: number) => {
 // Timer Logic
 const startTimer = () => {
   stopTimer();
-  timeLeft.value = gameDetails.value.timerForVotingInSec || 30; // Default 30 seconds
+  timeLeft.value = gameDetails.value.timerForVotingInSec || 3; // Default 30 seconds
   timer = window.setInterval(() => {
     if (timeLeft.value > 0) {
       timeLeft.value--;

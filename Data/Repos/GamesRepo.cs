@@ -158,6 +158,42 @@ public class GamesRepo(DataContext context)
 
         return players;
     }
+     //FIND GROUP BY ROUND NUMBER AND PLAYER ID
+    public async Task<int?> FindGroupNumberByGameIdAndRoundNumberAndPlayerId(int gameId, int roundNumber, int playerId)
+        {
+            if (gameId <= 0 || roundNumber <= 0 || playerId <= 0)
+            {
+                throw new ArgumentException("Invalid game ID, round number, or player ID.");
+            }
+
+            // Retrieve the game by GameId
+            var game = await context.Games
+                .Include(g => g.GameRounds)
+                    .ThenInclude(r => r.Groups)
+                        .ThenInclude(gr => gr.Players)
+                .FirstOrDefaultAsync(g => g.Id == gameId);
+
+            if (game == null)
+            {
+                return null; // No matching game found
+            }
+
+            // Find the round by RoundNumber
+            var round = game.GameRounds.FirstOrDefault(r => r.RoundNumber == roundNumber);
+
+            if (round == null)
+            {
+                return null; // No matching round found
+            }
+
+            // Find the group in the round containing the player
+            var group = round.Groups.FirstOrDefault(g => g.Players.Any(p => p.Id == playerId));
+
+            // Return the group number or null if no group found
+            return group?.GroupNumber;
+        }
+
+
     //FIND GROUP BY ROUND NUMBER AND PLAYER ID
     public async Task<(int? RoundId, int? GroupId)> FindRoundAndGroupByGameIdAndPlayerId(int gameId, int playerId)
     {

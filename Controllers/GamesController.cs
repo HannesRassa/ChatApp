@@ -26,25 +26,42 @@ namespace BackEnd.Controllers
             return Ok(game);
         }
 
-        [HttpGet("find-group/{gameId}/{playerId}")]
-        public async Task<IActionResult> FindRoundAndGroupByGameIdAndPlayerId([FromRoute] int gameId, [FromRoute] int playerId)
+        [HttpGet("find-group/{gameId}/{roundNumber}/{playerId}")]
+        public async Task<IActionResult> FindGroupNumberIdByGameIdAndRoundNumberAndPlayerId([FromRoute] int gameId, [FromRoute] int roundNumber, [FromRoute] int playerId)
         {
-            if (gameId <= 0 || playerId <= 0)
+            if (gameId <= 0 || roundNumber <= 0 || playerId <= 0)
             {
-                return BadRequest("Invalid game ID or player ID.");
+                return BadRequest("Invalid game ID, round number, or player ID.");
             }
 
-            // Fetch round and group information using the repository method
-            var (roundId, groupId) = await repo.FindRoundAndGroupByGameIdAndPlayerId(gameId, playerId);
-
-            if (roundId == null || groupId == null)
+            var groupId = await repo.FindGroupNumberByGameIdAndRoundNumberAndPlayerId(gameId, roundNumber, playerId);
+            if (groupId == null)
             {
-                return NotFound($"No group found for player ID {playerId} in game ID {gameId}.");
+                return NotFound($"No group found for player ID {playerId} in round {roundNumber} in game {gameId}.");
             }
 
-            // Return both the round ID and group ID as a JSON object
-            return Ok(new { roundId, groupId });
+            return Ok(groupId);
         }
+
+        // [HttpGet("find-group/{gameId}/{playerId}")]
+        // public async Task<IActionResult> FindRoundAndGroupByGameIdAndPlayerId([FromRoute] int gameId, [FromRoute] int playerId)
+        // {
+        //     if (gameId <= 0 || playerId <= 0)
+        //     {
+        //         return BadRequest("Invalid game ID or player ID.");
+        //     }
+
+        //     // Fetch round and group information using the repository method
+        //     var (roundId, groupId) = await repo.FindRoundAndGroupByGameIdAndPlayerId(gameId, playerId);
+
+        //     if (roundId == null || groupId == null)
+        //     {
+        //         return NotFound($"No group found for player ID {playerId} in game ID {gameId}.");
+        //     }
+
+        //     // Return both the round ID and group ID as a JSON object
+        //     return Ok(new { roundId, groupId });
+        // }
 
         [HttpGet("Player/{playerId}")]
         public async Task<IActionResult> GetGameIdByPlayerId([FromRoute] int playerId)
@@ -100,6 +117,7 @@ namespace BackEnd.Controllers
             var result = await repo.SaveGameToDb(newGame);
             return CreatedAtAction(nameof(SaveGame), new { newGame.Id }, result);
         }
+
         [HttpPost("{id}/add-round")]
         public async Task<IActionResult> AddRound(int id, [FromBody] Round newRound)
         {
@@ -109,7 +127,7 @@ namespace BackEnd.Controllers
             return Ok(updatedGame);
         }
 
-        
+
 
 
 
