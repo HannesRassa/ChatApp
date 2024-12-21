@@ -26,5 +26,13 @@ coverage
 *.njsproj
 *.sln
 *.sw?
-
 *.tsbuildinfo
+# Temporary build files
+*.cache
+*.json
+obj/
+bin/
+
+# NuGet
+*.nuget.*
+
