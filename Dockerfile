@@ -24,4 +24,4 @@ EXPOSE 80
 
 RUN addgroup -S runner && adduser -S runner -G runner
 USER runner
-ENTRYPOINT ["dotnet", "ChatApp.dll"]
+ENTRYPOINT ["dotnet", "backEnd.dll"]
