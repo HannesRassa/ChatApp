@@ -30,6 +30,7 @@ coverage
 # Temporary build files
 *.cache
 *.json
+*.exe
 obj/
 bin/
 
