@@ -7,7 +7,7 @@
         <button
           class="button-secondary"
           :class="{ 'green-button': gameStatus === 1 }"
-          @click="openPackages"
+          @click="togglePackageModal"
         >
           Packages
         </button>
@@ -62,6 +62,20 @@
           <button @click="increaseTime">+</button>
         </div>
       </div>
+      <div v-if="showPackageModal" class="modal">
+      <div class="modal-content">
+        <h3>Select Question Package</h3>
+        <input
+          type="text"
+          v-model="selectedPackage"
+          placeholder="Enter package name"
+        />
+        <div class="modal-buttons">
+          <button @click="togglePackageModal">Cancel</button>
+          <button @click="confirmPackage">Confirm</button>
+        </div>
+      </div>
+    </div>
     </div>
   </div>
 </template>
@@ -106,11 +120,13 @@ let roomCode = ref<string | null>(null);
 const roomId = ref<number | null>(null);
 const rounds = ref<number>(3);
 const roundTime = ref<number>(60);
-const selectedPackage = ref<null | string>(null);
 const pollInterval = ref<null | number>(null);
 const loading = ref<boolean>(false);
 const groupCount = ref<number>(2);
 let gameStatus = ref<number | null>(null);
+const showPackageModal = ref(false);
+const selectedPackage = ref("");
+
 
 // Fetch all players initially
 const fetchUsers = async (): Promise<void> => {
@@ -237,19 +253,13 @@ const startGame = async (): Promise<void> => {
     alert(`request data : ${JSON.stringify(users.value)}, ${rounds.value}, ${roundTime.value}, ${groupCount.value}`)
     console.log("Request body for creating the game:", JSON.stringify(requestBody,null,2));
 
-    const response = await axiosInstance.post("Game/create", requestBody);
+    const response = await axiosInstance.post(
+      `Game/create?questionPackName=${selectedPackage.value}`,
+      requestBody
+    );
 
     console.log("Game creation response:", response.data);
 
-    // const firstRound = response.data.gameRounds[0];
-    // const firstGroup = firstRound.groups[0];
-
-    // if (!firstRound || !firstGroup) {
-    //   console.error("No round or group data available for redirection.");
-    //   return;
-    // }
-
-    //change gameStatus to "1"
     await axios.put(
       `https://localhost:7269/Backend/Lobby/${roomId.value}/status/1`
     );
@@ -261,8 +271,14 @@ const startGame = async (): Promise<void> => {
   }
 };
 
-const openPackages = (): void => {
-  console.log("Opening Packages...");
+// Modal handlers
+const togglePackageModal = () => {
+  showPackageModal.value = !showPackageModal.value;
+};
+
+const confirmPackage = () => {
+  togglePackageModal();
+  console.log("Selected package:", selectedPackage.value);
 };
 
 const increaseRounds = (): void => {
@@ -421,5 +437,31 @@ button:hover {
   justify-content: center;
   align-items: center;
   border-radius: 50%;
+}
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background: rgb(255, 255, 255);
+  color: #5b2c6f;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  text-align: center;
+}
+
+.modal-buttons {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-around;
 }
 </style> 
