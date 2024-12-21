@@ -1,6 +1,6 @@
 variables:
   DOCKER_DRIVER: overlay2
-  DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_TLS_CERTDIR: ""
   # Minu konteineri registri aadress AWS-s (Amazon Elastic Container Registry)
   # Asenda MINU_REGISTRI_NIMI
   DOCKER_REGISTRY: 662032419283.dkr.ecr.eu-north-1.amazonaws.com/chatapp
@@ -9,10 +9,9 @@ stages:
   - build
 
 build:back-end:
-  image:
-    name: docker:27.3.1-alpine3.20
+  image: docker:27.3.1-alpine3.20
   services:
-    - docker:27.3.1-alpine3.20
+    - docker:27.3.1-dind
   only:
     - master
     - main
@@ -26,16 +25,13 @@ build:back-end:
   after_script:
     - docker logout ${DOCKER_REGISTRY}
   stage: build
-  artifacts:
-    paths:
   tags:
     - itb2203
 
 build:front-end:
-  image:
-    name: docker:27.3.1-alpine3.20
+  image: docker:27.3.1-alpine3.20
   services:
-    - docker:27.3.1-alpine3.20
+    - docker:27.3.1-dind
   only:
     - master
     - main
