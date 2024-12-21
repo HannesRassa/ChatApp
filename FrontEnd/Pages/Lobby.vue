@@ -85,7 +85,7 @@ const fetchLoggedInUserGameRoomId = async (): Promise<number | null> => {
     const userId = userStore.userId;
     console.log(userId);
     const response = await axios.get(
-      `http://localhost:5180/Backend/Lobby/Player/${userId}`,
+      `https://localhost:7269/Backend/Lobby/Player/${userId}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -116,7 +116,7 @@ let gameStatus = ref<number | null>(null);
 const fetchUsers = async (): Promise<void> => {
   try {
     const response = await axios.get(
-      `http://localhost:5180/Backend/Lobby/${roomId.value}`,
+      `https://localhost:7269/Backend/Lobby/${roomId.value}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -171,7 +171,7 @@ const fetchGameStatus = async (): Promise<void> => {
     }
 
     const response = await axios.get(
-      `http://localhost:5180/Backend/Lobby/${roomId.value}/status`
+      `https://localhost:7269/Backend/Lobby/${roomId.value}/status`
     );
 
     gameStatus.value = response.data.status;
@@ -251,7 +251,7 @@ const startGame = async (): Promise<void> => {
 
     //change gameStatus to "1"
     await axios.put(
-      `http://localhost:5180/Backend/Lobby/${roomId.value}/status/1`
+      `https://localhost:7269/Backend/Lobby/${roomId.value}/status/1`
     );
   } catch (error) {
     console.error("Error starting the game:", error);

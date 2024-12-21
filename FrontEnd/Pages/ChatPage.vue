@@ -29,7 +29,7 @@ const router = useRouter();
 // Fetch games from the API
 const fetchGames = async () => {
   try {
-    const response = await fetch("http://localhost:5180/backend/game");
+    const response = await fetch("https://localhost:7269/backend/game");
     if (!response.ok) throw new Error("Failed to fetch games.");
     games.value = await response.json();
   } catch (err) {

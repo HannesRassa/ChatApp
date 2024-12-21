@@ -43,7 +43,7 @@
       // Fetch all game rooms
       const fetchGameRooms = async () => {
         try {
-          const response = await fetch('http://localhost:5180/backend/gameroom');
+          const response = await fetch('https://localhost:7269/backend/gameroom');
           if (!response.ok) throw new Error("Failed to fetch game rooms.");
           gameRooms.value = await response.json();
         } catch (err) {
@@ -56,7 +56,7 @@
         const adminId = prompt("Enter your Player ID to create a game room:");
         if (adminId) {
           try {
-            const response = await fetch('http://localhost:5180/backend/gameroom', {
+            const response = await fetch('https://localhost:7269/backend/gameroom', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -76,7 +76,7 @@
         const playerId = prompt("Enter your Player ID to join the game room:");
         if (playerId) {
           try {
-            const response = await fetch('http://localhost:5180/backend/gameroom/joinroom', {
+            const response = await fetch('https://localhost:7269/backend/gameroom/joinroom', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',

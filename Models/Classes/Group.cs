@@ -18,4 +18,3 @@ public record Group
     // List of answers provided by players
     public List<Answer>? Answers { get; set; } = new();
 }
-

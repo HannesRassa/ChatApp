@@ -59,7 +59,7 @@ const playerPoint = ref({
 
 const submitPlayerPoint = async () => {
   try {
-    const response = await axios.post("http://localhost:5180/Backend/PlayerPoint", {
+    const response = await axios.post("https://localhost:7269/Backend/PlayerPoint", {
       playerId: playerPoint.value.playerId,
       gameId: playerPoint.value.gameId,
       points: playerPoint.value.points,
@@ -75,7 +75,7 @@ const submitPlayerPoint = async () => {
 const fetchPlayerById = async () => {
   const userId = userStore.userId;
   try {
-    const response = await axios.get(`http://localhost:5180/Backend/Player/${userId}`);
+    const response = await axios.get(`https://localhost:7269/Backend/Player/${userId}`);
     currentPlayer.value = response.data;
   } catch (error) {
     console.error("Error fetching player data:", error);

@@ -79,7 +79,7 @@ const fetchGameId = async () => {
   if (!playerId.value) return;
   try {
     const response = await axios.get(
-      `http://localhost:5180/Backend/Game/Player/${playerId.value}`
+      `https://localhost:7269/Backend/Game/Player/${playerId.value}`
     );
     gameId.value = response.data;
     console.log(`fetched game id ${gameId.value}`);
@@ -93,7 +93,7 @@ const findCurrentGroup = async () => {
   const userId = userStore.userId;
   try {
     const response = await axios.get(
-      `http://localhost:5180/Backend/Game/find-group/${gameId.value}/${currentRoundIndex}/${userId}`
+      `https://localhost:7269/Backend/Game/find-group/${gameId.value}/${currentRoundIndex}/${userId}`
     );
     groupID.value = response.data; // Ensure this sets a valid value
     console.log(`Group ID set to: ${groupID.value}`);
@@ -109,7 +109,7 @@ const fetchGameDetails = async () => {
 
   try {
     const response = await axios.get(
-      `http://localhost:5180/Backend/Game/${gameId.value}`
+      `https://localhost:7269/Backend/Game/${gameId.value}`
     );
     gameDetails.value = response.data;
 
@@ -133,7 +133,7 @@ const fetchGroupData = async () => {
 
     if (!groupID.value) throw new Error("Group ID is not defined.");
     const response = await axios.get(
-      `http://localhost:5180/Backend/Group/${groupID.value}`
+      `https://localhost:7269/Backend/Group/${groupID.value}`
     );
     currentGroup.value = response.data;
     roundID = currentGroup.value.roundId;
@@ -186,7 +186,7 @@ const submitAnswer = async () => {
   };
   console.log(`submit ans post request: ${JSON.stringify(request,null,2)}`);
   try {
-    await axios.post(`http://localhost:5180/Backend/Answer/`, request);
+    await axios.post(`https://localhost:7269/Backend/Answer/`, request);
     submittedAnswer.value = answer.value;
     isAnswerSubmitted.value = true;
   } catch (err) {

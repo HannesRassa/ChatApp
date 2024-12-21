@@ -84,7 +84,7 @@ const fetchGameData = async () => {
   console.log("Fetching data for Game ID:", id);
   try {
     const response = await axios.get(
-      `http://localhost:5180/Backend/Game/${id}`
+      `https://localhost:7269/Backend/Game/${id}`
     );
     console.log("Response data:", response.data);
     gameData.value = response.data;
@@ -96,7 +96,7 @@ const fetchGameData = async () => {
 
 const fetchAllQuestionIds = async () => {
   try {
-    const response = await axios.get(`http://localhost:5180/Backend/question/`);
+    const response = await axios.get(`https://localhost:7269/Backend/question/`);
     console.log("Fetched question IDs:", response.data);
     questionIds.value = response.data.map((question) => question.id);
     await fetchRandomQuestion();
@@ -116,7 +116,7 @@ const fetchRandomQuestion = async () => {
   console.log("Fetching question with ID:", randomId);
   try {
     const response = await axios.get(
-      `http://localhost:5180/Backend/question/${randomId}`
+      `https://localhost:7269/Backend/question/${randomId}`
     );
     console.log("Fetched question:", response.data);
     selectedQuestion.value = response.data;

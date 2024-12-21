@@ -215,7 +215,7 @@ export default defineComponent({
       }
 
       axios
-        .post("http://localhost:5180/Backend/Lobby", userStore.userId, {
+        .post("https://localhost:7269/Backend/Lobby", userStore.userId, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -241,7 +241,7 @@ export default defineComponent({
       try {
         console.log(JSON.stringify(this.questionText));
         const response = await axios.post(
-          "http://localhost:5180/Backend/Question",
+          "https://localhost:7269/Backend/Question",
           {
             questionText: this.questionText,
           }

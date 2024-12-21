@@ -44,7 +44,7 @@
     try {
       loading.value = true;
       const response = await axios.get(
-        `http://localhost:5180/Backend/Group/${groupID}`
+        `https://localhost:7269/Backend/Group/${groupID}`
       );
       group.value = response.data;
     } catch (err) {
@@ -63,7 +63,7 @@
     }
   
     try {
-      await axios.post(`http://localhost:5180/Backend/Game/submit`, {
+      await axios.post(`https://localhost:7269/Backend/Game/submit`, {
         roundID,
         groupID,
         answer: answer.value,

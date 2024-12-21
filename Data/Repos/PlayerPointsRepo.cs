@@ -45,4 +45,3 @@ public class PlayerPointsRepo(DataContext context)
         return changesCount == 1;
     }
 }
-

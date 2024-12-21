@@ -1,4 +1,3 @@
-
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BackEnd.Models.Classes;
@@ -32,5 +31,3 @@ public class Lobby
         public int PlayerId { get; set; }
         public int RoomCode { get; set; }
     }
-
-

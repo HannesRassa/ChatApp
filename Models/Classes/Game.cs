@@ -31,4 +31,3 @@ namespace BackEnd.Models.Classes
         public int PlayersPerGroup { get; set; } = 2;
     }
 }
-

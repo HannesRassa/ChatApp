@@ -36,7 +36,7 @@ export default defineComponent({
   methods: {
     async fetchQuestions() {
       try {
-        const response = await axios.get('http://localhost:5180/Backend/Question'); 
+        const response = await axios.get('https://localhost:7269/Backend/Question'); 
         this.questions = response.data;
         console.log('Fetched questions:', this.questions); 
       } catch (error) {

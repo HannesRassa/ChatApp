@@ -74,7 +74,7 @@ const gameId = ref<number | null>(null);
 const fetchGameId = async () => {
   try {
     const response = await axios.get(
-      `http://localhost:5180/Backend/Game/Player/${playerId.value}`
+      `https://localhost:7269/Backend/Game/Player/${playerId.value}`
     );
     gameId.value = response.data;
     localStorage.setItem("currentGameId", gameId.value.toString());
@@ -87,7 +87,7 @@ const fetchGameId = async () => {
 const fetchGameDetails = async () => {
   try {
     const response = await axios.get(
-      `http://localhost:5180/Backend/Game/${gameId.value}`
+      `https://localhost:7269/Backend/Game/${gameId.value}`
     );
     gameDetails.value = response.data;
   } catch (err) {
@@ -116,7 +116,7 @@ const fetchGameDetails = async () => {
 // const fetchGroupData = async () => {
 //   try {
 //     const response = await axios.get(
-//       `http://localhost:5180/Backend/Group/${groupID.value}`
+//       `https://localhost:7269/Backend/Group/${groupID.value}`
 //     );
 //     currentGroup.value = response.data;
 
@@ -136,7 +136,7 @@ const fetchGameDetails = async () => {
 // Submit Vote
 const voteForAnswer = async (answerId: number) => {
   try {
-    await axios.post(`http://localhost:5180/Backend/PlayerPoints`, {
+    await axios.post(`https://localhost:7269/Backend/PlayerPoints`, {
       playerId: playerId.value,
       gameId: gameId.value,
       points: 100,

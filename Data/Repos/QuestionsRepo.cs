@@ -40,4 +40,3 @@ public class QuestionsRepo(DataContext context)
         return changesCount == 1;
     }
 }
-
