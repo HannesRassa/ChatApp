@@ -7,8 +7,9 @@
 
     <!-- Question and Answers -->
     <div class="question-section">
-      <h2>Round {{ roundID }} - Group {{ groupID }}</h2>
+      <h2>Round {{ roundIndex }} - Group {{ groupIndex }}</h2>
       <p class="question">{{ currentGroup?.question?.questionText }}</p>
+      <div><button @click="skipToNextGroup">Next</button></div>
 
       <div v-if="currentGroup?.answers?.length > 0" class="answers">
         <h3>Answers:</h3>
@@ -45,19 +46,17 @@ import { ref, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import { useUserStore } from "@/stores/userStore";
-import Answering from "./Answering.vue";
 
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 
 // Game & Group Details
-let roundID = ref<number>(133722869); // Start with Round 1
-const groupID = ref<number>(133722869); // Start with Group 1
-const currentGroup = ref<any>(null);
-const gameDetails = ref<any>(null);
-const Questions = ref<any[]>([]);
-const answers = ref<any[]>([]);
+let roundIndex = ref<number | null>(1);
+let groupIndex = ref<number | null>(1);
+
+let currentGroup = ref<any>(null);
+let gameDetails = ref<any>(null);
 
 // Voting States
 const hasVoted = ref<boolean>(false);
@@ -84,62 +83,55 @@ const fetchGameId = async () => {
   }
 };
 
-// Fetch Game Detailss
+// Fetch Game Details
 const fetchGameDetails = async () => {
   try {
     const response = await axios.get(
       `http://localhost:5180/Backend/Game/${gameId.value}`
     );
-
-    return response.data;
+    gameDetails.value = response.data;
   } catch (err) {
     console.error("Failed to fetch game details:", err);
   }
 };
 
-// Fetch all questions from the game
-const findAllGameQuestions = () => {
-  Questions.value = [];
-  gameDetails.value.gameRounds.forEach((round: any) => {
-    round.groups.forEach((group: any) => {
-      Questions.value.push(group.question);
-    });
-  });
-  console.log(JSON.stringify(Questions.value, null, 2));
-};
+// const findFirstRoundNGroupData = async () => {
+//   if (!gameDetails.value || !gameDetails.value.gameRounds) {
+//     console.error("gameDetails or gameRounds is not defined.");
+//     return;
+//   }
 
-//Find All Answers and save them to a variable
-const extractAnswersFromGameDetails = (): void => {
-  console.log(
-      "Fetched gameDetails:",
-      JSON.stringify(gameDetails.value, null, 2)
-    );
-  if (!gameDetails || !gameDetails.value?.gameRounds) {
-    console.error("gameDetails or gameRounds is undefined:", gameDetails);
-    return;
-  }
-  if (!gameDetails) {
-    console.log(`game Details incorrect${gameDetails}`);
-  }
+//   const firstRound = gameDetails.value.gameRounds[0];
+//   if (!firstRound || !firstRound.groups || firstRound.groups.length === 0) {
+//     console.error("No groups available in the first round.");
+//     return;
+//   }
 
-  answers.value = []; // Clear the previous answers
-  gameDetails.value?.gameRounds.forEach((round: any) => {
-    console.log(`Round ${round.roundNumber}:`);
-    round.groups.forEach((group: any) => {
-      console.log(`Group ${group.groupNumber}:`);
-      group.answers.forEach((answer: any) => {
-        console.log(`Answer ID ${answer.id}: ${answer.answerText}`);
-        answers.value.push(answer); // Save each answer to the answers array
-      });
-    });
-  });
-  console.log(`Found Answers ${JSON.stringify(answers.value, null, 2)}`);
-};
+//   roundIndex.value = firstRound.roundNumber;
+//   groupIndex.value = firstRound.groups[0].groupNumber;
+//   currentGroup.value = firstRound.groups[0];
+// };
 
-const findFirstRoundAndGroupId()=>{
-  roundID = gameDetails.value.gameRounds[0].id;
-  groupID = gameDetails.value.gameRounds[0].id;
-};
+// Fetch Group Data
+// const fetchGroupData = async () => {
+//   try {
+//     const response = await axios.get(
+//       `http://localhost:5180/Backend/Group/${groupID.value}`
+//     );
+//     currentGroup.value = response.data;
+
+//     // Check if the current player participated
+//     isParticipant.value = currentGroup.value.players.some(
+//       (player: any) => player.id === playerId.value
+//     );
+
+//     // Reset voting state
+//     hasVoted.value = false;
+//     votedAnswerId.value = null;
+//   } catch (err) {
+//     console.error("Failed to fetch group data:", err);
+//   }
+// };
 
 // Submit Vote
 const voteForAnswer = async (answerId: number) => {
@@ -160,13 +152,13 @@ const voteForAnswer = async (answerId: number) => {
 // Timer Logic
 const startTimer = () => {
   stopTimer();
-  timeLeft.value = gameDetails.value.timerForVotingInSec || 9999; // Default 10 seconds
+  timeLeft.value = gameDetails.value.timerForVotingInSec || 999999; // Default 30 seconds
   timer = window.setInterval(() => {
     if (timeLeft.value > 0) {
       timeLeft.value--;
     } else {
       stopTimer();
-      // skipToNextGroup();
+      skipToNextGroup();
     }
   }, 1000);
 };
@@ -179,36 +171,57 @@ const stopTimer = () => {
 };
 
 // Navigate to Next Group
-const skipToNextGroup = () => {
-  const currentRound = gameDetails.value?.gameRounds.find(
-    (round: any) => round.id === roundID.value
+const skipToNextGroup = async () => {
+  if (!gameDetails.value || !gameDetails.value.gameRounds) {
+    console.error("Game details or game rounds are not available.");
+    return;
+  }
+  // Find the current round using roundNumber
+  const currentRound = gameDetails.value.gameRounds.find(
+    (round: { roundNumber: globalThis.Ref<number, number> }) =>
+      round.roundNumber === roundIndex
   );
+  // console.log(`179 STNG gamedata: ${JSON.stringify(gameDetails.value,null,2)}`);
 
+  console.log(`179 STNG currendRound: ${JSON.stringify(currentRound,null,2)}`);
+  console.log(`179 STNG roundIndex: ${roundIndex.value}`);
+
+  // Extract groups from the current round
   const currentGroups = currentRound?.groups || [];
+
+  // Find the index of the current group using groupNumber
   const currentGroupIndex = currentGroups.findIndex(
-    (group: any) => group.id === groupID.value
+    (group: { groupNumber: globalThis.Ref<number, number> }) =>
+      group.groupNumber === groupIndex
   );
 
   if (currentGroupIndex < currentGroups.length - 1) {
-    // Move to next group in the same round
-    groupID.value = currentGroups[currentGroupIndex + 1].id;
+    // Move to the next group within the same round
+    groupIndex = currentGroups[currentGroupIndex + 1].groupNumber;
   } else {
-    // Move to first group of the next round
-    const nextRoundIndex = gameDetails.value?.gameRounds.findIndex(
-      (round: any) => round.id === roundID.value
+    // Move to the first group of the next round
+    const nextRoundIndex = gameDetails.value.gameRounds.findIndex(
+      (round: { roundNumber: globalThis.Ref<number, number> }) =>
+        round.roundNumber === roundIndex
     );
 
     if (nextRoundIndex < gameDetails.value.gameRounds.length - 1) {
-      roundID.value = gameDetails.value.gameRounds[nextRoundIndex + 1].id;
-      groupID.value =
-        gameDetails.value.gameRounds[nextRoundIndex + 1]?.groups[0]?.id;
+      // Increment roundIndex to move to the next round
+      roundIndex = gameDetails.value.gameRounds[nextRoundIndex + 1].roundNumber;
+
+      // Set groupIndex to the first group of the new round
+      groupIndex =
+        gameDetails.value.gameRounds[nextRoundIndex + 1]?.groups[0]
+          ?.groupNumber || 1;
     } else {
+      // No more rounds left
       console.log("Voting complete! Redirect to summary.");
       router.push("/Game/Summary");
       return;
     }
   }
 
+  // fetchGroupData();
   startTimer();
 };
 
@@ -223,12 +236,23 @@ onMounted(async () => {
   playerId.value = userStore.userId;
 
   await fetchGameId();
-  if (!gameId.value) return;
+  if (!gameId.value) {
+    console.error("Game ID not available.");
+    return;
+  }
 
-  gameDetails.value = await fetchGameDetails();
-  findAllGameQuestions();
-  extractAnswersFromGameDetails();
-  startTimer();
+  await fetchGameDetails();
+  if (!gameDetails.value) {
+    console.error("Game details not available.");
+    return;
+  }
+
+  await skipToNextGroup();
+  // await findFirstRoundNGroupData();
+
+  if (roundIndex.value !== null && groupIndex.value !== null) {
+    startTimer();
+  }
 });
 
 onUnmounted(() => {
