@@ -68,7 +68,7 @@ const answer = ref<string>("");
 const isAnswerSubmitted = ref<boolean>(false);
 const submittedAnswer = ref<string>("");
 
-//othersf
+//other variables
 const loading = ref<boolean>(false);
 const error = ref<string | null>(null);
 
@@ -180,8 +180,8 @@ const submitAnswer = async () => {
   const request = {
     groupId: groupID.value,
     playerId: playerId.value,
-    questionId: currentGroup.value.question.id,
-    roundId: roundID.value,
+    question: currentGroup.value.question,
+    roundId: roundID,
     answerText: answer.value,
   };
   console.log(`submit ans post request: ${JSON.stringify(request,null,2)}`);

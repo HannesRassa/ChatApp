@@ -1,58 +1,63 @@
 <template>
-    <div class="voting-container">
-      <!-- Timer -->
-      <div class="timer">
-        <h2>Voting Time: {{ timeLeft }} seconds</h2>
-      </div>
-  
-      <!-- Question and Answers -->
-      <div class="question-section">
-        <h2>Round {{ roundID }} - Group {{ groupID }}</h2>
-        <p class="question">{{ currentGroup?.question?.questionText }}</p>
-  
-        <div v-if="currentGroup?.answers?.length > 0" class="answers">
-          <h3>Answers:</h3>
-          <div
-            v-for="answer in currentGroup.answers"
-            :key="answer.id"
-            class="answer-card"
-            :class="{ 'voted': votedAnswerId === answer.id }"
-          >
-            <p>{{ answer.answerText }}</p>
-            <button
-              v-if="!isParticipant && !hasVoted"
-              @click="voteForAnswer(answer.id)"
-            >
-              Vote
-            </button>
-            <span v-if="votedAnswerId === answer.id">You voted for this answer</span>
-          </div>
-        </div>
-        <p v-else>No answers submitted for this group.</p>
-      </div>
-  
-      <!-- Voting Progress -->
-      <div class="progress">
-        <button @click="skipToNextGroup" v-if="timeLeft === 0">Next</button>
-      </div>
+  <div class="voting-container">
+    <!-- Timer -->
+    <div class="timer">
+      <h2>Voting Time: {{ timeLeft }} seconds</h2>
     </div>
-  </template>
-  
-  <script lang="ts" setup>
+
+    <!-- Question and Answers -->
+    <div class="question-section">
+      <h2>Round {{ roundID }} - Group {{ groupID }}</h2>
+      <p class="question">{{ currentGroup?.question?.questionText }}</p>
+
+      <div v-if="currentGroup?.answers?.length > 0" class="answers">
+        <h3>Answers:</h3>
+        <div
+          v-for="answer in currentGroup.answers"
+          :key="answer.id"
+          class="answer-card"
+          :class="{ voted: votedAnswerId === answer.id }"
+        >
+          <p>{{ answer.answerText }}</p>
+          <button
+            v-if="!isParticipant && !hasVoted"
+            @click="voteForAnswer(answer.id)"
+          >
+            Vote
+          </button>
+          <span v-if="votedAnswerId === answer.id"
+            >You voted for this answer</span
+          >
+        </div>
+      </div>
+      <p v-else>No answers submitted for this group.</p>
+    </div>
+
+    <!-- Voting Progress -->
+    <div class="progress">
+      <button @click="skipToNextGroup" v-if="timeLeft === 0">Next</button>
+    </div>
+  </div>
+</template>
+
+<script lang="ts" setup>
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import { useUserStore } from "@/stores/userStore";
+import Answering from "./Answering.vue";
 
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 
 // Game & Group Details
-const roundID = ref<number>(1); // Start with Round 1
-const groupID = ref<number>(1); // Start with Group 1
+let roundID = ref<number>(133722869); // Start with Round 1
+const groupID = ref<number>(133722869); // Start with Group 1
 const currentGroup = ref<any>(null);
 const gameDetails = ref<any>(null);
+const Questions = ref<any[]>([]);
+const answers = ref<any[]>([]);
 
 // Voting States
 const hasVoted = ref<boolean>(false);
@@ -79,37 +84,61 @@ const fetchGameId = async () => {
   }
 };
 
-// Fetch Game Details
+// Fetch Game Detailss
 const fetchGameDetails = async () => {
   try {
     const response = await axios.get(
       `http://localhost:5180/Backend/Game/${gameId.value}`
     );
-    gameDetails.value = response.data;
+
+    return response.data;
   } catch (err) {
     console.error("Failed to fetch game details:", err);
   }
 };
 
-// Fetch Group Data
-const fetchGroupData = async () => {
-  try {
-    const response = await axios.get(
-      `http://localhost:5180/Backend/Group/${groupID.value}`
-    );
-    currentGroup.value = response.data;
+// Fetch all questions from the game
+const findAllGameQuestions = () => {
+  Questions.value = [];
+  gameDetails.value.gameRounds.forEach((round: any) => {
+    round.groups.forEach((group: any) => {
+      Questions.value.push(group.question);
+    });
+  });
+  console.log(JSON.stringify(Questions.value, null, 2));
+};
 
-    // Check if the current player participated
-    isParticipant.value = currentGroup.value.players.some(
-      (player: any) => player.id === playerId.value
+//Find All Answers and save them to a variable
+const extractAnswersFromGameDetails = (): void => {
+  console.log(
+      "Fetched gameDetails:",
+      JSON.stringify(gameDetails.value, null, 2)
     );
-
-    // Reset voting state
-    hasVoted.value = false;
-    votedAnswerId.value = null;
-  } catch (err) {
-    console.error("Failed to fetch group data:", err);
+  if (!gameDetails || !gameDetails.value?.gameRounds) {
+    console.error("gameDetails or gameRounds is undefined:", gameDetails);
+    return;
   }
+  if (!gameDetails) {
+    console.log(`game Details incorrect${gameDetails}`);
+  }
+
+  answers.value = []; // Clear the previous answers
+  gameDetails.value?.gameRounds.forEach((round: any) => {
+    console.log(`Round ${round.roundNumber}:`);
+    round.groups.forEach((group: any) => {
+      console.log(`Group ${group.groupNumber}:`);
+      group.answers.forEach((answer: any) => {
+        console.log(`Answer ID ${answer.id}: ${answer.answerText}`);
+        answers.value.push(answer); // Save each answer to the answers array
+      });
+    });
+  });
+  console.log(`Found Answers ${JSON.stringify(answers.value, null, 2)}`);
+};
+
+const findFirstRoundAndGroupId()=>{
+  roundID = gameDetails.value.gameRounds[0].id;
+  groupID = gameDetails.value.gameRounds[0].id;
 };
 
 // Submit Vote
@@ -118,8 +147,7 @@ const voteForAnswer = async (answerId: number) => {
     await axios.post(`http://localhost:5180/Backend/PlayerPoints`, {
       playerId: playerId.value,
       gameId: gameId.value,
-      points: 100
-
+      points: 100,
     });
 
     votedAnswerId.value = answerId;
@@ -132,13 +160,13 @@ const voteForAnswer = async (answerId: number) => {
 // Timer Logic
 const startTimer = () => {
   stopTimer();
-  timeLeft.value = gameDetails.value.timerForVotingInSec || 3; // Default 30 seconds
+  timeLeft.value = gameDetails.value.timerForVotingInSec || 9999; // Default 10 seconds
   timer = window.setInterval(() => {
     if (timeLeft.value > 0) {
       timeLeft.value--;
     } else {
       stopTimer();
-      skipToNextGroup();
+      // skipToNextGroup();
     }
   }, 1000);
 };
@@ -181,7 +209,6 @@ const skipToNextGroup = () => {
     }
   }
 
-  fetchGroupData();
   startTimer();
 };
 
@@ -198,8 +225,9 @@ onMounted(async () => {
   await fetchGameId();
   if (!gameId.value) return;
 
-  await fetchGameDetails();
-  await fetchGroupData();
+  gameDetails.value = await fetchGameDetails();
+  findAllGameQuestions();
+  extractAnswersFromGameDetails();
   startTimer();
 });
 
@@ -312,4 +340,3 @@ button:hover {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 </style>
-  

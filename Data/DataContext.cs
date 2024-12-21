@@ -18,6 +18,13 @@ public class DataContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
+        //Answer -> Questions
+        modelBuilder.Entity<Answer>()
+        .HasOne(a => a.Question)
+        .WithMany()
+        .OnDelete(DeleteBehavior.Cascade);
+
         // Game -> Rounds
         modelBuilder.Entity<Game>()
             .HasMany(g => g.GameRounds)
