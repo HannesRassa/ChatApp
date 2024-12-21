@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace backEnd.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateGameToWork : Migration
+    public partial class FixLobbyPlayerRelation : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -51,8 +51,8 @@ namespace backEnd.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    GameId = table.Column<int>(type: "integer", nullable: false),
-                    GameId1 = table.Column<int>(type: "integer", nullable: false)
+                    RoundNumber = table.Column<int>(type: "integer", nullable: false),
+                    GameId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -60,12 +60,6 @@ namespace backEnd.Migrations
                     table.ForeignKey(
                         name: "FK_Rounds_Games_GameId",
                         column: x => x.GameId,
-                        principalTable: "Games",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Rounds_Games_GameId1",
-                        column: x => x.GameId1,
                         principalTable: "Games",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -77,8 +71,8 @@ namespace backEnd.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    GroupNumber = table.Column<int>(type: "integer", nullable: false),
                     RoundId = table.Column<int>(type: "integer", nullable: false),
-                    RoundId1 = table.Column<int>(type: "integer", nullable: false),
                     QuestionId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
@@ -96,12 +90,6 @@ namespace backEnd.Migrations
                         principalTable: "Rounds",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Groups_Rounds_RoundId1",
-                        column: x => x.RoundId1,
-                        principalTable: "Rounds",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -111,11 +99,10 @@ namespace backEnd.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     GroupId = table.Column<int>(type: "integer", nullable: false),
-                    GroupId1 = table.Column<int>(type: "integer", nullable: false),
                     PlayerId = table.Column<int>(type: "integer", nullable: false),
                     QuestionId = table.Column<int>(type: "integer", nullable: false),
-                    AnswerText = table.Column<string>(type: "text", nullable: false),
-                    AnswerPoints = table.Column<int>(type: "integer", nullable: false)
+                    RoundId = table.Column<int>(type: "integer", nullable: false),
+                    AnswerText = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -126,22 +113,30 @@ namespace backEnd.Migrations
                         principalTable: "Groups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Answers_Groups_GroupId1",
-                        column: x => x.GroupId1,
-                        principalTable: "Groups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Answers_Questions_QuestionId",
-                        column: x => x.QuestionId,
-                        principalTable: "Questions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "GamePlayer",
+                name: "Players",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Username = table.Column<string>(type: "text", nullable: false),
+                    Password = table.Column<string>(type: "text", nullable: true),
+                    GroupId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Players", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Players_Groups_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "Groups",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GamePlayers",
                 columns: table => new
                 {
                     GameId = table.Column<int>(type: "integer", nullable: false),
@@ -149,29 +144,17 @@ namespace backEnd.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GamePlayer", x => new { x.GameId, x.PlayersId });
+                    table.PrimaryKey("PK_GamePlayers", x => new { x.GameId, x.PlayersId });
                     table.ForeignKey(
-                        name: "FK_GamePlayer_Games_GameId",
+                        name: "FK_GamePlayers_Games_GameId",
                         column: x => x.GameId,
                         principalTable: "Games",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "GroupPlayer",
-                columns: table => new
-                {
-                    GroupId = table.Column<int>(type: "integer", nullable: false),
-                    PlayersId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GroupPlayer", x => new { x.GroupId, x.PlayersId });
                     table.ForeignKey(
-                        name: "FK_GroupPlayer_Groups_GroupId",
-                        column: x => x.GroupId,
-                        principalTable: "Groups",
+                        name: "FK_GamePlayers_Players_PlayersId",
+                        column: x => x.PlayersId,
+                        principalTable: "Players",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -188,26 +171,69 @@ namespace backEnd.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Lobbies", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Lobbies_Players_AdminId",
+                        column: x => x.AdminId,
+                        principalTable: "Players",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Players",
+                name: "PlayerPoints",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Username = table.Column<string>(type: "text", nullable: false),
-                    Password = table.Column<string>(type: "text", nullable: false),
-                    LobbyId = table.Column<int>(type: "integer", nullable: true)
+                    PlayerId = table.Column<int>(type: "integer", nullable: false),
+                    GameId = table.Column<int>(type: "integer", nullable: false),
+                    Points = table.Column<int>(type: "integer", nullable: false),
+                    GameId1 = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Players", x => x.Id);
+                    table.PrimaryKey("PK_PlayerPoints", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Players_Lobbies_LobbyId",
+                        name: "FK_PlayerPoints_Games_GameId",
+                        column: x => x.GameId,
+                        principalTable: "Games",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PlayerPoints_Games_GameId1",
+                        column: x => x.GameId1,
+                        principalTable: "Games",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_PlayerPoints_Players_PlayerId",
+                        column: x => x.PlayerId,
+                        principalTable: "Players",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LobbyPlayers",
+                columns: table => new
+                {
+                    LobbyId = table.Column<int>(type: "integer", nullable: false),
+                    PlayersId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LobbyPlayers", x => new { x.LobbyId, x.PlayersId });
+                    table.ForeignKey(
+                        name: "FK_LobbyPlayers_Lobbies_LobbyId",
                         column: x => x.LobbyId,
                         principalTable: "Lobbies",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_LobbyPlayers_Players_PlayersId",
+                        column: x => x.PlayersId,
+                        principalTable: "Players",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -216,23 +242,8 @@ namespace backEnd.Migrations
                 column: "GroupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Answers_GroupId1",
-                table: "Answers",
-                column: "GroupId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Answers_QuestionId",
-                table: "Answers",
-                column: "QuestionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_GamePlayer_PlayersId",
-                table: "GamePlayer",
-                column: "PlayersId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_GroupPlayer_PlayersId",
-                table: "GroupPlayer",
+                name: "IX_GamePlayers_PlayersId",
+                table: "GamePlayers",
                 column: "PlayersId");
 
             migrationBuilder.CreateIndex(
@@ -246,19 +257,34 @@ namespace backEnd.Migrations
                 column: "RoundId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Groups_RoundId1",
-                table: "Groups",
-                column: "RoundId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Lobbies_AdminId",
                 table: "Lobbies",
                 column: "AdminId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Players_LobbyId",
+                name: "IX_LobbyPlayers_PlayersId",
+                table: "LobbyPlayers",
+                column: "PlayersId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlayerPoints_GameId",
+                table: "PlayerPoints",
+                column: "GameId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlayerPoints_GameId1",
+                table: "PlayerPoints",
+                column: "GameId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlayerPoints_PlayerId",
+                table: "PlayerPoints",
+                column: "PlayerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Players_GroupId",
                 table: "Players",
-                column: "LobbyId");
+                column: "GroupId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Questions_GameId",
@@ -269,52 +295,28 @@ namespace backEnd.Migrations
                 name: "IX_Rounds_GameId",
                 table: "Rounds",
                 column: "GameId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Rounds_GameId1",
-                table: "Rounds",
-                column: "GameId1");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_GamePlayer_Players_PlayersId",
-                table: "GamePlayer",
-                column: "PlayersId",
-                principalTable: "Players",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_GroupPlayer_Players_PlayersId",
-                table: "GroupPlayer",
-                column: "PlayersId",
-                principalTable: "Players",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Lobbies_Players_AdminId",
-                table: "Lobbies",
-                column: "AdminId",
-                principalTable: "Players",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Lobbies_Players_AdminId",
-                table: "Lobbies");
-
             migrationBuilder.DropTable(
                 name: "Answers");
 
             migrationBuilder.DropTable(
-                name: "GamePlayer");
+                name: "GamePlayers");
 
             migrationBuilder.DropTable(
-                name: "GroupPlayer");
+                name: "LobbyPlayers");
+
+            migrationBuilder.DropTable(
+                name: "PlayerPoints");
+
+            migrationBuilder.DropTable(
+                name: "Lobbies");
+
+            migrationBuilder.DropTable(
+                name: "Players");
 
             migrationBuilder.DropTable(
                 name: "Groups");
@@ -327,12 +329,6 @@ namespace backEnd.Migrations
 
             migrationBuilder.DropTable(
                 name: "Games");
-
-            migrationBuilder.DropTable(
-                name: "Players");
-
-            migrationBuilder.DropTable(
-                name: "Lobbies");
         }
     }
 }

@@ -14,9 +14,17 @@ public class DataContext : DbContext
     public DbSet<Lobby> Lobbies { get; set; } = null!;
     public DbSet<Question> Questions { get; set; } = null!;
     public DbSet<Answer> Answers { get; set; } = null!;
+    public DbSet<PlayerPoint> PlayerPoints { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
+        //Answer -> Questions
+        modelBuilder.Entity<Answer>()
+        .HasOne(a => a.Question)
+        .WithMany()
+        .OnDelete(DeleteBehavior.Cascade);
+
         // Game -> Rounds
         modelBuilder.Entity<Game>()
             .HasMany(g => g.GameRounds)
@@ -24,41 +32,64 @@ public class DataContext : DbContext
             .HasForeignKey(r => r.GameId)
             .OnDelete(DeleteBehavior.Cascade);
 
+
         // Round -> Groups
         modelBuilder.Entity<Round>()
             .HasMany(r => r.Groups)
-            .WithOne(g => g.Round)
+            .WithOne()
             .HasForeignKey(g => g.RoundId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Group -> Answers
         modelBuilder.Entity<Group>()
             .HasMany(g => g.Answers)
-            .WithOne(a => a.Group)
+            .WithOne()
             .HasForeignKey(a => a.GroupId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Group -> Question (optional relationship)
+        // Group -> Question (optional)
         modelBuilder.Entity<Group>()
             .HasOne(g => g.Question)
             .WithMany()
             .OnDelete(DeleteBehavior.SetNull);
+
 
         // Group -> Players (Many-to-Many)
         modelBuilder.Entity<Group>()
             .HasMany(g => g.Players)
             .WithMany();
 
+
+        // Lobby -> Players (Many-to-Many)
+        modelBuilder.Entity<Lobby>()
+            .HasOne(l => l.Admin)
+            .WithMany()
+            .HasForeignKey(l => l.AdminId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Lobby>()
+            .HasMany(l => l.Players)
+            .WithMany();
+
         // Game -> Players (Many-to-Many)
         modelBuilder.Entity<Game>()
             .HasMany(g => g.Players)
-            .WithMany();
+            .WithMany()
+            .UsingEntity(j => j.ToTable("GamePlayers"));
 
-        // Lobby -> Players
-        modelBuilder.Entity<Lobby>()
-            .HasMany(l => l.Players)
-            .WithOne()
+        // PlayerPoint -> Player
+        modelBuilder.Entity<PlayerPoint>()
+            .HasOne<Player>()
+            .WithMany()
+            .HasForeignKey(pp => pp.PlayerId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        // PlayerPoint -> Game
+        modelBuilder.Entity<PlayerPoint>()
+            .HasOne<Game>()
+            .WithMany()
+            .HasForeignKey(pp => pp.GameId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
+
 }

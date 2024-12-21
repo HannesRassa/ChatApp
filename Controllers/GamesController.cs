@@ -13,7 +13,7 @@ namespace BackEnd.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
-        {       
+        {
             var result = await repo.GetAllGames();
             return Ok(result);
         }
@@ -26,11 +26,73 @@ namespace BackEnd.Controllers
             return Ok(game);
         }
 
+        [HttpGet("find-group/{gameId}/{roundNumber}/{playerId}")]
+        public async Task<IActionResult> FindGroupNumberIdByGameIdAndRoundNumberAndPlayerId([FromRoute] int gameId, [FromRoute] int roundNumber, [FromRoute] int playerId)
+        {
+            if (gameId <= 0 || roundNumber <= 0 || playerId <= 0)
+            {
+                return BadRequest("Invalid game ID, round number, or player ID.");
+            }
+
+            var groupId = await repo.FindGroupNumberByGameIdAndRoundNumberAndPlayerId(gameId, roundNumber, playerId);
+            if (groupId == null)
+            {
+                return NotFound($"No group found for player ID {playerId} in round {roundNumber} in game {gameId}.");
+            }
+
+            return Ok(groupId);
+        }
+
+        // [HttpGet("find-group/{gameId}/{playerId}")]
+        // public async Task<IActionResult> FindRoundAndGroupByGameIdAndPlayerId([FromRoute] int gameId, [FromRoute] int playerId)
+        // {
+        //     if (gameId <= 0 || playerId <= 0)
+        //     {
+        //         return BadRequest("Invalid game ID or player ID.");
+        //     }
+
+        //     // Fetch round and group information using the repository method
+        //     var (roundId, groupId) = await repo.FindRoundAndGroupByGameIdAndPlayerId(gameId, playerId);
+
+        //     if (roundId == null || groupId == null)
+        //     {
+        //         return NotFound($"No group found for player ID {playerId} in game ID {gameId}.");
+        //     }
+
+        //     // Return both the round ID and group ID as a JSON object
+        //     return Ok(new { roundId, groupId });
+        // }
+
+        [HttpGet("Player/{playerId}")]
+        public async Task<IActionResult> GetGameIdByPlayerId([FromRoute] int playerId)
+        {
+            try
+            {
+                // Fetch the game room for the player
+                var gameRoom = await repo.GetGameByPlayerId(playerId);
+
+                // If the game room is null, return a 404 Not Found
+                if (gameRoom == null)
+                {
+                    return NotFound($"No room found for player with ID {playerId}");
+                }
+
+                // Return the room's ID (or RoomCode, depending on what you want to return)
+                return Ok(gameRoom.Id); // Or gameRoom.RoomCode if that's what you prefer to return
+            }
+            catch
+            {
+                // Return a generic server error message if something goes wrong
+                return StatusCode(500, "Internal server error");
+            }
+
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Game newGame)
         {
-            bool result = await repo.UpdateGame(id,newGame);
-            return result? NoContent() : NotFound();
+            bool result = await repo.UpdateGame(id, newGame);
+            return result ? NoContent() : NotFound();
         }
 
         [HttpPost("create")]
@@ -55,6 +117,7 @@ namespace BackEnd.Controllers
             var result = await repo.SaveGameToDb(newGame);
             return CreatedAtAction(nameof(SaveGame), new { newGame.Id }, result);
         }
+
         [HttpPost("{id}/add-round")]
         public async Task<IActionResult> AddRound(int id, [FromBody] Round newRound)
         {
@@ -65,11 +128,14 @@ namespace BackEnd.Controllers
         }
 
 
+
+
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGame([FromRoute] int id)
         {
-            bool isDeleted = await repo.DeleteGameById(id);    
-            if (!isDeleted)  return NotFound();
+            bool isDeleted = await repo.DeleteGameById(id);
+            if (!isDeleted) return NotFound();
             return NoContent();
         }
     }

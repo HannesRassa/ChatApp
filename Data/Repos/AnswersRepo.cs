@@ -7,19 +7,26 @@ public class AnswersRepo(DataContext context)
     private readonly DataContext context = context;
 
     //CREATE
-    public async Task<Answer> SaveAnswerToDb(Answer answer)
+  public async Task<Answer> SaveAnswerToDb(Answer answer)
+{
+    // Attach the existing Question if it has an Id
+    if (answer.Question.Id > 0)
     {
-        context.Questions.Attach(answer.Question);
-        context.Add(answer);
-        await context.SaveChangesAsync();
-        return answer;
+        context.Attach(answer.Question);
     }
 
+    // Add the answer to the context
+    context.Answers.Add(answer);
+    await context.SaveChangesAsync();
+
+    return answer;
+}
+
     //READ
-    public async Task<List<Answer>> GetAllAnswers(Question? question = null, Player? player = null)
+    public async Task<List<Answer>> GetAllAnswers()
     {
         IQueryable<Answer> query = context.Answers.AsQueryable();
-        if (question is not null) query = query.Where(x => x.Question == question);
+        // if (question is not null) query = query.Where(x => x.Question == question);
         return await query.ToListAsync();
     } 
 

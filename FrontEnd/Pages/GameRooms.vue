@@ -1,22 +1,27 @@
 <template>
   <div class="flex-layout">
     <div class="main">
-      <table class="users-table">
-        <thead>
-          <tr>
-            <th>Lobby ID</th>
-            <th>RoomCode</th>
-            <th>Connect</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="gameRoom in gameRooms" :key="gameRoom.id">
-            <td>{{ gameRoom.id }}</td>
-            <td>{{ gameRoom.RoomCode }}</td>
-            <td><button @click="connectToGame(gameRoom.RoomCode)">Connect</button></td>
-          </tr>
-        </tbody>
-      </table>
+      <h1 class="section-title">Available Game Rooms</h1>
+      <div class="table-container">
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>Lobby ID</th>
+              <th>Room Code</th>
+              <th>Connect</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="gameRoom in gameRooms" :key="gameRoom.id">
+              <td>{{ gameRoom.id }}</td>
+              <td>{{ gameRoom.RoomCode }}</td>
+              <td>
+                <button class="connect-button" @click="connectToGame(gameRoom.RoomCode)">Connect</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -35,91 +40,102 @@ export default {
   },
   methods: {
     connectToGame(roomCode) {
-      // Handle the logic to connect to the selected game room
       console.log("Connecting to room: ", roomCode);
-      // Redirect or perform any action needed to connect to the game
-      // Example: 
-      this.$router.push(`LobbyPage`)
-      //this.$router.push({ name: 'LobbyPage/${id}' });
+      this.$router.push(`LobbyPage`);
     }
   }
-}
+};
 </script>
 
 <style scoped>
-  .flex-layout {
-    display: flex;
-    height: 100vh; /* Full viewport height */
-    padding: 20px;
-    background-color: #19222d; /* Light lavender background for the layout */
-  }
+.flex-layout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #2c3e50, #4ca1af);
+  padding: 20px;
+  box-sizing: border-box;
+}
 
-  .main {
-    flex: 4; /* Takes up 4/6 of the available width (more space than the sidebar) */
-    padding: 20px;
-    text-align: center;
-    background-color: #ececec; 
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start; /* Aligns content to the top */
-    align-items: center; /* Centers content horizontally */
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-  }
+.main {
+  width: 80%;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  text-align: center;
+  animation: fadeIn 0.5s ease-in-out;
+}
 
-  /* RoomCode display */
-  .roomCode-display {
-    position: absolute;
-    top: 70px;
-    left: 50px;
-    font-size: 16px;
-    color: #f9f9f9;
-    font-weight: bold;
-    background-color: rgba(245, 245, 245, 0.8); /* Optional background */
-    padding: 5px 10px;
-    border-radius: 5px;
-  }
+.section-title {
+  font-size: 2rem;
+  color: #34495e;
+  margin-bottom: 20px;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
 
-  button {
-    background-color: #bfbfbf; 
-    color: black;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    border: none;
-    transition: background-color 0.3s;
-  } 
+.table-container {
+  overflow-x: auto;
+  margin-top: 10px;
+}
 
-  button:hover {
-    background-color: #a29b97; 
-  }
-  
-  .users-table {
-    background-color: #bfbfbf; 
-    color: black;
-    width: 0%;
-    border-collapse: collapse;
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid #ddd;
-    margin-top: 100px; /* Adds space between button and table */
-  }
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
 
-  .users-table th,
-  .users-table td {
-    padding: 10px;
-  }
+.users-table th, .users-table td {
+  padding: 12px;
+  text-align: center;
+  color: #000000; 
+}
 
-  .users-table th {
-    background-color: #d1d1d1; 
-  }
+.users-table th {
+  background-color: #4ca1af;
+  color: #ffffff;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
 
-  .users-table tr:nth-child(even) {
-    background-color: #dfdfdf; 
-  }
+.users-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
 
-  .users-table tr:nth-child(odd) {
-    background-color: #d7d7d7; 
+.users-table tr:nth-child(odd) {
+  background-color: #f1f1f1;
+}
+
+.connect-button {
+  background-color: #2ecc71;
+  color: #000000;
+  border: none;
+  padding: 8px 16px;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.connect-button:hover {
+  background-color: #27ae60;
+  transform: translateY(-2px);
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 </style>

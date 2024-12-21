@@ -11,9 +11,7 @@ namespace BackEnd.Models.Classes
         public List<Player> Players { get; set; } = new();
 
         // Player points for the game
-        [NotMapped]
-        public Dictionary<string, int> PlayersPoints { get; set; } = new();
-
+        public List<PlayerPoint> PlayersPoints { get; set; } = new();
         // List of rounds in the game
         public List<Round> GameRounds { get; set; } = new();
 

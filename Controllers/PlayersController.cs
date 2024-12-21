@@ -18,7 +18,6 @@ namespace BackEnd.Controllers
 
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetAll()
         {
             var result = await repo.GetAllPlayers();
@@ -26,7 +25,6 @@ namespace BackEnd.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var player = await repo.GetPlayerById(id);
@@ -81,7 +79,7 @@ namespace BackEnd.Controllers
                 issuer: configuration["Jwt:Issuer"],
                 audience: configuration["Jwt:Issuer"],
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(2),
+                expires: DateTime.Now.AddHours(3),
                 signingCredentials: creds
             );
 

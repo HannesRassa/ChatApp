@@ -16,7 +16,23 @@ public class LobbiesRepo
     // CREATE
     public async Task<Lobby> SaveLobbyToDb(Lobby lobby)
     {
-        context.Add(lobby);
+        // Attach Admin if it's not tracked
+        if (!context.Players.Local.Any(p => p.Id == lobby.AdminId))
+        {
+            context.Players.Attach(lobby.Admin);
+        }
+
+        // Ensure Players are tracked
+        foreach (var player in lobby.Players)
+        {
+            if (!context.Players.Local.Any(p => p.Id == player.Id))
+            {
+                context.Players.Attach(player);
+            }
+        }
+
+        // Add and save
+        context.Lobbies.Add(lobby);
         await context.SaveChangesAsync();
         return lobby;
     }
@@ -82,6 +98,31 @@ public class LobbiesRepo
         int updatedRecordsCount = await context.SaveChangesAsync();
         return updatedRecordsCount == 1;
     }
+    public async Task<bool> UpdateGameStatus(int id, int status)
+    {
+        // Find the game by its ID
+        var lobby = await context.Lobbies.FindAsync(id);
+        if (lobby == null)
+        {
+            // Return false if the game is not found
+            return false;
+        }
+
+        // Update the status
+        lobby.GameStatus = status;
+
+        // Save changes to the database
+        try
+        {
+            await context.SaveChangesAsync();
+            return true; // Return true if the update is successful
+        }
+        catch
+        {
+            return false; // Return false if there is an error
+        }
+    }
+
 
     // Check if game room exists by ID
     public async Task<bool> LobbyExistsInDb(int id)

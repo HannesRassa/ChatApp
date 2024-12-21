@@ -20,20 +20,26 @@ public class GamesRepo(DataContext context)
         var rnd = new Random();
 
         // Create rounds
+        int GlobaGroupInex = 1;
         for (int roundIndex = 0; roundIndex < newGame.Rounds; roundIndex++)
         {
-            var round = new Round { Groups = new List<Group>() };
+            var round = new Round
+            {
+                RoundNumber = roundIndex + 1,
+                Groups = new List<Group>()
+            };
 
             // Shuffle players and divide them into groups
             var shuffledPlayers = newGame.Players.OrderBy(_ => rnd.Next()).ToList();
 
-            for (int i = 0; i < shuffledPlayers.Count; i += newGame.PlayersPerGroup)
+            for (int groupIndex = 0; groupIndex < shuffledPlayers.Count; groupIndex += newGame.PlayersPerGroup)
             {
-                var groupPlayers = shuffledPlayers.Skip(i).Take(newGame.PlayersPerGroup).ToList();
+                var groupPlayers = shuffledPlayers.Skip(groupIndex).Take(newGame.PlayersPerGroup).ToList();
                 var randomQuestion = allQuestions[rnd.Next(allQuestions.Count)];
 
                 var group = new Group
                 {
+                    GroupNumber = GlobaGroupInex++,
                     Players = groupPlayers,
                     Question = randomQuestion,
                     Answers = new List<Answer>() // Answers will be filled during gameplay
@@ -136,6 +142,7 @@ public class GamesRepo(DataContext context)
                     .ThenInclude(g => g.Answers)
             .FirstOrDefaultAsync(g => g.Id == id);
     }
+    // GET ALL PLAYERS
     public async Task<List<Player>> GetAllPlayersInGame(int gameId)
     {
         var game = await context.Games
@@ -155,9 +162,79 @@ public class GamesRepo(DataContext context)
 
         return players;
     }
+     //FIND GROUP BY ROUND NUMBER AND PLAYER ID
+    public async Task<int?> FindGroupNumberByGameIdAndRoundNumberAndPlayerId(int gameId, int roundNumber, int playerId)
+        {
+            if (gameId <= 0 || roundNumber <= 0 || playerId <= 0)
+            {
+                throw new ArgumentException("Invalid game ID, round number, or player ID.");
+            }
+
+            // Retrieve the game by GameId
+            var game = await context.Games
+                .Include(g => g.GameRounds)
+                    .ThenInclude(r => r.Groups)
+                        .ThenInclude(gr => gr.Players)
+                .FirstOrDefaultAsync(g => g.Id == gameId);
+
+            if (game == null)
+            {
+                return null; // No matching game found
+            }
+
+            // Find the round by RoundNumber
+            var round = game.GameRounds.FirstOrDefault(r => r.RoundNumber == roundNumber);
+
+            if (round == null)
+            {
+                return null; // No matching round found
+            }
+
+            // Find the group in the round containing the player
+            var group = round.Groups.FirstOrDefault(g => g.Players.Any(p => p.Id == playerId));
+
+            // Return the group number or null if no group found
+            return group?.GroupNumber;
+        }
+
+
+    //FIND GROUP BY ROUND NUMBER AND PLAYER ID
+    public async Task<(int? RoundId, int? GroupId)> FindRoundAndGroupByGameIdAndPlayerId(int gameId, int playerId)
+    {
+        if (gameId <= 0 || playerId <= 0)
+        {
+            throw new ArgumentException("Invalid game ID or player ID.");
+        }
+
+        // Fetch the game and include its rounds, groups, and players
+        var game = await context.Games
+            .Include(g => g.GameRounds) // Include rounds in the game
+                .ThenInclude(r => r.Groups) // Include groups in each round
+                    .ThenInclude(gr => gr.Players) // Include players in each group
+            .FirstOrDefaultAsync(g => g.Id == gameId);
+
+        if (game == null)
+        {
+            return (null, null);
+        }
+
+        // Search for the round and group that contains the player
+        foreach (var round in game.GameRounds)
+        {
+            var group = round.Groups.FirstOrDefault(g => g.Players.Any(p => p.Id == playerId));
+            if (group != null)
+            {
+                // Return the round ID and group ID where the player was found
+                return (round.Id, group.Id);
+            }
+        }
+
+        // If no match is found, return null
+        return (null, null);
+    }
 
     public async Task<bool> GameExistsInDb(int id) => await context.Games.AnyAsync(x => x.Id == id);
-    
+
     //UPDATE
     public async Task<bool> UpdateGame(int id, Game game)
     {
@@ -176,6 +253,14 @@ public class GamesRepo(DataContext context)
         context.Remove(gameInDb);
         int changesCount = await context.SaveChangesAsync();
         return changesCount == 1;
+    }
+    public async Task<Game> GetGameByPlayerId(int playerId)
+    {
+        return await context.Games
+                        .Include(g => g.Players) 
+                        .Where(g => g.Players.Any(p => p.Id == playerId)) 
+                        .OrderByDescending(g => g.Id) 
+                        .FirstOrDefaultAsync();
     }
 }
 
