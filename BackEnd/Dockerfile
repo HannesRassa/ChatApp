@@ -20,7 +20,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine3.20
 WORKDIR /app
 COPY --from=builder /publish .
 
-EXPOSE 80
+EXPOSE 8080
 
 RUN addgroup -S runner && adduser -S runner -G runner
 USER runner
