@@ -52,7 +52,6 @@ namespace BackEnd.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         public async Task<IActionResult> SaveLobby([FromBody] int adminId)
         {
             // Retrieve the player by adminId
