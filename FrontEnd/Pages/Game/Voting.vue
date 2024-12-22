@@ -322,8 +322,13 @@ const skipToNextGroup = async () => {
   hasVoted.value = false;
   startTimer();
 };
-const goToLobby = () => {
-  router.push({ name: "Lobby" }); // Replace "Lobby" with the actual route name or path for your lobby page
+const goToLobby = async () => {
+
+  await axios.put(
+      `https://localhost:7269/Backend/Lobby/${gameDetails.value.roomId}/status/1`  //Set the game status back to 0 to prevent the lobby from throwing the player back into the game
+    );
+
+  router.push({ name: "" }); //move player back to index
 };
 
 // Lifecycle Hooks
