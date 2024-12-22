@@ -4,11 +4,9 @@ variables:
   # Minu konteineri registri aadress AWS-s (Amazon Elastic Container Registry)
   # Asenda MINU_REGISTRI_NIMI
   DOCKER_REGISTRY: 662032419283.dkr.ecr.eu-north-1.amazonaws.com/chatapp
-  DOMAIN: chatapp.itb2203.tautar.ee
 
 stages:
   - build
-  - deploy
 
 build:back-end:
   image: docker:27.3.1-alpine3.20
