@@ -13,8 +13,6 @@ FROM node:22.11-alpine3.19
 
 WORKDIR /app
 
-Expose 3000
-
 COPY --from=builder /app/.output ./.output
 
 CMD [ "node", ".output/server/index.mjs" ]
