@@ -37,10 +37,23 @@
 
     <div v-if="loggedIn" class="menu-options">
       <button @click="startNewGame">Start New Game</button>
-      <button @click="joinExactLobby">Join Lobby(not rady)</button>
+      <button @click="toggleLobbyCodeInput">Join Lobby(not rady)</button>
       <button @click="searchForGames">Search for Existing Games</button>
       <button @click="createQuestions">Create Question</button>
       <button @click="browseQuestions">Browse Questions</button>
+    </div>
+
+    <div v-if="showLobbyCodeInput" class="lobby-code-input">
+      <label for="lobbyCode">Enter Room Code:</label>
+      <input
+        type="text"
+        id="lobbyCode"
+        v-model="exactLobbyCodeInput"
+        placeholder="e.g., 1234"
+        required
+      />
+      <button @click="joinExactLobby()">Join Lobby</button>
+      <p v-if="joinLobbyError" class="error">{{ joinLobbyError }}</p>
     </div>
 
     <div v-if="isDropdownOpen" class="question-form">
@@ -57,7 +70,7 @@
       <input
         type="number"
         id="lobbyCode"
-        v-model="lobbyCodeInput"
+        v-model="exactLobbyCodeInput"
         placeholder="e.g., 1234"
         required
       />
@@ -91,7 +104,9 @@ export default defineComponent({
       answerPoints: null as number | null,
       showLobbyCodeDropdown: false,
       lobbyCodeInput: null as number | null,
+      exactLobbyCodeInput: null as number | null,
       joinLobbyError: "",
+      showLobbyCodeInput: false,
     };
   },
   methods: {
@@ -254,11 +269,35 @@ export default defineComponent({
       }
     },
 
-    joinExactLobby(){
-      this.$router.push({ name: "Lobby" });
-
+    toggleLobbyCodeInput() {
+      this.showLobbyCodeInput = !this.showLobbyCodeInput;
     },
 
+    async joinExactLobby() {
+      const userStore = useUserStore;
+      if (
+        !this.exactLobbyCodeInput ||
+        this.exactLobbyCodeInput.toString().trim() === ""
+      ) {
+        this.joinLobbyError = "Room code cannot be empty.";
+        console.log("this.exactLobbyCodeInput is empty");
+        return;
+      }
+      try {
+        console.log("Joining lobby with code:", this.exactLobbyCodeInput);
+        const requsest = {
+          playerId: this.userId,
+          roomCode: this.exactLobbyCodeInput,
+        };
+        console.log(`requst joinlobby log : ${JSON.stringify(requsest,null,2)}`);
+        await axios.post("https://localhost:7269/Backend/Lobby/JoinLobby", requsest);
+        this.$router.push({ name: "Lobby" });
+      } catch (error) {
+        console.error("Failed to join the game lobby:", error);
+        this.joinLobbyError =
+          "Failed to join lobby. Please check the code and try again.";
+      }
+    },
     async joinLobby() {
       const userStore = useUserStore();
       if (!this.lobbyCodeInput) {
@@ -301,10 +340,12 @@ export default defineComponent({
     if (userStore.token && !isTokenExpired(userStore.tokenExpiration)) {
       this.loggedIn = true;
       this.username = userStore.username;
+      this.userId = userStore.userId;
     } else {
       userStore.logOut();
       this.loggedIn = false;
       this.username = "";
+      this.userId = null;
       console.warn("Session expired. Please log in again.");
     }
   },
@@ -320,7 +361,19 @@ export default defineComponent({
   box-sizing: border-box;
   font-family: "Poppins", sans-serif;
 }
-
+.lobby-code-input {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+}
 .main-menu {
   background: linear-gradient(to bottom right, #f8f9fd, #e9e4f5);
   min-height: 100vh;

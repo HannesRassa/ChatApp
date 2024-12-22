@@ -22,7 +22,12 @@
         </div>
 
         <div v-if="!isAnswerSubmitted" class="submit-answer">
-          <input v-model="answer" type="text" placeholder="Enter your answer" />
+          <input
+            v-model="answer"
+            type="text"
+            placeholder="Enter your answer"
+            @keydown.enter="submitAnswer"
+          />
           <button @click="submitAnswer">Submit Answer</button>
         </div>
 
@@ -184,7 +189,7 @@ const submitAnswer = async () => {
     roundId: roundID,
     answerText: answer.value,
   };
-  console.log(`submit ans post request: ${JSON.stringify(request,null,2)}`);
+  console.log(`submit ans post request: ${JSON.stringify(request, null, 2)}`);
   try {
     await axios.post(`https://localhost:7269/Backend/Answer/`, request);
     submittedAnswer.value = answer.value;
@@ -192,12 +197,13 @@ const submitAnswer = async () => {
   } catch (err) {
     console.error("Failed to submit answer:", err);
   }
+  answer.value = "";
 };
 
 // Timer logic
 const startTimer = () => {
   stopTimer();
-  timeLeft.value = roundTime.value;
+  timeLeft.value = gameDetails.value.timerForAnsweringInSec;
 
   timer = window.setInterval(() => {
     if (timeLeft.value > 0) {
@@ -224,7 +230,6 @@ onMounted(async () => {
     console.error("User ID is not set. Ensure the user is logged in.");
     return;
   }
-
   try {
     playerId.value = userStore.userId;
 

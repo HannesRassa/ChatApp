@@ -52,7 +52,8 @@ builder.Services.AddDbContext<DataContext>(options => options.UseNpgsql(builder.
     .AddScoped<GroupsRepo>()
     .AddScoped<PlayersRepo>()
     .AddScoped<QuestionsRepo>()
-    .AddScoped<RoundsRepo>();
+    .AddScoped<RoundsRepo>()
+    .AddScoped<PlayerPointsRepo>();
 
 
 var app = builder.Build();

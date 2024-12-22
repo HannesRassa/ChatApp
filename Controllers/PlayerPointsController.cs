@@ -25,19 +25,34 @@ namespace BackEnd.Controllers
                 return NotFound();
             return Ok(playerPoint);
         }
-        [HttpGet("find-by-PlayerId-and-gameId/{playerId}/{gameId}")]
-        public async Task<IActionResult> GetByPlayerIdAndGameId([FromRoute] int playerId, [FromRoute] int gameId)
+
+        [HttpGet("find-by-gameId/{gameId}")]
+        public async Task<IActionResult> GetByGameId([FromRoute] int gameId)
         {
-             Console.WriteLine($"Received PlayerId: {playerId}, GameId: {gameId}"); // Debug line
-            if (playerId <= 0 || gameId <= 0)
+            if (gameId <= 0)
             {
-                return BadRequest("Player ID and Game ID must be positive numbers.");
+                return BadRequest("Game ID must be a positive number.");
             }
-            var playerPoint = await repo.GetPlayerPointByPlayerIdAndGameId(playerId, gameId);
-            if (playerPoint == null)
+
+            var playerPoints = await repo.GetAllPlayerPointsByGameId(gameId);
+            if (playerPoints == null || !playerPoints.Any())
                 return NotFound();
-            return Ok(playerPoint);
+
+            return Ok(playerPoints);
         }
+        // [HttpGet("find-by-PlayerId-and-gameId/{playerId}/{gameId}")]
+        // public async Task<IActionResult> GetByPlayerIdAndGameId([FromRoute] int playerId, [FromRoute] int gameId)
+        // {
+        //      Console.WriteLine($"Received PlayerId: {playerId}, GameId: {gameId}"); // Debug line
+        //     if (playerId <= 0 || gameId <= 0)
+        //     {
+        //         return BadRequest("Player ID and Game ID must be positive numbers.");
+        //     }
+        //     var playerPoint = await repo.GetPlayerPointByPlayerIdAndGameId(playerId, gameId);
+        //     if (playerPoint == null || !playerPoint.Any())
+        //         return NotFound();
+        //     return Ok(playerPoint);
+        // }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] PlayerPoint newPlayerPoint)

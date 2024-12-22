@@ -48,8 +48,8 @@
           Rounds: <strong>{{ rounds }}</strong>
         </p>
         <div class="controls">
-          <button @click="decreaseRounds">-</button>
-          <button @click="increaseRounds">+</button>
+          <button @click="decreaseRounds" :disabled="!isAdmin">-</button>
+          <button @click="increaseRounds":disabled="!isAdmin">+</button>
         </div>
       </div>
 
@@ -58,8 +58,18 @@
           Timer: <strong>{{ roundTime }} sec</strong>
         </p>
         <div class="controls">
-          <button @click="decreaseTime">-</button>
-          <button @click="increaseTime">+</button>
+          <button @click="decreaseTime":disabled="!isAdmin">-</button>
+          <button @click="increaseTime":disabled="!isAdmin">+</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <p>
+          Group Count: <strong>{{ groupCount }} People</strong>
+        </p>
+        <div class="controls">
+          <button @click="decreaseGroups":disabled="!isAdmin">-</button>
+          <button @click="increaseGroups":disabled="!isAdmin">+</button>
         </div>
       </div>
       <div v-if="showPackageModal" class="modal">
@@ -113,19 +123,28 @@ const fetchLoggedInUserGameRoomId = async (): Promise<number | null> => {
     return null;
   }
 };
-// State variables
-const users = ref<User[]>([]);
-let gameStatusInterval = ref<null | number>(null);
+//Changable Variables From Lobby
+const roundTime = ref<number>(10); //for testing 10/default 60
+const groupCount = ref<number>(2);
+const rounds = ref<number>(3);
+
+//Lobby Variables
+const selectedPackage = ref<null | string>(null);
 let roomCode = ref<string | null>(null);
 const roomId = ref<number | null>(null);
-const rounds = ref<number>(3);
-const roundTime = ref<number>(60);
+const users = ref<User[]>([]);
+const adminId = ref<number| null>(null);
+const isAdmin = ref<boolean>(false);
+
+//Game Related Variables
+let gameStatusInterval = ref<null | number>(null);
 const pollInterval = ref<null | number>(null);
 const loading = ref<boolean>(false);
-const groupCount = ref<number>(2);
 let gameStatus = ref<number | null>(null);
 const showPackageModal = ref(false);
 const selectedPackage = ref("");
+
+
 
 
 // Fetch all players initially
@@ -140,8 +159,9 @@ const fetchUsers = async (): Promise<void> => {
       }
     );
     roomCode = response.data.roomCode;
-    const newPlayers: User[] = response.data.players || [];
 
+    const newPlayers: User[] = response.data.players || [];
+      adminId.value = response.data.adminId;
     const currentIds = new Set(users.value.map((user) => user.id));
     newPlayers.forEach((player) => {
       if (!currentIds.has(player.id)) {
@@ -152,6 +172,14 @@ const fetchUsers = async (): Promise<void> => {
         });
       }
     });
+    if(adminId.value === userStore.userId){// if (gameroom.data.adminId == userId)
+      console.log(`225${adminId.value}, ${userStore.userId}`)
+      
+      isAdmin.value = true;
+    
+    }else{
+      console.log(`228${adminId.value}, ${userStore.userId}`)
+    }
   } catch (error) {
     console.error("Error polling for new players:", error);
   }
@@ -179,6 +207,7 @@ const pollNewPlayers = async (): Promise<void> => {
     console.error("Error polling for new players:", error);
   }
 };
+
 const fetchGameStatus = async (): Promise<void> => {
   try {
     if (!roomId.value) {
@@ -218,6 +247,8 @@ onMounted(async () => {
     // Start polling for new players
     pollInterval.value = window.setInterval(pollNewPlayers, 2000);
     gameStatusInterval.value = window.setInterval(fetchGameStatus, 4000);
+    
+   
   }
 });
 
@@ -250,8 +281,15 @@ const startGame = async (): Promise<void> => {
       timerForAnsweringInSec: roundTime.value,
       playersPerGroup: groupCount.value,
     };
-    alert(`request data : ${JSON.stringify(users.value)}, ${rounds.value}, ${roundTime.value}, ${groupCount.value}`)
-    console.log("Request body for creating the game:", JSON.stringify(requestBody,null,2));
+    alert(
+      `request data : ${JSON.stringify(users.value)}, ${rounds.value}, ${
+        roundTime.value
+      }, ${groupCount.value}`
+    );
+    console.log(
+      "Request body for creating the game:",
+      JSON.stringify(requestBody, null, 2)
+    );
 
     const response = await axiosInstance.post(
       `Game/create?questionPackName=${selectedPackage.value}`,
@@ -259,7 +297,6 @@ const startGame = async (): Promise<void> => {
     );
 
     console.log("Game creation response:", response.data);
-
     await axios.put(
       `https://localhost:7269/Backend/Lobby/${roomId.value}/status/1`
     );
@@ -429,7 +466,11 @@ button:hover {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
+button:disabled {
+  background-color: #4a2c75; /* Dark violet color */
+  cursor: not-allowed;
+  opacity: 0.6; /* Optional: adds a slight transparency to indicate the button is disabled */
+}
 .controls button {
   width: 40px;
   height: 40px;
@@ -437,6 +478,12 @@ button:hover {
   justify-content: center;
   align-items: center;
   border-radius: 50%;
+  border: none;
+  color: rgb(0, 0, 0);
+  background-color: #fff03c;
+  cursor: pointer;
+  transition: all 0.3s;
+  transform: scale(0.9);
 }
 .modal {
   position: fixed;
