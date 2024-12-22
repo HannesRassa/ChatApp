@@ -68,8 +68,8 @@
           Group Count: <strong>{{ groupCount }} People</strong>
         </p>
         <div class="controls">
-          <button @click="decreaseGroups":disabled="isAdmin">-</button>
-          <button @click="increaseGroups":disabled="isAdmin">+</button>
+          <button @click="decreaseGroups":disabled="!isAdmin">-</button>
+          <button @click="increaseGroups":disabled="!isAdmin">+</button>
         </div>
       </div>
     </div>
@@ -128,8 +128,9 @@ const pollInterval = ref<null | number>(null);
 const loading = ref<boolean>(false);
 let gameStatus = ref<number | null>(null);
 
-// Fetch all players initially
 
+
+// Fetch all players initially
 const fetchUsers = async (): Promise<void> => {
   try {
     const response = await axios.get(
@@ -189,6 +190,7 @@ const pollNewPlayers = async (): Promise<void> => {
     console.error("Error polling for new players:", error);
   }
 };
+
 const fetchGameStatus = async (): Promise<void> => {
   try {
     if (!roomId.value) {
@@ -275,16 +277,6 @@ const startGame = async (): Promise<void> => {
     const response = await axiosInstance.post("Game/create", requestBody);
 
     console.log("Game creation response:", response.data);
-
-    // const firstRound = response.data.gameRounds[0];
-    // const firstGroup = firstRound.groups[0];
-
-    // if (!firstRound || !firstGroup) {
-    //   console.error("No round or group data available for redirection.");
-    //   return;
-    // }
-
-    //change gameStatus to "1"
     await axios.put(
       `https://localhost:7269/Backend/Lobby/${roomId.value}/status/1`
     );

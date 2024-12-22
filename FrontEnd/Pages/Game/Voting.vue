@@ -89,6 +89,9 @@ let groupIndex = ref<number | null>(null);
 let currentGroup = ref<any>(null);
 let gameDetails = ref<any>(null);
 
+const playerId = ref<number | null>(null);
+const gameId = ref<number | null>(null);
+
 // Voting States
 const hasVoted = ref<boolean>(false);
 const votedAnswerId = ref<number | null>(null);
@@ -101,11 +104,8 @@ let playerPointsMap = ref<Record<number, number>>({});
 const timeLeft = ref<number>(0);
 let timer: number | null = null;
 
-const playerId = ref<number | null>(null);
-const gameId = ref<number | null>(null);
-
+//Other Variables
 const isFirstLoad = ref<boolean>(true);
-
 const isAnsweringDone = ref<boolean>(false);
 
 const startLeaderboardTimer = () => {
@@ -116,7 +116,7 @@ const startLeaderboardTimer = () => {
       timeLeft.value--;
     } else {
       stopTimer();
-      goToLobby(); 
+      goToLobby();
     }
   }, 1000);
 };
@@ -236,13 +236,13 @@ const stopTimer = () => {
   }
 };
 
+//Load Only First Group
 const loadFirstGroup = async () => {
   if (!gameDetails.value || !gameDetails.value.gameRounds) {
     console.error("Game details or game rounds are not available.");
     return;
   }
 
-  
   roundIndex.value = 1; // First round`s number
   groupIndex.value = 1; // First group`s number
 
@@ -251,7 +251,7 @@ const loadFirstGroup = async () => {
   const firstGroup = firstRound.groups[0];
 
   currentGroup.value = firstGroup;
-  startTimer(); 
+  startTimer();
   isFirstLoad.value = false;
 };
 
@@ -269,7 +269,6 @@ const skipToNextGroup = async () => {
     isFirstLoad.value = false; // Mark the first load as completed
   }
 
-  // Existing logic for skipping to the next group...
   const currentRound = gameDetails.value.gameRounds.find(
     (round: { roundNumber: number }) => round.roundNumber === roundIndex.value
   );
@@ -323,10 +322,9 @@ const skipToNextGroup = async () => {
   startTimer();
 };
 const goToLobby = async () => {
-
-  await axios.put(
-      `https://localhost:7269/Backend/Lobby/${gameDetails.value.roomId}/status/1`  //Set the game status back to 0 to prevent the lobby from throwing the player back into the game
-    );
+  // await axios.put(
+  //   `https://localhost:7269/Backend/Lobby/${gameDetails.value.roomId}/status/1` //Set the game status back to 0 to prevent the lobby from throwing the player back into the game
+  // );
 
   router.push({ name: "" }); //move player back to index
 };

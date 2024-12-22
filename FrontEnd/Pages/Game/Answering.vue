@@ -230,7 +230,6 @@ onMounted(async () => {
     console.error("User ID is not set. Ensure the user is logged in.");
     return;
   }
-
   try {
     playerId.value = userStore.userId;
 
