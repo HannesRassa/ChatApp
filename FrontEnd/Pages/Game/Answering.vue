@@ -197,7 +197,7 @@ const submitAnswer = async () => {
 // Timer logic
 const startTimer = () => {
   stopTimer();
-  timeLeft.value = roundTime.value;
+  timeLeft.value = gameDetails.value.timerForAnsweringInSec;
 
   timer = window.setInterval(() => {
     if (timeLeft.value > 0) {

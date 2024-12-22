@@ -108,16 +108,15 @@ const isFirstLoad = ref<boolean>(true);
 
 const isAnsweringDone = ref<boolean>(false);
 
-
 const startLeaderboardTimer = () => {
   stopTimer(); // Ensure no previous timer is running
-  timeLeft.value = 60; // Start from 60 seconds
+  timeLeft.value = 60; // Default?  60 seconds
   timer = window.setInterval(() => {
     if (timeLeft.value > 0) {
       timeLeft.value--;
     } else {
       stopTimer();
-      goToLobby(); // Redirect to Lobby when timer finishes
+      goToLobby(); 
     }
   }, 1000);
 };
@@ -167,7 +166,7 @@ const fetchAllPlayerPoints = async (
         (pointsMap[pPoint.playerId] || 0) + pPoint.points;
     });
 
-    console.log(`pointsMap: ${JSON.stringify(pointsMap,null,2)}`);
+    console.log(`pointsMap: ${JSON.stringify(pointsMap, null, 2)}`);
 
     return pointsMap;
   } catch (error) {
@@ -219,7 +218,7 @@ const voteForAnswer = async (answerId: number) => {
 // Timer Logic
 const startTimer = () => {
   stopTimer();
-  timeLeft.value = gameDetails.value.timerForVotingInSec || 999999; // Default 30 seconds
+  timeLeft.value = gameDetails.value.timerForVotingInSec || 20; // Default 20 seconds
   timer = window.setInterval(() => {
     if (timeLeft.value > 0) {
       timeLeft.value--;
@@ -243,16 +242,16 @@ const loadFirstGroup = async () => {
     return;
   }
 
-  // Устанавливаем roundIndex и groupIndex на первую группу
-  roundIndex.value = 1; // Первый раунд
-  groupIndex.value = 1; // Первая группаF
+  
+  roundIndex.value = 1; // First round`s number
+  groupIndex.value = 1; // First group`s number
 
-  // Обновляем currentGroup, присваиваем данные для первой группы
+  //Update currentGroup with first game`s round and group
   const firstRound = gameDetails.value.gameRounds[0];
   const firstGroup = firstRound.groups[0];
 
   currentGroup.value = firstGroup;
-  startTimer(); // Стартуем таймер для первой группы
+  startTimer(); 
   isFirstLoad.value = false;
 };
 
@@ -301,12 +300,12 @@ const skipToNextGroup = async () => {
           ?.groupNumber || 1;
     } else {
       await fetchGameDetails();
-      console.log(`gameId: ${gameId.value}`);
       if (gameId.value) {
         playerPointsMap.value = await fetchAllPlayerPoints(gameId.value);
       }
-      console.log("Voting complete! Redirect to summary.");
       isAnsweringDone.value = true;
+      stopTimer(); // Stop Any Existing Timers
+      startLeaderboardTimer();
       return;
     }
   }
