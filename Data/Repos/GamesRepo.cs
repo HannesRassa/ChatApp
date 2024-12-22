@@ -7,20 +7,21 @@ public class GamesRepo(DataContext context)
     private readonly DataContext context = context;
 
     //CREATE
-    public async Task<Game> SaveGameToDb(Game newGame)
+       public async Task<Game> SaveGameToDb(Game newGame, string? questionPackName)
     {
-        // Ensure enough players and questions are available
         if (!newGame.Players.Any())
             throw new InvalidOperationException("Players list cannot be empty.");
 
-        var allQuestions = await context.Questions.ToListAsync();
+        var allQuestions = string.IsNullOrEmpty(questionPackName)
+            ? await context.Questions.ToListAsync() // Use all questions if no pack is specified
+            : await context.Questions.Where(q => q.PackName == questionPackName).ToListAsync(); // Filter by pack
+
         if (!allQuestions.Any())
             throw new InvalidOperationException("No questions available to assign.");
 
         var rnd = new Random();
 
-        // Create rounds
-        int GlobaGroupInex = 1;
+        int GlobalGroupIndex = 1;
         for (int roundIndex = 0; roundIndex < newGame.Rounds; roundIndex++)
         {
             var round = new Round
@@ -29,7 +30,6 @@ public class GamesRepo(DataContext context)
                 Groups = new List<Group>()
             };
 
-            // Shuffle players and divide them into groups
             var shuffledPlayers = newGame.Players.OrderBy(_ => rnd.Next()).ToList();
 
             for (int groupIndex = 0; groupIndex < shuffledPlayers.Count; groupIndex += newGame.PlayersPerGroup)
@@ -39,10 +39,10 @@ public class GamesRepo(DataContext context)
 
                 var group = new Group
                 {
-                    GroupNumber = GlobaGroupInex++,
+                    GroupNumber = GlobalGroupIndex++,
                     Players = groupPlayers,
                     Question = randomQuestion,
-                    Answers = new List<Answer>() // Answers will be filled during gameplay
+                    Answers = new List<Answer>()
                 };
 
                 round.Groups.Add(group);
@@ -51,13 +51,11 @@ public class GamesRepo(DataContext context)
             newGame.GameRounds.Add(round);
         }
 
-        // Mark existing players as unchanged
         foreach (var player in newGame.Players)
         {
             context.Entry(player).State = EntityState.Unchanged;
         }
 
-        // Attach questions to avoid duplication
         foreach (var round in newGame.GameRounds)
         {
             foreach (var group in round.Groups)
@@ -66,7 +64,6 @@ public class GamesRepo(DataContext context)
             }
         }
 
-        // Save the game to the database
         context.Add(newGame);
         await context.SaveChangesAsync();
 

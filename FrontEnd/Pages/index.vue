@@ -39,7 +39,7 @@
       <button @click="startNewGame">Start New Game</button>
       <button @click="toggleLobbyCodeInput">Join Lobby(not rady)</button>
       <button @click="searchForGames">Search for Existing Games</button>
-      <button @click="toggleQuestionDropdown">Create Question</button>
+      <button @click="createQuestions">Create Question</button>
       <button @click="browseQuestions">Browse Questions</button>
     </div>
 
@@ -244,8 +244,8 @@ export default defineComponent({
           this.errorMessage = "Failed to start a new game. Please try again.";
         });
     },
-    toggleQuestionDropdown() {
-      this.isDropdownOpen = !this.isDropdownOpen;
+    createQuestions() {
+      this.$router.push({ name: "CreateQuestions" });
     },
 
     async submitQuestion() {
@@ -331,7 +331,7 @@ export default defineComponent({
       this.$router.push(`Lobbies`);
     },
     browseQuestions() {
-      this.$router.push({ name: "BrowseQuestions" });
+      this.$router.push({ name: "QuestionPacks" });
     },
   },
   mounted() {

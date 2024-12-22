@@ -12,7 +12,7 @@ namespace BackEnd.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
-        {       
+        {
             var result = await repo.GetAllQuestions();
             return Ok(result);
         }
@@ -25,29 +25,53 @@ namespace BackEnd.Controllers
             return Ok(question);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Question newQuestion)
+        [HttpGet("ByPack/{packName}")]
+        public async Task<IActionResult> GetByPackName([FromRoute] string packName)
         {
-            bool result = await repo.UpdateQuestion(id,newQuestion);
-            return result? NoContent() : NotFound();
+            var questions = await repo.GetQuestionsByPackName(packName);
+            if (questions == null || !questions.Any()) return NotFound();
+            return Ok(questions);
+        }
+
+        [HttpGet("Packs")]
+        public async Task<IActionResult> GetAllPackNames()
+        {
+            var packNames = await repo.GetDistinctPackNames();
+            if (!packNames.Any()) return NotFound();
+            return Ok(packNames);
         }
 
         [HttpPost]
-        public async Task<IActionResult> SaveQuestion([FromBody] Question newQuesiton)
+        public async Task<IActionResult> SaveQuestion([FromBody] Question newQuestion)
         {
-            var questionExists = await repo.QuestionExistsInDb(newQuesiton.Id);
+            var questionExists = await repo.QuestionExistsInDb(newQuestion.Id);
             if (questionExists) return Conflict();
 
-            var result = await repo.SaveQuestionToDb(newQuesiton);
+            var result = await repo.SaveQuestionToDb(newQuestion);
+            return CreatedAtAction(nameof(SaveQuestion), new { newQuestion.Id }, result);
+        }
 
-            return CreatedAtAction(nameof(SaveQuestion), new { newQuesiton.Id }, result);
+        [HttpPost("Batch")]
+        public async Task<IActionResult> SaveQuestionsBatch([FromBody] IEnumerable<Question> questions)
+        {
+            if (!questions.Any()) return BadRequest("The questions list is empty.");
+
+            var result = await repo.SaveQuestionsToDb(questions);
+            return Created(nameof(SaveQuestionsBatch), result);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] Question newQuestion)
+        {
+            bool result = await repo.UpdateQuestion(id, newQuestion);
+            return result ? NoContent() : NotFound();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteQuestion([FromRoute] int id)
         {
-            bool isDeleted = await repo.DeleteQuestionById(id);    
-            if (!isDeleted)  return NotFound();
+            bool isDeleted = await repo.DeleteQuestionById(id);
+            if (!isDeleted) return NotFound();
             return NoContent();
         }
     }

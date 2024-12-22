@@ -96,26 +96,17 @@ namespace BackEnd.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreateGame([FromBody] Game newGame)
+        public async Task<IActionResult> CreateGame([FromBody] Game newGame, [FromQuery] string? questionPackName)
         {
             try
             {
-                var createdGame = await repo.SaveGameToDb(newGame);
+                var createdGame = await repo.SaveGameToDb(newGame, questionPackName);
                 return CreatedAtAction(nameof(CreateGame), new { id = createdGame.Id }, createdGame);
             }
             catch (InvalidOperationException ex)
             {
                 return BadRequest(ex.Message);
             }
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> SaveGame([FromBody] Game newGame)
-        {
-            var gameExists = await repo.GameExistsInDb(newGame.Id);
-            if (gameExists) return Conflict();
-            var result = await repo.SaveGameToDb(newGame);
-            return CreatedAtAction(nameof(SaveGame), new { newGame.Id }, result);
         }
 
         [HttpPost("{id}/add-round")]
@@ -126,10 +117,6 @@ namespace BackEnd.Controllers
                 return NotFound($"Game with ID {id} not found.");
             return Ok(updatedGame);
         }
-
-
-
-
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGame([FromRoute] int id)
