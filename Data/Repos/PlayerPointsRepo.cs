@@ -19,11 +19,18 @@ public class PlayerPointsRepo(DataContext context)
 
     public async Task<PlayerPoint?> GetPlayerPointById(int id) => await context.PlayerPoints.FindAsync(id);
     public async Task<bool> PlayerPointExistsInDb(int id) => await context.PlayerPoints.AnyAsync(x => x.Id == id);
-    public async Task<PlayerPoint?> GetPlayerPointByPlayerIdAndGameId(int playerId, int gameId)
+
+    public async Task<List<PlayerPoint>> GetAllPlayerPointsByGameId(int gameId)
 {
     return await context.PlayerPoints
-        .FirstOrDefaultAsync(pp => pp.PlayerId == playerId && pp.GameId == gameId);
+        .Where(pp => pp.GameId == gameId)
+        .ToListAsync();
 }
+    public async Task<List<PlayerPoint>> GetPlayerPointByPlayerIdAndGameId(int playerId, int gameId)
+    {
+        return await context.PlayerPoints
+            .Where(pp => pp.PlayerId == playerId && pp.GameId == gameId).ToListAsync();
+    }
 
     //UPDATE
     public async Task<bool> UpdatePlayerPoint(int id, PlayerPoint playerPoint)
