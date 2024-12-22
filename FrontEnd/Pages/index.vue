@@ -39,8 +39,8 @@
       <button @click="startNewGame">Start New Game</button>
       <button @click="toggleLobbyCodeInput">Join Lobby(not rady)</button>
       <button @click="searchForGames">Search for Existing Games</button>
-      <button @click="createQuestions">Create Question</button>
-      <button @click="browseQuestions">Browse Questions</button>
+      <button @click="createQuestions">Create QPacks</button>
+      <button @click="browseQuestions">Browse QPacks</button>
     </div>
 
     <div v-if="showLobbyCodeInput" class="lobby-code-input">
@@ -54,16 +54,6 @@
       />
       <button @click="joinExactLobby()">Join Lobby</button>
       <p v-if="joinLobbyError" class="error">{{ joinLobbyError }}</p>
-    </div>
-
-    <div v-if="isDropdownOpen" class="question-form">
-      <form @submit.prevent="submitQuestion">
-        <label>
-          Question Text:
-          <input v-model="questionText" type="text" required />
-        </label>
-        <button type="submit">Submit Question</button>
-      </form>
     </div>
     <div v-if="showLobbyCodeDropdown" class="lobby-code-dropdown">
       <label for="lobbyCode">Enter Lobby Code:</label>
@@ -229,7 +219,7 @@ export default defineComponent({
         return;
       }
 
-      axios
+      axiosInstance
         .post("https://localhost:7269/Backend/Lobby", userStore.userId, {
           headers: {
             "Content-Type": "application/json",
@@ -246,27 +236,6 @@ export default defineComponent({
     },
     createQuestions() {
       this.$router.push({ name: "CreateQuestions" });
-    },
-
-    async submitQuestion() {
-      if (!this.questionText) {
-        this.isDropdownOpen = false;
-        return;
-      }
-      try {
-        console.log(JSON.stringify(this.questionText));
-        const response = await axios.post(
-          "https://localhost:7269/Backend/Question",
-          {
-            questionText: this.questionText,
-          }
-        );
-
-        console.log("Question created successfully:", response.data);
-        this.resetQuestionForm();
-      } catch (error) {
-        console.error("Failed to create question:", error);
-      }
     },
 
     toggleLobbyCodeInput() {

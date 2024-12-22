@@ -1,5 +1,6 @@
 using BackEnd.Data.Repos;
 using BackEnd.Models.Classes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static BackEnd.Models.Classes.Lobby;
 
@@ -51,6 +52,7 @@ namespace BackEnd.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> SaveLobby([FromBody] int adminId)
         {
             // Retrieve the player by adminId
