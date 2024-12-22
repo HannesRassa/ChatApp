@@ -13,7 +13,7 @@ COPY . .
 
 # Publish
 WORKDIR /source
-RUN dotnet publish "backEnd.csproj" -c Release -o /publish
+RUN dotnet publish "ChatApp.csproj" -c Release -o /publish
 
 # Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine3.20
@@ -24,4 +24,4 @@ EXPOSE 80
 
 RUN addgroup -S runner && adduser -S runner -G runner
 USER runner
-ENTRYPOINT ["dotnet", "backEnd.dll"]
+ENTRYPOINT ["dotnet", "ChatApp.dll"]
