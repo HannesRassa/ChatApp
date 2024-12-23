@@ -433,13 +433,13 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background-color: #f4f0ff;
+  background: linear-gradient(135deg, #2c3e50, #4ca1af);
   height: 100vh;
 }
 
 .timer {
-  background-color: #c7a6d9;
-  color: #fff;
+  background-color: #fff;
+  color: #34495e;
   padding: 15px 30px;
   border-radius: 10px;
   font-size: 20px;
@@ -451,7 +451,7 @@ onUnmounted(() => {
 .question-section {
   text-align: center;
   padding: 20px;
-  background-color: #e0d4f7;
+  background-color: #fff;
   border-radius: 15px;
   width: 80%;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
@@ -460,13 +460,13 @@ onUnmounted(() => {
 .question-section h2 {
   font-size: 24px;
   font-weight: bold;
-  color: #7d3c98;
+  color: #34495e;
   margin-bottom: 10px;
 }
 
 .question-section .question {
-  background-color: #c7a6d9;
-  color: #fff;
+  background-color: #4ca1af;
+  color: #34495e;
   padding: 10px;
   border-radius: 10px;
   margin: 20px 0;
@@ -495,8 +495,8 @@ onUnmounted(() => {
 }
 
 button {
-  background-color: #7d3c98;
-  color: white;
+  background-color: #4ca1af;
+  color: #fff;
   border: none;
   padding: 10px 20px;
   border-radius: 8px;
@@ -506,7 +506,7 @@ button {
 }
 
 button:hover {
-  background-color: #5b2c6f;
+  background-color: #34495e;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
@@ -515,7 +515,7 @@ button:hover {
 }
 
 .progress button {
-  background-color: #5b2c6f;
+  background-color: #4ca1af;
   color: #fff;
   padding: 10px 20px;
   border-radius: 8px;
@@ -526,7 +526,7 @@ button:hover {
 }
 
 .progress button:hover {
-  background-color: #3e1d47;
+  background-color: #34495e;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 </style>

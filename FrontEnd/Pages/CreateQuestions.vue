@@ -138,7 +138,7 @@ export default {
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
-  background-color: #f9f9f9;
+  background: linear-gradient(135deg, #2c3e50, #4ca1af);
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -201,7 +201,7 @@ export default {
   position: absolute;
   top: 10px;
   left: 10px;
-  background-color: #9104a3;
+  background-color: #34495e;
   color: white;
   padding: 10px 20px;
   border: none;

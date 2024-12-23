@@ -95,14 +95,14 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background: linear-gradient(135deg, #f4f4ff, #e6d8f7);
+  background: linear-gradient(135deg, #2c3e50, #4ca1af);
   padding: 20px;
 }
 
 .form-title {
   font-size: 2rem;
   font-weight: bold;
-  color: #5b2c6f;
+  color: #fff;
   margin-bottom: 20px;
 }
 
@@ -127,7 +127,7 @@ onMounted(() => {
 .form-label {
   font-size: 1rem;
   font-weight: bold;
-  color: #7d3c98;
+  color: #4ca1af;
 }
 
 .form-input {
@@ -140,12 +140,12 @@ onMounted(() => {
 
 .form-input:focus {
   outline: none;
-  border-color: #8e44ad;
-  box-shadow: 0 0 4px rgba(142, 68, 173, 0.5);
+  border-color: #4ca1af;
+  box-shadow: 0 0 4px rgba(68, 127, 173, 0.5);
 }
 
 .form-button {
-  background-color: #8e44ad;
+  background-color: #4ca1af;
   color: white;
   font-size: 1rem;
   padding: 10px;
@@ -156,7 +156,7 @@ onMounted(() => {
 }
 
 .form-button:hover {
-  background-color: #732d91;
+  background-color: #4ca1af;
   transform: scale(1.05);
 }
 </style>

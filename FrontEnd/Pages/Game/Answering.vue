@@ -21,13 +21,15 @@
           <p>{{ currentGroup?.question?.questionText }}</p>
         </div>
 
-        <div v-if="!isAnswerSubmitted" class="submit-answer">
-          <input
-            v-model="answer"
-            type="text"
-            placeholder="Enter your answer"
-            @keydown.enter="submitAnswer"
-          />
+        <div v-if="!isAnswerSubmitted" class="submit-answer">          
+          <input 
+          v-model="answer" 
+          type="text" 
+          class="form__field" 
+          placeholder="Enter your answer" 
+          required 
+          @keydown.enter="submitAnswer">
+          <label for="name" class="form__label">Write your answer:</label>                    
           <button @click="submitAnswer">Submit Answer</button>
         </div>
 
@@ -252,14 +254,14 @@ onUnmounted(() => stopTimer());
   display: flex;
   height: 100vh;
   padding: 20px;
-  background-color: #f4f0ff;
+  background-color: #fff;
 }
 
 .players-list {
   flex: 1;
   padding: 20px;
-  background-color: #e0d4f7;
-  border-right: 3px solid #a569bd;
+  background: linear-gradient(135deg, #2c3e50, #4ca1af);
+  border-right: 3px solid #34495e;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -270,7 +272,7 @@ onUnmounted(() => stopTimer());
 .players-list h2 {
   font-size: 24px;
   font-weight: bold;
-  color: #5b2c6f;
+  color: #fff;
 }
 
 .players-list ul {
@@ -279,7 +281,7 @@ onUnmounted(() => stopTimer());
 }
 
 .players-list li {
-  background-color: #c7a6d9;
+  background-color: #fff;
   color: #fff;
   padding: 15px;
   margin-bottom: 10px;
@@ -290,7 +292,7 @@ onUnmounted(() => stopTimer());
 .main-content {
   flex: 2;
   padding: 20px;
-  background-color: #e0d4f7;
+  background: linear-gradient(135deg, #2c3e50, #4ca1af);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -302,13 +304,13 @@ onUnmounted(() => stopTimer());
 .timer {
   font-size: 26px;
   font-weight: bold;
-  color: #7d3c98;
+  color: #fff;
   margin-bottom: 20px;
 }
 
 .question {
   margin-top: 20px;
-  background-color: #c7a6d9;
+  background-color: #4ca1af;
   padding: 15px;
   border-radius: 8px;
   width: 100%;
@@ -318,25 +320,33 @@ onUnmounted(() => stopTimer());
 
 .submit-answer,
 .submitted-answer {
+  position: relative;
   margin-top: 20px;
   padding: 15px;
+  background-color: #4ca1af;
   border-radius: 8px;
   width: 100%;
   text-align: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  font-family: inherit;
+  border: none;
+  border-bottom: 1px solid #9b9b9b;
+  outline: 0;
+  font-size: 17px;
+  color: #fff;
+  background: transparent;
+  transition: border-color 0.2s;
 }
 
 .submit-answer input {
   padding: 12px;
   width: 100%;
   margin-bottom: 10px;
-  border-radius: 8px;
-  border: 1px solid #c7a6d9;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 button {
-  background-color: #7d3c98;
+  background-color: #34495e;
   color: white;
   padding: 15px 50px;
   border-radius: 12px;
@@ -347,13 +357,77 @@ button {
 }
 
 button:hover {
-  background-color: #5b2c6f;
+  background-color: #4ca1af;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .submitted-answer h2 {
   font-size: 22px;
   font-weight: bold;
-  color: #7d3c98;
+  color: #000;
 }
+
+.form__group {
+  position: relative;
+  padding: 20px 0 0;
+  width: 100%;
+  max-width: 210px;
+}
+
+.form__field {
+  font-family: inherit;
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid #9b9b9b;
+  outline: 0;
+  font-size: 17px;
+  color: #000;
+  padding: 7px 0;
+  background: transparent;
+  transition: border-color 0.2s;
+}
+
+.form__field::placeholder {
+  color: transparent;
+}
+
+.form__field:placeholder-shown ~ .form__label {
+  font-size: 17px;
+  cursor: text;
+  top: 20px;
+}
+
+.form__label {
+  position: absolute;
+  top: 0;
+  display: block;
+  transition: 0.2s;
+  font-size: 17px;
+  color: #fff;
+  pointer-events: none;
+}
+
+.form__field:focus {
+  padding-bottom: 6px;
+  font-weight: 700;
+  border-width: 3px;
+  border-image: linear-gradient(to right, #116399, #38caef);
+  border-image-slice: 1;
+}
+
+.form__field:focus ~ .form__label {
+  position: absolute;
+  top: 0;
+  display: block;
+  transition: 0.2s;
+  font-size: 17px;
+  color: #38caef;
+  font-weight: 700;
+}
+
+/* reset input */
+.form__field:required, .form__field:invalid {
+  box-shadow: none;
+}
+
 </style>
