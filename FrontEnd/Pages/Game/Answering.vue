@@ -172,7 +172,7 @@ const goToNextGroupOrRound = async () => {
     isAnswerSubmitted.value = false;
   } else {
     // No more rounds left, end the game
-    alert("Insert Logic to Redirect");
+    // alert("Insert Logic to Redirect");
     router.push(`/game/voting`);
   }
 };
@@ -282,10 +282,11 @@ onUnmounted(() => stopTimer());
 
 .players-list li {
   background-color: #fff;
-  color: #fff;
+  color: #000000;
   padding: 15px;
   margin-bottom: 10px;
   border-radius: 8px;
+  font-weight: bold;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 

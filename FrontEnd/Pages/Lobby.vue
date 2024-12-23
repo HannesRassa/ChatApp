@@ -277,11 +277,11 @@ const startGame = async (): Promise<void> => {
       timerForAnsweringInSec: roundTime.value,
       playersPerGroup: groupCount.value,
     };
-    alert(
-      `request data : ${JSON.stringify(users.value)}, ${rounds.value}, ${
-        roundTime.value
-      }, ${groupCount.value}`
-    );
+    // alert(
+    //   `request data : ${JSON.stringify(users.value)}, ${rounds.value}, ${
+    //     roundTime.value
+    //   }, ${groupCount.value}`
+    // );
     console.log(
       "Request body for creating the game:",
       JSON.stringify(requestBody, null, 2)
