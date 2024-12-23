@@ -37,7 +37,7 @@
 
     <div v-if="loggedIn" class="menu-options">
       <button @click="startNewGame">Start New Game</button>
-      <button @click="toggleLobbyCodeInput">Join Lobby(not rady)</button>
+      <button @click="toggleLobbyCodeInput">Join Lobby</button>
       <button @click="searchForGames">Search for Existing Games</button>
       <button @click="createQuestions">Create QPacks</button>
       <button @click="browseQuestions">Browse QPacks</button>
@@ -55,6 +55,7 @@
       <button @click="joinExactLobby()">Join Lobby</button>
       <p v-if="joinLobbyError" class="error">{{ joinLobbyError }}</p>
     </div>
+
     <div v-if="showLobbyCodeDropdown" class="lobby-code-dropdown">
       <label for="lobbyCode">Enter Lobby Code:</label>
       <input
@@ -239,7 +240,8 @@ export default defineComponent({
     },
 
     toggleLobbyCodeInput() {
-      this.showLobbyCodeInput = !this.showLobbyCodeInput;
+      //this.showLobbyCodeInput = !this.showLobbyCodeInput;
+      this.$router.push({ name: "GameRooms" });
     },
 
     async joinExactLobby() {
