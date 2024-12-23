@@ -349,7 +349,7 @@ const decreaseGroups = (): void => {
 .flex-layout {
   display: flex;
   height: 100vh;
-  background: linear-gradient(135deg, #f4f4ff, #e6d8f7);
+  background: linear-gradient(135deg, #2c3e50, #4ca1af);
   gap: 10px;
   padding: 20px;
   box-sizing: border-box;
@@ -368,7 +368,7 @@ const decreaseGroups = (): void => {
 
 .sidebar {
   flex: 1;
-  background: #7d3c98;
+  background: #4b8891;
   color: white;
   border-radius: 10px;
   padding: 20px;
@@ -401,8 +401,8 @@ const decreaseGroups = (): void => {
 }
 
 button {
-  background-color: #8e44ad;
-  color: white;
+  background-color: #4ca1af;
+  color: #34495e;
   border: none;
   padding: 10px 20px;
   border-radius: 8px;
@@ -412,7 +412,7 @@ button {
 }
 
 button:hover {
-  background-color: #732d91;
+  background-color: #4ca1af;
   transform: scale(1.05);
 }
 
@@ -421,7 +421,7 @@ button:hover {
 }
 
 .button-secondary {
-  background-color: #f39c12;
+  background-color: #d78b11;
 }
 
 .table-container {
@@ -433,19 +433,20 @@ button:hover {
 .users-table {
   width: 100%;
   border-collapse: collapse;
-  border-radius: 10px;
+  border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
 .users-table th {
-  background-color: #8e44ad;
+  background-color: #4ca1af;
   color: white;
   padding: 10px;
   text-align: left;
 }
 
 .users-table td {
-  padding: 10px;
+  padding: 12px;
   border-bottom: 1px solid #ddd;
 }
 
@@ -456,14 +457,14 @@ button:hover {
 .roomCode-display {
   margin-top: 10px;
   font-size: 1.2rem;
-  color: #5b2c6f;
+  color: #34495e;
   background: rgba(245, 245, 245, 0.8);
   padding: 10px 15px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 button:disabled {
-  background-color: #4a2c75; /* Dark violet color */
+  background-color: #4ca1af; /* Dark violet color */
   cursor: not-allowed;
   opacity: 0.6; /* Optional: adds a slight transparency to indicate the button is disabled */
 }
@@ -476,7 +477,7 @@ button:disabled {
   border-radius: 50%;
   border: none;
   color: rgb(0, 0, 0);
-  background-color: #fff03c;
+  background-color: #27ae60;
   cursor: pointer;
   transition: all 0.3s;
   transform: scale(0.9);
@@ -495,7 +496,7 @@ button:disabled {
 
 .modal-content {
   background: rgb(255, 255, 255);
-  color: #5b2c6f;
+  color: #4ca1af;
   padding: 20px;
   border-radius: 8px;
   width: 400px;
