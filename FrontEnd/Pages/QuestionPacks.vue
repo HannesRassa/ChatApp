@@ -1,15 +1,17 @@
 <template>
-  <div class="packs-container">
-    <!-- Home Button -->
-    <button class="home-button" @click="goHome">Home</button>
+  <div class="flex-layout">
+    <div class="packs-container">
+      <!-- Home Button -->
+      <button class="home-button" @click="goHome">Home</button>
 
-    <h1 class="page-title">Question Packages</h1>
-    <ul class="pack-list">
-      <li v-for="pack in packs" :key="pack" class="pack-item">
-        <span>{{ pack }}</span>
-        <button class="primary-button" @click="viewPack(pack)">View</button>
-      </li>
-    </ul>
+      <h1 class="page-title">Question Packages</h1>
+      <ul class="pack-list">
+        <li v-for="pack in packs" :key="pack" class="pack-item">
+          <span>{{ pack }}</span>
+          <button class="primary-button" @click="viewPack(pack)">View</button>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -55,11 +57,22 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.flex-layout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #2c3e50, #4ca1af);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
 .packs-container {
-  max-width: 600px;
+  width: 80%;
+  height: 40%;
   margin: 0 auto;
   padding: 20px;
-  background-color: #000;
+  background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -96,13 +109,17 @@ export default defineComponent({
   position: absolute;
   top: 10px;
   left: 10px;
-  background-color: #9104a3;
+  background-color: #34495e;
   color: white;
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
+}
+
+.home-button:hover {
+  background-color: #27ae60;
 }
 
 h1 {
