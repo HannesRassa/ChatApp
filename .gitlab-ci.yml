@@ -4,7 +4,9 @@ variables:
   # Minu konteineri registri aadress AWS-s (Amazon Elastic Container Registry)
   # Asenda MINU_REGISTRI_NIMI
   DOCKER_REGISTRY: 662032419283.dkr.ecr.eu-north-1.amazonaws.com/chatapp
+  # muuda enda domeeniks või virtuaalmasina IP-ks
   DOMAIN: chatapp.itb2203.tautar.ee
+
 
 stages:
   - build
@@ -34,7 +36,6 @@ build:back-end:
   tags:
     - itb2203
 
-
 build:front-end:
   image:
     name: docker:27.3.1-alpine3.20
@@ -58,8 +59,10 @@ build:front-end:
   tags:
     - itb2203
 
-
 api_test:
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_TLS_CERTDIR: ""
   image:
     name: docker:27.3.1-alpine3.20
     entrypoint: ["/bin/sh", "-c"]
@@ -77,7 +80,7 @@ api_test:
     - docker compose up --abort-on-container-exit --exit-code-from newman
     - docker compose down -v
   after_script:
-    - docker logout ${DOCKER_REGISTRY}
+    - docker logout ${ITB2203_REGISTRY}
   stage: api_test
   tags:
     - itb2203
@@ -115,3 +118,4 @@ deploy:
   stage: deploy
   tags:
     - itb2203
+
