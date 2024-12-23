@@ -143,7 +143,9 @@ public class LobbiesRepo
     {
         return await context.Lobbies
                             .Include(gr => gr.Players) // Include players for the game room
-                            .FirstOrDefaultAsync(gr => gr.Players.Any(p => p.Id == playerId));
+                            .FirstOrDefaultAsync(gr => gr.Players.Any(p => p.Id == playerId))
+            ?? new Lobby(); // Return a default instance of Lobby if no match is found
     }
 
 }
+

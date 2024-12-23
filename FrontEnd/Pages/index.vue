@@ -37,34 +37,26 @@
 
     <div v-if="loggedIn" class="menu-options">
       <button @click="startNewGame">Start New Game</button>
-      <button @click="toggleLobbyCodeInput">Join Lobby(not rady)</button>
+      <button @click="toggleLobbyCodeInput">Join Lobby</button>
       <button @click="searchForGames">Search for Existing Games</button>
-      <button @click="toggleQuestionDropdown">Create Question</button>
-      <button @click="browseQuestions">Browse Questions</button>
+      <button @click="createQuestions">Create QPacks</button>
+      <button @click="browseQuestions">Browse QPacks</button>
     </div>
 
     <div v-if="showLobbyCodeInput" class="lobby-code-input">
-      <label for="lobbyCode">Enter Room Code:</label>
       <input
-        type="text"
-        id="lobbyCode"
-        v-model="exactLobbyCodeInput"
-        placeholder="e.g., 1234"
-        required
+      type="text"
+      id="lobbyCode"
+      class="form__field"
+      v-model="exactLobbyCodeInput"
+      placeholder="e.g., 1234"
+      required
       />
+      <label for="lobbyCode" class="form__label">Enter Room Code:</label>
       <button @click="joinExactLobby()">Join Lobby</button>
       <p v-if="joinLobbyError" class="error">{{ joinLobbyError }}</p>
     </div>
 
-    <div v-if="isDropdownOpen" class="question-form">
-      <form @submit.prevent="submitQuestion">
-        <label>
-          Question Text:
-          <input v-model="questionText" type="text" required />
-        </label>
-        <button type="submit">Submit Question</button>
-      </form>
-    </div>
     <div v-if="showLobbyCodeDropdown" class="lobby-code-dropdown">
       <label for="lobbyCode">Enter Lobby Code:</label>
       <input
@@ -229,7 +221,7 @@ export default defineComponent({
         return;
       }
 
-      axios
+      axiosInstance
         .post("https://localhost:7269/Backend/Lobby", userStore.userId, {
           headers: {
             "Content-Type": "application/json",
@@ -244,33 +236,13 @@ export default defineComponent({
           this.errorMessage = "Failed to start a new game. Please try again.";
         });
     },
-    toggleQuestionDropdown() {
-      this.isDropdownOpen = !this.isDropdownOpen;
-    },
-
-    async submitQuestion() {
-      if (!this.questionText) {
-        this.isDropdownOpen = false;
-        return;
-      }
-      try {
-        console.log(JSON.stringify(this.questionText));
-        const response = await axios.post(
-          "https://localhost:7269/Backend/Question",
-          {
-            questionText: this.questionText,
-          }
-        );
-
-        console.log("Question created successfully:", response.data);
-        this.resetQuestionForm();
-      } catch (error) {
-        console.error("Failed to create question:", error);
-      }
+    createQuestions() {
+      this.$router.push({ name: "CreateQuestions" });
     },
 
     toggleLobbyCodeInput() {
       this.showLobbyCodeInput = !this.showLobbyCodeInput;
+      //this.$router.push({ name: "GameRooms" });
     },
 
     async joinExactLobby() {
@@ -328,10 +300,11 @@ export default defineComponent({
     },
     searchForGames() {
       //this.showLobbyCodeDropdown = !this.showLobbyCodeDropdown;
-      this.$router.push(`Lobbies`);
+      //this.$router.push(`Lobbies`);
+      this.$router.push({ name: "GameRooms" });
     },
     browseQuestions() {
-      this.$router.push({ name: "BrowseQuestions" });
+      this.$router.push({ name: "QuestionPacks" });
     },
   },
   mounted() {
@@ -362,6 +335,7 @@ export default defineComponent({
   font-family: "Poppins", sans-serif;
 }
 .lobby-code-input {
+  position: relative;
   margin-top: 20px;
   display: flex;
   flex-direction: column;
@@ -375,7 +349,7 @@ export default defineComponent({
   width: 100%;
 }
 .main-menu {
-  background: linear-gradient(to bottom right, #f8f9fd, #e9e4f5);
+  background: linear-gradient(to bottom right, #2c3e50, #4ca1af);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -393,7 +367,7 @@ export default defineComponent({
 }
 
 button {
-  background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+  background: linear-gradient(135deg, #2c3e50, #4ca1af);
   border: none;
   padding: 12px 24px;
   border-radius: 30px;
@@ -405,7 +379,7 @@ button {
 }
 
 button:hover {
-  background: #5c51c6;
+  background: #4ca1af;
   transform: translateY(-2px);
 }
 
@@ -422,7 +396,7 @@ button:hover {
 
 .form-container h2 {
   margin-bottom: 20px;
-  color: #6c5ce7;
+  color: #4ca1af;
 }
 
 .form-container label {
@@ -443,7 +417,7 @@ button:hover {
 }
 
 .form-container input:focus {
-  border-color: #6c5ce7;
+  border-color: #4ca1af;
   outline: none;
 }
 
@@ -479,6 +453,62 @@ button:hover {
   margin-top: 20px;
   width: 100%;
   max-width: 400px;
+}
+
+.form__label {
+  position: absolute;
+  top: 0;
+  display: block;
+  transition: 0.2s;
+  font-size: 17px;
+  color: #000;
+  pointer-events: none;
+}
+
+.form__field {
+  font-family: inherit;
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid #9b9b9b;
+  outline: 0;
+  font-size: 16px;
+  color: #000;
+  padding: 7px 0;
+  background: transparent;
+  transition: border-color 0.2s;
+}
+
+.form__field::placeholder {
+  color: transparent;
+}
+
+.form__field:placeholder-shown ~ .form__label {
+  font-size: 15px;
+  cursor: text;
+  top: 20px;
+}
+
+.form__field:focus {
+  padding-bottom: 6px;
+  font-weight: 700;
+  border-width: 3px;
+  border-image: linear-gradient(to right, #116399, #38caef);
+  border-image-slice: 1;
+}
+
+.form__field:focus ~ .form__label {
+  position: absolute;
+  top: 0;
+  display: block;
+  transition: 0.2s;
+  font-size: 17px;
+  color: #38caef;
+  font-weight: 700;
+}
+
+/* reset input */
+.form__field:required, .form__field:invalid {
+  box-shadow: none;
 }
 
 .question-form label {

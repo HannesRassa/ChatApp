@@ -12,11 +12,16 @@
             </tr>
           </thead>
           <tbody>
+            <tr v-if="gameRooms.length === 0">
+              <td colspan="3">No game rooms available</td>
+            </tr>
             <tr v-for="gameRoom in gameRooms" :key="gameRoom.id">
               <td>{{ gameRoom.id }}</td>
-              <td>{{ gameRoom.RoomCode }}</td>
+              <td>{{ gameRoom.roomCode }}</td>
               <td>
-                <button class="connect-button" @click="connectToGame(gameRoom.RoomCode)">Connect</button>
+                <button class="connect-button" @click="connectToGame(gameRoom.id)">
+                  Connect
+                </button>
               </td>
             </tr>
           </tbody>
@@ -27,24 +32,37 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   data() {
     return {
       roomCode: "Lobby",
-      gameRooms: [
-        { id: 1, RoomCode: "ROOM001" },
-        { id: 2, RoomCode: "ROOM002" },
-        { id: 3, RoomCode: "ROOM003" }
-      ]
+      gameRooms: []
     };
   },
-  methods: {
-    connectToGame(roomCode) {
-      console.log("Connecting to room: ", roomCode);
-      this.$router.push(`LobbyPage`);
+  created() {
+    this.fetchGameRooms();
+  },
+  methods: { 
+    async fetchGameRooms() {
+      try {
+        const response = await axios.get('https://localhost:7269/Backend/Lobby');
+        console.log(response.data);
+        this.gameRooms = response.data;
+      } catch (error) {
+          console.error("Error fetching game rooms:", error);
+        }
+    },
+    connectToGame(id) {
+      // Handle the logic to connect to the selected game room
+      console.log("Connecting to room: ", id);
+      // Redirect or perform any action needed to connect to the game
+      // Example:
+      //this.$router.push({ name: 'LobbyPage', params: { id: roomCode } });
+      this.$router.push({ name: 'Lobby', params: { id } });
     }
   }
-};
+}
 </script>
 
 <style scoped>

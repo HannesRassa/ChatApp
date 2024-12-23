@@ -2,11 +2,12 @@ using BackEnd.Models.Classes;
 using Microsoft.EntityFrameworkCore;
 
 namespace BackEnd.Data.Repos;
+
 public class QuestionsRepo(DataContext context)
 {
     private readonly DataContext context = context;
 
-    //CREATE
+    // CREATE
     public async Task<Question> SaveQuestionToDb(Question question)
     {
         context.Add(question);
@@ -14,13 +15,27 @@ public class QuestionsRepo(DataContext context)
         return question;
     }
 
-    //READ
+    public async Task<List<Question>> SaveQuestionsToDb(IEnumerable<Question> questions)
+    {
+        context.AddRange(questions);
+        await context.SaveChangesAsync();
+        return questions.ToList();
+    }
+
+    // READ
     public async Task<List<Question>> GetAllQuestions() => await context.Questions.ToListAsync();
 
     public async Task<Question?> GetQuestionById(int id) => await context.Questions.FindAsync(id);
+
+    public async Task<List<Question>> GetQuestionsByPackName(string packName) =>
+        await context.Questions.Where(q => q.PackName == packName).ToListAsync();
+
     public async Task<bool> QuestionExistsInDb(int id) => await context.Questions.AnyAsync(x => x.Id == id);
-    
-    //UPDATE
+
+    public async Task<List<string>> GetDistinctPackNames() =>
+    await context.Questions.Select(q => q.PackName).Distinct().ToListAsync();
+
+    // UPDATE
     public async Task<bool> UpdateQuestion(int id, Question question)
     {
         bool isIdsMatch = id == question.Id;
@@ -30,7 +45,8 @@ public class QuestionsRepo(DataContext context)
         int updatedRecordsCount = await context.SaveChangesAsync();
         return updatedRecordsCount == 1;
     }
-    //DELETE
+
+    // DELETE
     public async Task<bool> DeleteQuestionById(int id)
     {
         Question? questionInDb = await GetQuestionById(id);

@@ -1,59 +1,58 @@
 <template>
-  <div class="game-container">
-    <div class="game-id">
-      <p>Game ID: {{ gameData.id }}</p>
-    </div>
+  <div class="flex-layout">
+    <div class="game-container">
+      <h1 class="section-title">Game ID: {{ gameData.id }}</h1>
 
-    <!-- Question Text -->
-    <div class="question-box">
-      <p>{{ selectedQuestion.questionText }}</p>
-    </div>
+      <!-- Question Box -->
+      <div class="question-box">
+        <p>{{ selectedQuestion.questionText }}</p>
+      </div>
 
-    <!-- Answer Box -->
-    <div class="answer-box">
-      <input
-        v-model="answer"
-        placeholder="Type your answer here"
-        class="answer-input"
-      />
-    </div>
+      <!-- Answer Box -->
+      <div class="answer-box">
+        <input
+          v-model="answer"
+          placeholder="Type your answer here"
+          class="answer-input"
+        />
+      </div>
 
-    <!-- Submit Button -->
-    <button @click="submitAnswer" class="submit-button">Submit Answer</button>
+      <!-- Submit Button -->
+      <button @click="submitAnswer" class="submit-button">Submit Answer</button>
 
-    <!-- Player Points -->
-    <div class="points">
-      <p>Points: {{ gameData.id }}</p>
-      <!--dont change right now!!!-->
-    </div>
+      <!-- Player Points -->
+      <div class="points">
+        <p>Points: {{ gameData.id }}</p>
+      </div>
 
-    <!-- Opponent Section -->
-    <div class="opponent">
-      <p>Opponent</p>
-      <div class="opponent-icon">✓</div>
-    </div>
+      <!-- Opponent Section -->
+      <div class="opponent">
+        <p>Opponent</p>
+        <div class="opponent-icon">✓</div>
+      </div>
 
-    <!-- Summary Button -->
-    <button @click="showSummary" class="summary-button">Show Summary</button>
+      <!-- Summary Button -->
+      <button @click="showSummary" class="summary-button">Show Summary</button>
 
-    <!-- Summary Modal -->
-    <div
-      v-if="isSummaryVisible"
-      class="modal-overlay"
-      @click.self="isSummaryVisible = false"
-    >
-      <div class="modal-content">
-        <h3>Answer Summary</h3>
-        <ul>
-          <li v-for="(item, index) in answeredQuestions" :key="index">
-            <strong>Question:</strong> {{ item.question }} <br />
-            <strong>Your Answer:</strong> {{ item.yourAnswer }} <br />
-            <strong>Fake Player Answer:</strong> {{ item.fakeAnswer }} <br />
-          </li>
-        </ul>
-        <button @click="isSummaryVisible = false" class="close-button">
-          Close
-        </button>
+      <!-- Summary Modal -->
+      <div
+        v-if="isSummaryVisible"
+        class="modal-overlay"
+        @click.self="isSummaryVisible = false"
+      >
+        <div class="modal-content">
+          <h3>Answer Summary</h3>
+          <ul>
+            <li v-for="(item, index) in answeredQuestions" :key="index">
+              <strong>Question:</strong> {{ item.question }} <br />
+              <strong>Your Answer:</strong> {{ item.yourAnswer }} <br />
+              <strong>Fake Player Answer:</strong> {{ item.fakeAnswer }} <br />
+            </li>
+          </ul>
+          <button @click="isSummaryVisible = false" class="close-button">
+            Close
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -179,27 +178,35 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* General Game Container Styles */
-.game-container {
-  max-width: 600px;
-  margin: 0 auto;
+/* Flex Layout */
+.flex-layout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #2c3e50, #4ca1af);
   padding: 20px;
-  background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  font-family: "Arial", sans-serif;
+  box-sizing: border-box;
 }
 
-/* Game ID and Points Styles */
-.game-id,
-.points {
-  margin-bottom: 15px;
-  padding: 12px;
-  border-radius: 6px;
-  background-color: #f1f1f1;
-  border: 1px solid #e1e1e1;
-  font-size: 1.1em;
-  color: #333;
+/* Game Container Styles */
+.game-container {
+  width: 80%;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  text-align: center;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Section Title Styles */
+.section-title {
+  font-size: 2rem;
+  color: #34495e;
+  margin-bottom: 20px;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 /* Question Box Styles */
@@ -217,6 +224,7 @@ onMounted(() => {
 /* Answer Box Styles */
 .answer-box {
   margin-bottom: 20px;
+  background-color: #ffffff;
 }
 
 /* Answer Input Styles */
@@ -258,12 +266,24 @@ onMounted(() => {
   transform: translateY(1px);
 }
 
+/* Player Points Styles */
+.points {
+  margin-bottom: 20px;
+  padding: 12px;
+  border-radius: 6px;
+  background-color: #f1f1f1;
+  border: 1px solid #e1e1e1;
+  font-size: 1.1em;
+  color: #333;
+}
+
 /* Opponent Section Styles */
 .opponent {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 20px;
+  color: black;
 }
 
 .opponent-icon {
