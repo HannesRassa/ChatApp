@@ -60,9 +60,6 @@ build:front-end:
 
 
 api_test:
-  variables:
-    DOCKER_HOST: tcp://docker:2375/
-    DOCKER_TLS_CERTDIR: ""
   image:
     name: docker:27.3.1-alpine3.20
     entrypoint: ["/bin/sh", "-c"]
@@ -80,7 +77,7 @@ api_test:
     - docker compose up --abort-on-container-exit --exit-code-from newman
     - docker compose down -v
   after_script:
-    - docker logout ${ITB2203_REGISTRY}
+    - docker logout ${DOCKER_REGISTRY}
   stage: api_test
   tags:
     - itb2203
