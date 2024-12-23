@@ -26,7 +26,6 @@ public class AnswersRepo(DataContext context)
     public async Task<List<Answer>> GetAllAnswers()
     {
         IQueryable<Answer> query = context.Answers.AsQueryable();
-        // if (question is not null) query = query.Where(x => x.Question == question);
         return await query.ToListAsync();
     } 
 
