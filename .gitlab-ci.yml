@@ -14,7 +14,7 @@ build:back-end:
   image:
     name: docker:27.3.1-alpine3.20
   services:
-    - docker:27.3.1-alpine3.20
+    - docker:27.3.1-dind
   only:
     - master
     - main
@@ -37,7 +37,7 @@ build:front-end:
   image:
     name: docker:27.3.1-alpine3.20
   services:
-    - docker:27.3.1-alpine3.20
+    - docker:27.3.1-dind
   only:
     - master
     - main
