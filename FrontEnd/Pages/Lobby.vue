@@ -142,10 +142,6 @@ const pollInterval = ref<null | number>(null);
 const loading = ref<boolean>(false);
 let gameStatus = ref<number | null>(null);
 const showPackageModal = ref(false);
-const selectedPackage = ref("");
-
-
-
 
 // Fetch all players initially
 const fetchUsers = async (): Promise<void> => {

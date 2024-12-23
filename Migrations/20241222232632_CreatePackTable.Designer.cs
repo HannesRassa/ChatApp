@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace backEnd.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241221202936_CreatePackTable")]
+    [Migration("20241222232632_CreatePackTable")]
     partial class CreatePackTable
     {
         /// <inheritdoc />
